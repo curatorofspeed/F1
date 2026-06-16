@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The F1 Card Index</title>
+<title>F1 Card Index</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -86,6 +86,7 @@
   .rb-pts{color:var(--up);border-color:rgba(57,224,138,.22)}
   .rb-flat{color:var(--muted);border-color:var(--line)}
   .rb-dnf{color:var(--down);border-color:rgba(255,93,93,.3)}
+  .rec-dt{color:var(--muted);font-size:10px;font-family:'JetBrains Mono',monospace}
   .driver .num{position:absolute;right:12px;top:6px;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:54px;line-height:1;opacity:.13}
   .driver .team{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:20px;font-weight:600}
   .driver .nm{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:23px;text-transform:uppercase;letter-spacing:.5px;margin-top:10px;line-height:1}
@@ -362,7 +363,7 @@
 <div class="wrap">
   <header>
     <div class="stripe"><i></i><i></i><i></i><i></i><i></i></div>
-    <h1 id="homeTitle">The F1 <span class="red">Card Index</span></h1>
+    <h1 id="homeTitle">F1 <span class="red">Card Index</span></h1>
     <div class="tagline">
       The live market index for Formula 1 cards — what's ending, what just sold, what's next
       <span class="badge" id="updatedBadge">2026 Season</span>
@@ -442,7 +443,7 @@
       </div>
     </div>
     <div class="tiles">
-      <div class="tile gold"><div class="lab">Top Card</div><div class="val" id="dTop">—</div><div class="vsub" id="dTopSub">&nbsp;</div></div>
+      <div class="tile gold"><div class="lab" id="dTopLab">Top Card</div><div class="val" id="dTop">—</div><div class="vsub" id="dTopSub">&nbsp;</div></div>
       <div class="tile"><div class="lab">Comps on File</div><div class="val" id="dCount">0</div><div class="vsub">verified sales</div></div>
       <div class="tile" id="dMoverTile"><div class="lab">Biggest Mover · 30d</div><div class="val" id="dMover">—</div><div class="vsub" id="dMoverSub">&nbsp;</div></div>
     </div>
@@ -486,7 +487,7 @@
   </div>
 
   <div class="foot">
-    The F1 Card Index surfaces the live Formula 1 trading-card market — auctions ending soon, recent sales, and what's moving around race weekends. Sold and live data come straight from eBay, 130point, and Whatnot in real time; we don't store a price database. Verify comps at <a href="https://www.sportscardinvestor.com" target="_blank" rel="noopener">Sports Card Investor</a>, <a href="https://app.cardladder.com" target="_blank" rel="noopener">Card Ladder</a>, <a href="https://130point.com/sales/" target="_blank" rel="noopener" onclick="copy130(&#39;Topps Chrome Formula 1&#39;)">130point</a> (true sold incl. best offers), and <a id="footEbay" data-base="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" href="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">eBay sold</a>. Some links are affiliate links — if you buy through them we may earn a commission, at no extra cost to you.
+    F1 Card Index surfaces the live Formula 1 trading-card market — auctions ending soon, recent sales, and what's moving around race weekends. Sold and live data come straight from eBay, 130point, and Whatnot in real time; we don't store a price database. Verify comps at <a href="https://www.sportscardinvestor.com" target="_blank" rel="noopener">Sports Card Investor</a>, <a href="https://app.cardladder.com" target="_blank" rel="noopener">Card Ladder</a>, <a href="https://130point.com/sales/" target="_blank" rel="noopener" onclick="copy130(&#39;Topps Chrome Formula 1&#39;)">130point</a> (true sold incl. best offers), and <a id="footEbay" data-base="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" href="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">eBay sold</a>. Some links are affiliate links — if you buy through them we may earn a commission, at no extra cost to you.
     <div class="tools admin-only">
       <button class="btn ghost" id="affBtn">💰 Affiliate Settings</button>
       <button class="btn ghost" id="exportBtn">Export JSON</button>
@@ -547,7 +548,7 @@ function seedData(){
     return a;
   };
   state.drivers=[
-    {id:'antonelli',name:'Andrea Kimi Antonelli',abbr:'ANT',team:'Mercedes',number:12,color:'#00D2BE',rookieYear:2024,cards:[
+    {id:'antonelli',name:'Andrea Kimi Antonelli',abbr:'ANT',team:'Mercedes',number:12,color:'#00D2BE',rookieYear:2024,record:{txt:'2025 Dynasty glove RPA 1/1',price:'$201,910',date:'Apr 2026',src:'Goldin'},cards:[
       C('Topps Dynasty F1',2025,'Race-Worn Patch Auto 1/1','Raw',[['2026-04-12',201910]],'high','Auction',null,{print:1,kind:'auto'}),
       C('Topps Dynasty F1',2025,'Patch Auto /5','Raw',[['2026-05-18',28060]],'high','eBay / Card Ladder',null,{print:5,kind:'auto'}),
       C('Topps Chrome F1 Sapphire',2024,'#22 Orange Sapphire /25','Raw',[[NOW,626.11]],'medium','Sports Card Investor',SCI+'andrea-kimi-antonelli-racing/2024-topps-chrome-formula-1-sapphire-edition-orange-22',{num:22,print:25,rc:true}),
@@ -592,7 +593,7 @@ function seedData(){
       C('Topps Chrome F1',2024,'#CAC-ANT Auto SuperFractor 1/1','Raw',[],'low','checklist · refresh',null,{num:'CAC-ANT',print:1,kind:'auto',rc:true}),
       ...rainbow2025(8,true)
     ]},
-    {id:'verstappen',name:'Max Verstappen',abbr:'VER',team:'Red Bull',number:1,color:'#3671C6',rookieYear:2015,cards:[
+    {id:'verstappen',name:'Max Verstappen',abbr:'VER',team:'Red Bull',number:1,color:'#3671C6',rookieYear:2015,record:{txt:'2020 Chrome SuperFractor Auto 1/1',price:'~$500K',date:'2023',src:'auction'},cards:[
       C('Topps Chrome F1',2020,'SuperFractor 1/1','Raw',[[NOW,25000]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Autograph','Raw',[[NOW,4200]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Orange Refractor /25','Raw',[[NOW,2600]],'low','est · refresh'),
@@ -602,7 +603,7 @@ function seedData(){
       C('Topps Chrome F1',2020,'Base','Raw',[[NOW,40]],'low','est · refresh'),
       ...rainbow2024(1)
     ]},
-    {id:'hamilton',name:'Lewis Hamilton',abbr:'HAM',team:'Ferrari',number:44,color:'#ED1C24',rookieYear:2007,cards:[
+    {id:'hamilton',name:'Lewis Hamilton',abbr:'HAM',team:'Ferrari',number:44,color:'#ED1C24',rookieYear:2007,record:{txt:'2020 Chrome SuperFractor Auto 1/1',price:'~$1M',date:'Dec 2024',src:'all-time F1 record'},cards:[
       C('Topps Chrome F1',2020,'SuperFractor 1/1','Raw',[[NOW,18000]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Autograph','Raw',[[NOW,2600]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Orange Refractor /25','Raw',[[NOW,1800]],'low','est · refresh'),
@@ -660,7 +661,7 @@ function seedData(){
       C('Topps Chrome F1',2020,'Base','Raw',[[NOW,8]],'low','est · refresh'),
       ...rainbow2024(4)
     ]},
-    {id:'hadjar',name:'Isack Hadjar',abbr:'HAD',team:'Red Bull',number:6,color:'#3671C6',rookieYear:2025,cards:[]},
+    {id:'hadjar',name:'Isack Hadjar',abbr:'HAD',team:'Red Bull',number:6,color:'#3671C6',rookieYear:2025,record:{txt:'2025 Dynasty Patch RPA 1/1',price:'$12,932',date:'Mar 2026',src:'Goldin'},cards:[]},
     {id:'lawson',name:'Liam Lawson',abbr:'LAW',team:'Racing Bulls',number:30,color:'#6692FF',rookieYear:2024,cards:[]},
     {id:'lindblad',name:'Arvid Lindblad',abbr:'LIN',team:'Racing Bulls',number:41,color:'#6692FF',rookieYear:2026,cards:[]},
     {id:'gasly',name:'Pierre Gasly',abbr:'GAS',team:'Alpine',number:10,color:'#0093CC',cards:[]},
@@ -681,11 +682,11 @@ function seedData(){
       C('Topps Chrome F1',2025,'#DR-45 Diamond Anniversary Relic','Raw',[],'low','checklist · refresh',null,{num:'DR-45',kind:'insert',rc:true}),
       ...rainbow2025(45)
     ]},
-    {id:'camara',name:'Rafael Câmara',abbr:'CAM',team:'Trident F3',number:47,color:'#0066CC',tier:'prospect',rookieYear:2025,cards:[
+    {id:'camara',name:'Rafael Câmara',abbr:'CAM',team:'Invicta F2',number:47,color:'#0066CC',tier:'prospect',rookieYear:2025,cards:[
       C('Topps Chrome F1',2025,'#DR-47 Diamond Anniversary Relic','Raw',[],'low','checklist · refresh',null,{num:'DR-47',kind:'insert',rc:true}),
       ...rainbow2025(47)
     ]},
-    {id:'montoya',name:'Sebastián Montoya',abbr:'MON',team:'F2',number:30,color:'#3671C6',tier:'prospect',rookieYear:2025,cards:[
+    {id:'montoya',name:'Sebastián Montoya',abbr:'MON',team:'Prema F2',number:11,color:'#3671C6',tier:'prospect',rookieYear:2025,cards:[
       C('Topps Chrome F1',2025,'#CAC-MON Chrome Autograph','Raw',[],'low','checklist · refresh',null,{num:'CAC-MON',kind:'auto',rc:true}),
       C('Topps Chrome F1',2025,'#CAC-MON Auto Orange Refractor','Raw',[],'low','checklist · refresh',null,{num:'CAC-MON',print:25,kind:'auto',rc:true}),
       C('Topps Chrome F1',2025,'#CAC-MON Auto Red Refractor','Raw',[],'low','checklist · refresh',null,{num:'CAC-MON',print:5,kind:'auto',rc:true}),
@@ -699,7 +700,16 @@ function seedData(){
       C('Topps Chrome F1',2025,'#CAC-MIN Auto SuperFractor','Raw',[],'low','checklist · refresh',null,{num:'CAC-MIN',print:1,kind:'auto',rc:true}),
       ...rainbow2025(29)
     ]},
-    {id:'senna',name:'Ayrton Senna',abbr:'SEN',team:'Legend',number:null,color:'#e6b65c',tier:'legend',rookieYear:null,cards:[
+    {id:'fornaroli',name:'Leonardo Fornaroli',abbr:'FOR',team:'F2',number:null,color:'#C0A062',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(21)]},
+    {id:'dunne',name:'Alexander Dunne',abbr:'DUN',team:'Rodin F2',number:15,color:'#FF8000',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(35)]},
+    {id:'beganovic',name:'Dino Beganović',abbr:'BEG',team:'DAMS F2',number:null,color:'#E80020',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(27)]},
+    {id:'verschoor',name:'Richard Verschoor',abbr:'VSC',team:'F2',number:null,color:'#6692FF',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(25)]},
+    {id:'crawford',name:'Jak Crawford',abbr:'CRA',team:'F2',number:null,color:'#229971',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(31)]},
+    {id:'martins',name:'Victor Martins',abbr:'MRT',team:'F2',number:null,color:'#0093CC',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(34)]},
+    {id:'maini',name:'Kush Maini',abbr:'MAI',team:'ART F2',number:16,color:'#0093CC',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(32)]},
+    {id:'browning',name:'Luke Browning',abbr:'BRO',team:'F2',number:null,color:'#64C4FF',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(28)]},
+    {id:'durksen',name:'Joshua Dürksen',abbr:'DUR',team:'Invicta F2',number:null,color:'#b06cf0',tier:'prospect',rookieYear:2025,cards:[...rainbow2025(37)]},
+    {id:'senna',name:'Ayrton Senna',abbr:'SEN',team:'Legend',number:null,color:'#e6b65c',tier:'legend',rookieYear:null,record:{txt:'1984 Panini Toleman RC · PSA 7',price:'$39,600',date:'Apr 2023',src:'Goldin'},cards:[
       C('Topps Chrome F1',2021,'Tribute Refractor /99','Raw',[[NOW,180]],'low','est · refresh'),
       C('Topps Chrome F1',2021,'Tribute Refractor','Raw',[[NOW,60]],'low','est · refresh'),
       ...rainbow2024(188)
@@ -1226,9 +1236,11 @@ function renderDriverGrid(){
   const driverCard=d=>{
     const tc=topCard(d);const hasComp=tc&&last(tc)>0;
     const rb=resultBadge(d.id,res);
-    const meta=hasComp
-      ? `Top comp · <span class="gold">${money(last(tc))}</span>`
-      : (d.rookieYear?`Rookie ${d.rookieYear}`:(d.tier==='legend'?'All-time legend':'2026 grid'));
+    const meta=d.record
+      ? `Record · <span class="gold">${d.record.price}</span> <span class="rec-dt">${esc(d.record.date)}</span>`
+      : (hasComp
+        ? `Top comp · <span class="gold">${money(last(tc))}</span>`
+        : (d.rookieYear?`Rookie ${d.rookieYear}`:(d.tier==='legend'?'All-time legend':'2026 grid')));
     return `<div class="driver${rb&&rb.cls==='rb-win'?' card-win':''}" style="border-top:3px solid ${d.color}" onclick="showDriver('${d.id}')">
       ${rb?`<div class="rbadge ${rb.cls}">${rb.txt}</div>`:''}
       <div class="num" style="color:${d.color}">${d.number!=null?d.number:''}</div>
@@ -1414,7 +1426,17 @@ function renderDriver(){
   $('dName').textContent=d.name;
   $('dTeam').textContent=d.team+(d.rookieYear?(' · Rookie '+d.rookieYear):'')+(d.number!=null?(' · #'+d.number):'');
   const tc=topCard(d);
-  if(tc){$('dTop').textContent=money(last(tc));$('dTopSub').textContent=esc((tc.year+' '+tc.parallel).slice(0,40));}else{$('dTop').textContent='—';$('dTopSub').textContent='';}
+  if(d.record){
+    $('dTopLab').textContent='Auction Record';
+    $('dTop').textContent=d.record.price;
+    $('dTopSub').textContent=esc(d.record.txt+' · '+d.record.date);
+  }else if(tc){
+    $('dTopLab').textContent='Top Card';
+    $('dTop').textContent=money(last(tc));$('dTopSub').textContent=esc((tc.year+' '+tc.parallel).slice(0,40));
+  }else{
+    $('dTopLab').textContent='Top Card';
+    $('dTop').textContent='—';$('dTopSub').textContent='';
+  }
   $('dCount').textContent=d.cards.length;
   const mv=driverMover(d);const mt=$('dMoverTile');mt.classList.remove('gold');
   if(mv){const cl=mv.pct>=0?'up':'down';$('dMover').className='val '+cl;$('dMover').textContent=(mv.pct>=0?'+':'')+mv.pct.toFixed(1)+'%';$('dMoverSub').textContent=esc(mv.c.parallel+' · 30d');}
