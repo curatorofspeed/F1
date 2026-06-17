@@ -503,8 +503,6 @@
       <h2>Recent Notable Sales</h2>
       <div class="right">
         <span class="sub" id="feedAsOf"></span>
-        <span class="status admin-only" id="feedStatus"></span>
-        <button class="btn primary admin-only" id="updateFeed">↻ Find Sales</button>
       </div>
     </div>
     <div id="feed"></div>
@@ -1551,7 +1549,6 @@ function renderAuctChips(){
 
 
 /* ---------- Claude web search ---------- */
-function humanErr(e){const m=(e&&e.message)||'';if(/Failed to fetch|NetworkError|CORS|TypeError/i.test(m))return 'live update only runs inside Claude.ai';return m||'unknown error';}
 function setStatus(el,html){el.innerHTML=html;el.style.color='var(--gold)';el.classList.add('on');}
 function flash(el,msg,warn){el.innerHTML=msg;el.style.color=warn?'var(--down)':'var(--gold)';el.classList.add('on');setTimeout(()=>el.classList.remove('on'),7000);}
 async function callClaude(prompt){
@@ -1589,32 +1586,6 @@ Use "high" only if recent comps agree. If no sold data, return value 0 and confi
 
 let refreshing=false;
 
-
-
-$('updateFeed').addEventListener('click',async()=>{
-  const d=getDriver(currentDriverId);if(!d)return;
-  const btn=$('updateFeed');btn.style.pointerEvents='none';btn.style.opacity='.55';
-  setStatus($('feedStatus'),'<span class="spin"></span> Searching recent sales…');
-  try{
-    const prompt=`Use web search to find the most recent NOTABLE individual SOLD cards of ${d.name} from the 2020–2026 Topps Chrome Formula 1 series (lead your searches with "Topps Chrome Formula 1 ${d.name}"; you may also include Topps Chrome F1 Sapphire and Topps Dynasty F1). Completed sales from roughly the last 60 days — eBay sold, Card Ladder, 130point, PWCC. Include a mix of high-end and mid-tier. Do NOT use Goldin as a source.
-
-Respond with ONLY a JSON array (no markdown), up to 8 items, newest first:
-[{"card":"<full card name incl. set & parallel>","grade":"<grade or Raw>","price":<USD number>,"date":"<YYYY-MM-DD>","source":"<site/auction>"}]
-Only include sales you actually found evidence for.`;
-    const arr=extractJSON(await callClaude(prompt),true);let added=0;
-    (Array.isArray(arr)?arr:[]).forEach(s=>{
-      if(!s||!s.card||!s.price)return;
-      const price=typeof s.price==='number'?s.price:parseFloat(String(s.price).replace(/[^0-9.]/g,''))||0;
-      if(!price)return;
-      if(state.feed.some(f=>f.driver===d.id&&f.card.toLowerCase()===String(s.card).toLowerCase()&&Math.abs(f.price-price)<1))return;
-      let src=s.source||'web';if(/goldin/i.test(src))src='Auction';
-      state.feed.unshift({id:uid(),driver:d.id,card:s.card,grade:s.grade||'',price,date:(s.date&&/^\d{4}-\d{2}-\d{2}$/.test(s.date))?s.date:today(),source:src});added++;
-    });
-    state.feed=state.feed.slice(0,200);state.lastUpdated=new Date().toISOString();save();renderFeed();renderDriver();
-    flash($('feedStatus'),added?`Added ${added} sale${added>1?'s':''}.`:'No new sales found.',!added);
-  }catch(err){flash($('feedStatus'),'⚠ '+humanErr(err),true);}
-  finally{btn.style.pointerEvents='';btn.style.opacity='';}
-});
 
 
 
