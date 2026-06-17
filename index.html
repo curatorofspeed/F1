@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F1 Card Index</title>
+<title>F1 Card Index — Live Formula 1 Trading Card Market, Prices & Records</title>
+<meta name="description" content="The live market index for Formula 1 trading cards. Track Topps Chrome F1 auctions ending soon, recent sold prices, race-week movers, and record sales for every 2026 driver.">
+<link rel="canonical" href="https://f1cardindex.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="F1 Card Index">
+<meta property="og:title" content="F1 Card Index — Live Formula 1 Trading Card Market">
+<meta property="og:description" content="Track Topps Chrome F1 auctions ending soon, recent sold prices, and record sales for every 2026 driver.">
+<meta property="og:url" content="https://f1cardindex.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="F1 Card Index — Live Formula 1 Trading Card Market">
+<meta name="twitter:description" content="Live Topps Chrome F1 auctions, sold prices, and record sales for every 2026 driver.">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"F1 Card Index","url":"https://f1cardindex.com/","description":"The live market index for Formula 1 trading cards — Topps Chrome auctions, sold prices, and record sales."}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -87,6 +100,18 @@
   .rb-flat{color:var(--muted);border-color:var(--line)}
   .rb-dnf{color:var(--down);border-color:rgba(255,93,93,.3)}
   .rec-dt{color:var(--muted);font-size:10px;font-family:'JetBrains Mono',monospace}
+  .live-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--up);letter-spacing:.5px}
+  .hsales{display:grid;gap:8px;margin-bottom:22px}
+  .hsale{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;transition:.13s}
+  .hsale:hover{transform:translateY(-2px);border-color:var(--teal-dim)}
+  .hsale:active{transform:scale(.99)}
+  .hs-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .hs-mid{flex:1;min-width:0}
+  .hs-name{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.4px}
+  .hs-card{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hs-right{text-align:right;flex:0 0 auto}
+  .hs-price{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;color:var(--gold)}
+  .hs-date{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
   .driver .num{position:absolute;right:12px;top:6px;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:54px;line-height:1;opacity:.13}
   .driver .team{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:20px;font-weight:600}
   .driver .nm{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:23px;text-transform:uppercase;letter-spacing:.5px;margin-top:10px;line-height:1}
@@ -404,6 +429,7 @@
 
     <div class="sec-h">
       <h2>🔴 Market Signal</h2>
+      <span class="live-tag">● Live · eBay</span>
     </div>
     <div class="herosub">F1 Chrome cards ending in the next 24 hours and just sold — across all drivers.</div>
     <div class="live-cta">
@@ -412,9 +438,11 @@
     </div>
 
     <div class="sec-h">
-      <h2>Drivers</h2>
-      <span class="sub">Tap a driver for their full card board</span>
+      <h2>💰 Recent Notable Sales</h2>
+      <span class="sub" id="salesAsOf"></span>
     </div>
+    <div class="hsales" id="homeSales"></div>
+
     <div class="sec-h">
       <h2>🏁 Race Calendar</h2>
       <div class="right" id="racesToggleWrap">
@@ -423,6 +451,10 @@
       </div>
     </div>
     <div id="raceStrip"></div>
+    <div class="sec-h">
+      <h2>Drivers</h2>
+      <span class="sub">Tap a driver for their full card board</span>
+    </div>
     <div class="drivers" id="driversBox"></div>
   </div>
 
@@ -452,6 +484,7 @@
 
     <div class="sec-h">
       <h2>🔴 Market Signal</h2>
+      <span class="live-tag">● Live · eBay</span>
     </div>
     <div class="herosub" id="sigSubhead">Live eBay activity — auctions ending in 24hrs and cards just sold.</div>
     <div class="live-cta">
@@ -469,8 +502,9 @@
     <div class="sec-h">
       <h2>Recent Notable Sales</h2>
       <div class="right">
-        <span class="status" id="feedStatus"></span>
-        <button class="btn primary" id="updateFeed">↻ Find Sales</button>
+        <span class="sub" id="feedAsOf"></span>
+        <span class="status admin-only" id="feedStatus"></span>
+        <button class="btn primary admin-only" id="updateFeed">↻ Find Sales</button>
       </div>
     </div>
     <div id="feed"></div>
@@ -593,7 +627,7 @@ function seedData(){
       C('Topps Chrome F1',2024,'#CAC-ANT Auto SuperFractor 1/1','Raw',[],'low','checklist · refresh',null,{num:'CAC-ANT',print:1,kind:'auto',rc:true}),
       ...rainbow2025(8,true)
     ]},
-    {id:'verstappen',name:'Max Verstappen',abbr:'VER',team:'Red Bull',number:1,color:'#3671C6',rookieYear:2015,record:{txt:'2020 Chrome SuperFractor Auto 1/1',price:'~$500K',date:'2023',src:'auction'},cards:[
+    {id:'verstappen',name:'Max Verstappen',abbr:'VER',team:'Red Bull',number:1,color:'#3671C6',rookieYear:2015,record:{txt:'2020 Chrome Auto SuperFractor 1/1',price:'$534K',date:'2023',src:'auction'},cards:[
       C('Topps Chrome F1',2020,'SuperFractor 1/1','Raw',[[NOW,25000]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Autograph','Raw',[[NOW,4200]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Orange Refractor /25','Raw',[[NOW,2600]],'low','est · refresh'),
@@ -613,7 +647,7 @@ function seedData(){
       C('Topps Chrome F1',2020,'Base','Raw',[[NOW,25]],'low','est · refresh'),
       ...rainbow2024(6)
     ]},
-    {id:'leclerc',name:'Charles Leclerc',abbr:'LEC',team:'Ferrari',number:16,color:'#ED1C24',rookieYear:2018,cards:[
+    {id:'leclerc',name:'Charles Leclerc',abbr:'LEC',team:'Ferrari',number:16,color:'#ED1C24',rookieYear:2018,record:{txt:'2020 Chrome SuperFractor RC 1/1',price:'$264K',date:'2023',src:'auction'},cards:[
       C('Topps Chrome F1',2020,'Orange Refractor /25','Raw',[[NOW,1100]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Autograph','Raw',[[NOW,800]],'low','est · refresh'),
       C('Topps Chrome F1',2020,'Gold Refractor /50','Raw',[[NOW,550]],'low','est · refresh'),
@@ -726,11 +760,19 @@ function seedData(){
     d.cards.forEach(c=>{if((c.source||'').includes('est'))c.hist=[];})
   );
   state.feed=[
-    {id:uid(),driver:'antonelli',card:'2025 Topps Dynasty F1 Race-Worn Patch Auto 1/1',grade:'Raw',price:201910,date:'2026-04-12',source:'Auction',record:true},
+    {id:uid(),driver:'antonelli',card:'2025 Topps Dynasty F1 Race-Worn Glove Patch Auto RC 1/1',grade:'Raw',price:201910,date:'2026-04-12',source:'Goldin',record:true},
     {id:uid(),driver:'antonelli',card:'2025 Topps Dynasty F1 Patch Auto 2/5',grade:'Raw',price:28060,date:'2026-05-18',source:'eBay'},
-    {id:uid(),driver:'antonelli',card:'2024 Topps Chrome F1 Base Auto (Mercedes)',grade:'Raw',price:1104,date:'2026-05-22',source:'eBay'}
+    {id:uid(),driver:'antonelli',card:'2024 Topps Chrome F1 Base Auto (Mercedes)',grade:'Raw',price:1104,date:'2026-05-22',source:'eBay'},
+    {id:uid(),driver:'hamilton',card:'2020 Topps Chrome F1 SuperFractor Auto 1/1',grade:'Raw',price:1000000,date:'2024-12-01',source:'Auction',record:true},
+    {id:uid(),driver:'verstappen',card:'2020 Topps Chrome F1 Autographs SuperFractor RC 1/1',grade:'Raw',price:534000,date:'2023',source:'Auction',record:true},
+    {id:uid(),driver:'verstappen',card:'2025 Topps Dynasty F1 Signed Race-Used Patch 2/5',grade:'Raw',price:17893,date:'2026-03-26',source:'Goldin'},
+    {id:uid(),driver:'leclerc',card:'2020 Topps Chrome F1 SuperFractor #4 RC 1/1',grade:'Raw',price:264000,date:'2023',source:'Auction',record:true},
+    {id:uid(),driver:'hadjar',card:'2025 Topps Dynasty F1 Signed Patch RC 1/1',grade:'Raw',price:12932,date:'2026-03-26',source:'Goldin',record:true},
+    {id:uid(),driver:'senna',card:'1984 Panini Toleman Rookie Sticker',grade:'PSA 7',price:39600,date:'2023-04-01',source:'Goldin',record:true},
+    {id:uid(),driver:'norris',card:'2023 Topps Chrome F1 SuperFractor Auto',grade:'PSA 6',price:4575,date:'2026-04-02',source:'Card Ladder'},
+    {id:uid(),driver:'piastri',card:'2023 Topps Chrome F1 Futuro Red 5/5',grade:'PSA 7',price:5351,date:'2024',source:'eBay'}
   ];
-  state.lastUpdated=null;
+  state.lastUpdated='2026-05-22';
   state.promos=defaultPromos();
   state.ebayCampid='';state.ebayCustomid='';
 }
@@ -844,10 +886,27 @@ function renderIndex(){
   $('homeAuct').href=homeAuctionLink();
   $('homeSold').href=homeSoldLink();
   renderTrending();
+  renderHomeSales();
   renderRaceStrip();
   renderDriverGrid();
   renderPromos();
   setFootEbay();
+}
+function renderHomeSales(){
+  const box=$('homeSales');if(!box)return;
+  const list=(state.feed||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,6);
+  if(!list.length){box.innerHTML='';return;}
+  const latest=list[0]&&list[0].date?fmtSaleDate(list[0].date):'';
+  if($('salesAsOf'))$('salesAsOf').textContent=latest?('latest '+latest):'';
+  box.innerHTML=list.map(f=>{
+    const d=getDriver(f.driver)||{};
+    return '<div class="hsale" onclick="showDriver(\''+f.driver+'\')">'+
+      '<span class="hs-dot" style="background:'+(d.color||'#888')+'"></span>'+
+      '<div class="hs-mid"><div class="hs-name">'+esc(d.name||'')+(f.record?' <span class="rec-tag">RECORD</span>':'')+'</div>'+
+      '<div class="hs-card">'+esc(f.card)+'</div></div>'+
+      '<div class="hs-right"><div class="hs-price">'+money(f.price)+'</div><div class="hs-date">'+esc(fmtSaleDate(f.date))+' · '+esc(f.source||'')+'</div></div>'+
+    '</div>';
+  }).join('');
 }
 function cardSrcLink(c,d){
   if(c.url)return wrapEbay(c.url);
@@ -1445,13 +1504,21 @@ function renderDriver(){
   renderAuctChips();renderFeed();renderPromosInto($('dPromo'),'drv');renderRaceCountdown(d);renderGradeCalc(d);renderMoreForFans(d);setFootEbay();
 }
 
+function fmtSaleDate(s){
+  if(!s)return '';
+  const m=/^(\d{4})-(\d{2})/.exec(s);
+  if(!m)return s;
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m[2],10)-1];
+  return mo+' '+m[1];
+}
 function renderFeed(){
   const box=$('feed');
   const list=state.feed.filter(f=>f.driver===currentDriverId).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  if(!list.length){box.innerHTML='<div class="panel empty">No notable sales logged yet. Hit <strong>↻ Find Sales</strong> to search recent results.</div>';return;}
+  if($('feedAsOf'))$('feedAsOf').textContent=list.length?('latest '+fmtSaleDate(list[0].date)):'';
+  if(!list.length){box.innerHTML='<div class="panel empty">No notable sales on file yet — tap the <strong>✅ Just sold</strong> button above for live eBay results.</div>';return;}
   box.innerHTML=list.slice(0,30).map(f=>`
     <div class="feed-item ${f.record?'record':''}">
-      <div class="date">${esc(f.date||'')}</div>
+      <div class="date">${esc(fmtSaleDate(f.date))}</div>
       <div><div class="fc">${esc(f.card)}${f.record?'<span class="rec-tag">RECORD</span>':''}</div><div class="fm">${f.grade?esc(f.grade)+' · ':''}${esc(f.source||'')}</div></div>
       <div class="fp">${money(f.price)}</div>
     </div>`).join('');
