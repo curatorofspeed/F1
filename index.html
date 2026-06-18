@@ -263,6 +263,8 @@
   .gc-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:9px 15px;border-radius:20px;text-decoration:none;border:1px solid;white-space:nowrap;transition:.13s}
   .gc-btn:hover{filter:brightness(1.25)}
   .gc-psa{background:rgba(57,224,138,.1);color:var(--up);border-color:#1a3a27}
+  .gc-beckett{background:rgba(91,157,255,.1);color:#5b9dff;border-color:#1e3a5f}
+  .gc-tag{background:rgba(167,139,250,.1);color:#b79cff;border-color:#3a2f5f}
   .gc-ghost{background:transparent;color:var(--teal);border-color:var(--teal-dim)}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#11201d;border:1px solid var(--teal-dim);color:var(--txt);font-size:13px;padding:11px 18px;border-radius:24px;z-index:9999;opacity:0;pointer-events:none;transition:.25s;max-width:90vw;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.45)}
   .wn-invite{margin-top:12px;display:flex;flex-direction:column;gap:9px}
@@ -1204,7 +1206,7 @@ const PARTNERS=[
   {cat:'🃏 For the Collection',items:[
     {key:'ebay',label:'Sealed boxes & packs',sub:()=>'Topps Chrome F1 hobby boxes',url:()=>wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent('Topps Chrome Formula 1 hobby box')+'&_sop=12')},
     {key:'amazon',label:'Card supplies',sub:()=>'Top loaders, sleeves, cases',url:()=>'https://www.amazon.com/s?k='+encodeURIComponent('trading card top loaders sleeves')},
-    {key:'psa',label:'Get cards graded',sub:()=>'PSA submission center',url:()=>'https://www.psacard.com/submissioncenter'},
+    {key:'psa',label:'Get cards graded',sub:()=>'PSA submission center',url:()=>'https://www.psacard.com/startsubmission'},
   ]},
   {cat:'🛍 Merch & Gear',items:[
     {key:'f1store',label:'Official F1 Store',sub:d=>esc(d.team)+' & '+esc(lastName(d.name))+' gear',url:d=>'https://f1store.formula1.com/en/search?q='+encodeURIComponent(lastName(d.name))},
@@ -1281,7 +1283,7 @@ function renderGradeCalc(d){
     '<div class="gc-out" id="gcOut"></div>'+
     '<div class="gc-caveat">\u26A0 Grading is a gamble. This assumes a PSA 10 — a 9 or lower can be worth a fraction as much. Card values move; never grade purely on these numbers.</div>'+
     '<div class="gc-cta">'+
-      '<a class="gc-btn gc-psa" href="'+esc(affWrap('https://www.psacard.com/submissioncenter','psa'))+'" target="_blank" rel="noopener sponsored">💎 Submit to PSA ↗</a>'+
+      '<a class="gc-btn gc-psa" href="'+esc(affWrap('https://www.psacard.com/startsubmission','psa'))+'" target="_blank" rel="noopener sponsored">💎 Submit to PSA ↗</a>'+'<a class="gc-btn gc-beckett" href="'+esc(affWrap('https://www.beckett.com/grading','beckett'))+'" target="_blank" rel="noopener sponsored">🔹 Submit to Beckett ↗</a>'+'<a class="gc-btn gc-tag" href="'+esc(affWrap('https://taggrading.com/pages/pricing','tag'))+'" target="_blank" rel="noopener sponsored">🏷️ Submit to TAG ↗</a>'+
       '<a class="gc-btn gc-ghost" href="'+esc(gridEbay(d.name,false))+'" target="_blank" rel="noopener">Find raw copies ↗</a>'+
       '<a class="gc-btn gc-ghost" href="'+esc(psa10Link(d.name))+'" target="_blank" rel="noopener">PSA 10 comps ↗</a>'+
       '<a class="gc-btn gc-ghost" id="gc130" href="'+POINT130+'" target="_blank" rel="noopener" title="True sold prices incl. accepted Best Offers">💯 130point ↗</a>'+
