@@ -498,8 +498,8 @@
     </div>
     <div class="tiles">
       <div class="tile gold"><div class="lab" id="dTopLab">Top Card</div><div class="val" id="dTop">—</div><div class="vsub" id="dTopSub">&nbsp;</div></div>
-      <div class="tile"><div class="lab">Comps on File</div><div class="val" id="dCount">0</div><div class="vsub">verified sales</div></div>
-      <div class="tile" id="dMoverTile"><div class="lab">Biggest Mover · 30d</div><div class="val" id="dMover">—</div><div class="vsub" id="dMoverSub">&nbsp;</div></div>
+      <div class="tile"><div class="lab">Latest Sale</div><div class="val" id="dCount">—</div><div class="vsub" id="dCountSub">&nbsp;</div></div>
+      <div class="tile" id="dMoverTile"><div class="lab">Last Race</div><div class="val" id="dMover">—</div><div class="vsub" id="dMoverSub">&nbsp;</div></div>
     </div>
 
     <div id="raceCountdown"></div>
@@ -1505,21 +1505,36 @@ function renderDriver(){
   $('dName').textContent=d.name;
   $('dTeam').textContent=d.team+(d.rookieYear?(' · Rookie '+d.rookieYear):'')+(d.number!=null?(' · #'+d.number):'');
   const tc=topCard(d);
+  const dsales=state.feed.filter(f=>f.driver===d.id).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(d.record){
     $('dTopLab').textContent='Auction Record';
     $('dTop').textContent=d.record.price;
     $('dTopSub').textContent=esc(d.record.txt+' · '+d.record.date);
-  }else if(tc){
-    $('dTopLab').textContent='Top Card';
-    $('dTop').textContent=money(last(tc));$('dTopSub').textContent=esc((tc.year+' '+tc.parallel).slice(0,40));
+  }else if(dsales.length){
+    const topS=dsales.slice().sort((a,b)=>b.price-a.price)[0];
+    $('dTopLab').textContent='Top Sale';
+    $('dTop').textContent=money(topS.price);$('dTopSub').textContent=esc(topS.card.slice(0,42));
   }else{
-    $('dTopLab').textContent='Top Card';
-    $('dTop').textContent='—';$('dTopSub').textContent='';
+    $('dTopLab').textContent='Auction Record';
+    $('dTop').textContent='—';$('dTopSub').textContent='no public sale yet';
   }
-  $('dCount').textContent=d.cards.length;
-  const mv=driverMover(d);const mt=$('dMoverTile');mt.classList.remove('gold');
-  if(mv){const cl=mv.pct>=0?'up':'down';$('dMover').className='val '+cl;$('dMover').textContent=(mv.pct>=0?'+':'')+mv.pct.toFixed(1)+'%';$('dMoverSub').textContent=esc(mv.c.parallel+' · 30d');}
-  else{$('dMover').textContent='—';$('dMoverSub').textContent='need 2+ points';}
+  // Latest Sale tile
+  if(dsales.length){
+    const ls=dsales[0];
+    $('dCount').className='val';$('dCount').textContent=money(ls.price);
+    $('dCountSub').textContent=esc(fmtSaleDate(ls.date)+(ls.source?' · '+ls.source:''));
+  }else{
+    $('dCount').className='val';$('dCount').textContent='—';$('dCountSub').textContent='no sales logged';
+  }
+  // Last Race tile
+  const mr=mostRecentResult();const res=mr?mr.res:null;const mt=$('dMoverTile');mt.classList.remove('gold');
+  let rv='—',rsub='',rcls='';
+  if(res&&res.pos&&res.pos[d.id]!=null){const p=res.pos[d.id];rv=p===1?'🏆 P1':'P'+p;rsub=mr.race.short;rcls=p<=3?'up':'';}
+  else if(res&&res.dnf&&res.dnf.indexOf(d.id)>-1){rv='DNF';rsub=mr.race.short;rcls='down';}
+  else if(d.tier==='legend'){rv='Legend';rsub='retired';}
+  else if(d.tier==='prospect'){rv='Prospect';rsub='F2 / F3';}
+  else{rsub='no race data';}
+  $('dMover').className='val '+rcls;$('dMover').textContent=rv;$('dMoverSub').textContent=esc(rsub||' ');
   $('sigSubhead').textContent='Live eBay activity for '+d.name+' cards — auctions ending in 24hrs and just sold.';
   renderAuctChips();renderFeed();renderPromosInto($('dPromo'),'drv');renderRaceCountdown(d);renderGradeCalc(d);renderMoreForFans(d);setFootEbay();
 }
