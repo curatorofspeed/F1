@@ -172,6 +172,12 @@
   .rrow-stat{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;flex:0 0 auto;white-space:nowrap;border:1px solid var(--line);color:var(--muted)}
   .rrow-stat.s-next{color:var(--teal);border-color:var(--teal-dim)}
   .rrow-stat.s-live{color:var(--down);border-color:rgba(255,93,93,.4)}
+  .amz-gear{display:flex;flex-wrap:wrap;gap:8px}
+  .amz-btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:600;text-decoration:none;transition:.12s}
+  .amz-btn:hover{border-color:var(--teal-dim);color:var(--teal);transform:translateY(-1px)}
+  .amz-btn .az{font-size:10px;color:var(--muted)}
+  .amz-btn:hover .az{color:var(--teal)}
+  .amz-num{min-width:36px;justify-content:center;padding:8px 0;font-family:'JetBrains Mono',monospace}
   .rbadge-inline{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;padding:2px 7px;border-radius:6px;border:1px solid;flex:0 0 auto;white-space:nowrap}
   .community{display:flex;align-items:center;gap:14px;background:linear-gradient(100deg,rgba(88,101,242,.14),var(--panel));border:1px solid rgba(88,101,242,.42);border-radius:14px;padding:15px 18px;margin:8px 0 6px;text-decoration:none;color:var(--txt);transition:.15s}
   .community:hover{transform:translateY(-2px);border-color:#5865F2;box-shadow:0 6px 24px rgba(88,101,242,.18)}
@@ -550,6 +556,9 @@
       </span>
       <span class="community-go">Join &rarr;</span>
     </a>
+
+    <div class="sec-h" style="margin-top:10px"><h2>🛒 Collector Gear</h2><span class="sub">Amazon · affiliate</span></div>
+    <div id="homeGear" style="margin-bottom:8px"></div>
   </div>
 
   <!-- ===== RACE VIEW ===== -->
@@ -977,6 +986,7 @@ function renderIndex(){
   renderHomeSales();
   renderRaceStrip();
   renderDriverGrid();
+  {const hg=$('homeGear');if(hg)hg.innerHTML=amzGearRow();}
   renderPromos();
   setFootEbay();
 }
@@ -1258,8 +1268,47 @@ function gridEbay(name,sold){
 }
 
 
-/* ---------- More for fans: audience-matched non-card affiliate partners ---------- */
-const POINT130='https://130point.com/sales/';
+/* ---------- Card supplies: Amazon affiliate (tags baked into amzn.to links) ---------- */
+const AMZ_GEAR=[
+  {label:'Sleeves',url:'https://amzn.to/4oHSeuK'},
+  {label:'Toploaders + Sleeves',url:'https://amzn.to/43OseUU'},
+  {label:'Binders',url:'https://amzn.to/4fZ7ukt'},
+  {label:'Magnet Holders',url:'https://amzn.to/4w2IIES'},
+  {label:'Card Storage',url:'https://amzn.to/4xxIJ5c'}
+];
+const AMZ_SEALED=['https://amzn.to/4acvAoa','https://amzn.to/4oD5ErH','https://amzn.to/4gyx2oI','https://amzn.to/4oElRx3','https://amzn.to/4eX7K2k','https://amzn.to/4eAjdnj'];
+const AMZ_TEAM={
+  Ferrari:['https://amzn.to/3Qt6oDl','https://amzn.to/3Sca8cZ','https://amzn.to/43KIztN','https://amzn.to/3QxMlne','https://amzn.to/3SlsnfX','https://amzn.to/3QcoIR6','https://amzn.to/3Sd2Sxs','https://amzn.to/44jfmpU'],
+  'Red Bull':['https://amzn.to/4epem9O','https://amzn.to/4eCopH8','https://amzn.to/4ghIDJ1','https://amzn.to/4oM4UAU'],
+  McLaren:['https://amzn.to/4uNz2gk','https://amzn.to/44mGZOR','https://amzn.to/4uL4JqD','https://amzn.to/4erMyjy'],
+  Audi:['https://amzn.to/4gywgYU'],
+  'Aston Martin':['https://amzn.to/4vUvt9g'],
+  Williams:['https://amzn.to/4eUFxt0'],
+  Mercedes:['https://amzn.to/4eAgjyG','https://amzn.to/4eywzQW']
+};
+const AMZ_DRIVER={
+  hamilton:['https://amzn.to/3QvoowS','https://amzn.to/4vovBhp','https://amzn.to/4b0jD5e'],
+  leclerc:['https://amzn.to/4xHoTVa','https://amzn.to/4abBwhf'],
+  antonelli:['https://amzn.to/4xJ2WFj']
+};
+const AMZ_GENERIC=['https://amzn.to/4emsq3J','https://amzn.to/4enZtnZ','https://amzn.to/4uTqHYK','https://amzn.to/4eRQewx','https://amzn.to/4oEkXRb'];
+function amzPick(d,arr){const i=(String(d.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%arr.length;return arr[i];}
+function amzGearRow(d){
+  let b=AMZ_GEAR.map(g=>'<a class="amz-btn" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+g.label+' <span class="az">↗</span></a>').join('');
+  const sealed=d?amzPick(d,AMZ_SEALED):AMZ_SEALED[0];
+  b+='<a class="amz-btn" href="'+esc(sealed)+'" target="_blank" rel="noopener sponsored">Sealed Boxes &amp; Packs <span class="az">↗</span></a>';
+  return '<div class="amz-gear">'+b+'</div>';
+}
+function amzFanGroups(d){
+  const mk=(links,header)=>'<div class="mff-group"><div class="mff-cat">'+header+'</div><div class="amz-gear">'+
+    links.map((u,i)=>'<a class="amz-btn amz-num" href="'+esc(u)+'" target="_blank" rel="noopener sponsored">'+(i+1)+'</a>').join('')+'</div></div>';
+  let out='';
+  const tl=AMZ_TEAM[d.team];if(tl&&tl.length)out+=mk(tl,'🏎️ '+esc(d.team)+' Fan Gear · Amazon');
+  const dl=AMZ_DRIVER[d.id];if(dl&&dl.length)out+=mk(dl,'⭐ '+esc(lastName(d.name))+' Picks · Amazon');
+  if(!out)out=mk(AMZ_GENERIC,'🏁 F1 Fan Gear · Amazon');
+  return out;
+}
+/* ---------- More for fans: audience-matched non-card affiliate partners ---------- */const POINT130='https://130point.com/sales/';
 function toast(msg){
   let t=$('toast');
   if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}
@@ -1287,8 +1336,6 @@ function affActive(key){if(!key||CORE_AFF[key])return true;return !!((state.affi
 const lastName=n=>n.split(' ').slice(-1)[0];
 const PARTNERS=[
   {cat:'🃏 For the Collection',items:[
-    {key:'ebay',label:'Sealed boxes & packs',sub:()=>'Topps Chrome F1 hobby boxes',url:()=>wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent('Topps Chrome Formula 1 hobby box')+'&_sop=12')},
-    {key:'amazon',label:'Card supplies',sub:()=>'Top loaders, sleeves, cases',url:()=>'https://www.amazon.com/s?k='+encodeURIComponent('trading card top loaders sleeves')},
     {key:'psa',label:'Get cards graded',sub:()=>'PSA submission center',url:()=>'https://www.psacard.com/startsubmission'},
   ]},
   {cat:'🛍 Merch & Gear',items:[
@@ -1324,6 +1371,7 @@ function renderMoreForFans(d){
           '<span class="mff-go">↗</span></a>';
       }).join('')+'</div>';
   }).filter(Boolean);
+  groups.unshift('<div class="mff-group"><div class="mff-cat">🛒 Collector Gear · Amazon</div>'+amzGearRow(d)+'</div>'+amzFanGroups(d));
   const sec=$('mffSection');
   if(!groups.length){if(sec)sec.style.display='none';return;}
   if(sec)sec.style.display='';
