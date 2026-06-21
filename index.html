@@ -79,7 +79,8 @@
   .tagline{color:var(--muted);font-size:14px;margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .badge{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);color:var(--teal);padding:3px 9px;border-radius:20px;letter-spacing:1px}
 
-  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+  .dtiles{grid-template-columns:repeat(2,1fr)}
   .tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
   .tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
   .tile.gold::before{background:var(--gold)}
@@ -487,7 +488,7 @@
     <div class="tiles">
       <div class="tile"><div class="lab">Drivers Tracked</div><div class="val" id="iDrivers">0</div><div class="vsub">F1 · F2/F3 · legends</div></div>
       <div class="tile" id="iNextTile" style="cursor:pointer"><div class="lab">🏁 Next Race</div><div class="val" id="iNext" style="font-size:21px">—</div><div class="vsub" id="iNextSub">&nbsp;</div></div>
-      <div class="tile gold"><div class="lab">Top Verified Sale</div><div class="val" id="iTop">—</div><div class="vsub" id="iTopSub">&nbsp;</div></div>
+      <div class="tile gold" id="iTopTile" style="display:none"><div class="lab">Top Verified Sale</div><div class="val" id="iTop">—</div><div class="vsub" id="iTopSub">&nbsp;</div></div>
       <div class="tile"><div class="lab">2026 Calendar</div><div class="val" id="iRaces">22</div><div class="vsub">Grand Prix weekends</div></div>
     </div>
 
@@ -577,9 +578,9 @@
         <div class="dteam" id="dTeam"></div>
       </div>
     </div>
-    <div class="tiles">
-      <div class="tile gold"><div class="lab" id="dTopLab">Top Card</div><div class="val" id="dTop">—</div><div class="vsub" id="dTopSub">&nbsp;</div></div>
-      <div class="tile"><div class="lab">Latest Sale</div><div class="val" id="dCount">—</div><div class="vsub" id="dCountSub">&nbsp;</div></div>
+    <div class="tiles dtiles">
+      <div class="tile gold" id="dRecordTile" style="display:none"><div class="lab" id="dTopLab">Top Card</div><div class="val" id="dTop">—</div><div class="vsub" id="dTopSub">&nbsp;</div></div>
+      <div class="tile"><div class="lab">Recent Top Sale</div><div class="val" id="dCount">—</div><div class="vsub" id="dCountSub">&nbsp;</div></div>
       <div class="tile" id="dMoverTile"><div class="lab">Last Race</div><div class="val" id="dMover">—</div><div class="vsub" id="dMoverSub">&nbsp;</div></div>
     </div>
 
@@ -644,6 +645,7 @@
 
 <script>
 const KEY='f1CardIndex:v1';
+const SEED_VERSION='2026-06-21-sales';
 let state={currency:'$',drivers:[],feed:[],lastUpdated:null};
 let currentDriverId=null;
 let endingSoon=[],endingSoonAt=null,auctBidsOnly=false,auctMax=0,showAll=false;
@@ -909,6 +911,7 @@ function seedData(){
   state.lastUpdated='2026-05-22';
   state.promos=defaultPromos();
   state.ebayCampid='';state.ebayCustomid='';
+  state.seedVersion=SEED_VERSION;
 }
 
 /* ---------- storage ---------- */
@@ -924,7 +927,26 @@ const _store={
   }
 };
 async function load(){
-  try{const r=await _store.get(KEY);if(r&&r.value){state=JSON.parse(r.value);}else{seedData();}}
+  try{
+    const r=await _store.get(KEY);
+    if(r&&r.value){
+      const saved=JSON.parse(r.value);
+      if(saved&&saved.seedVersion===SEED_VERSION){
+        state=saved;
+      }else{
+        // Seed data updated in code → refresh data, preserve user settings & admin edits
+        const keep={theme:saved&&saved.theme,results:saved&&saved.results,promos:saved&&saved.promos,
+          ebayCampid:saved&&saved.ebayCampid,ebayCustomid:saved&&saved.ebayCustomid};
+        seedData();
+        if(keep.theme)state.theme=keep.theme;
+        if(keep.results)state.results=keep.results;
+        if(keep.promos)state.promos=keep.promos;
+        if(keep.ebayCampid)state.ebayCampid=keep.ebayCampid;
+        if(keep.ebayCustomid)state.ebayCustomid=keep.ebayCustomid;
+        await save();
+      }
+    }else{seedData();}
+  }
   catch(e){seedData();}
   if(!state.drivers||!state.drivers.length)seedData();
   if(!state.currency)state.currency='$';
