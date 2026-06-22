@@ -10,7 +10,8 @@ import json, html
 from urllib.parse import quote
 
 SITE  = "https://f1cardindex.com"
-CAMPID = ""   # <-- paste your eBay EPN Campaign ID here, then re-run
+CAMPID = "5339157397"   # <-- paste your eBay EPN Campaign ID here, then re-run
+DISCORD = "https://discord.gg/DX2mrhtqY8"
 
 # id: name, team, num, color, blurb, record(card,price,date,src) or None, sales[...]
 DRIVERS = {
@@ -78,6 +79,23 @@ def ebay(name, sold):
         u += "&mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid="+CAMPID+"&toolid=10001"
     return u
 
+GEO_SCRIPT = '''<script>
+(function(){
+  var M={US:['com','711-53200-19255-0'],GB:['co.uk','710-53481-19255-0'],AU:['com.au','705-53470-19255-0'],CA:['ca','706-53473-19255-0'],DE:['de','707-53477-19255-0'],FR:['fr','709-53476-19255-0'],IT:['it','724-53478-19255-0'],ES:['es','1185-53479-19255-0'],NL:['nl','1346-53482-19255-0'],AT:['at','5221-53469-19255-0'],BE:['be','1553-53471-19255-0'],CH:['ch','5222-53480-19255-0'],IE:['ie','5282-53468-19255-0'],PL:['pl','4908-226936-19255-0']};
+  var mkt=M.US;
+  try{
+    var langs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'en-US'];
+    var found=null;
+    for(var i=0;i<langs.length;i++){var m=/[-_]([A-Za-z]{2})(?:[-_]|$)/.exec(langs[i]||'');if(m){var cc=m[1].toUpperCase();if(M[cc]){found=M[cc];break;}}}
+    if(!found){var b=((navigator.language||'en').split(/[-_]/)[0]||'en').toLowerCase();var bl={de:'DE',fr:'FR',it:'IT',es:'ES',nl:'NL',pl:'PL'};if(bl[b]&&M[bl[b]])found=M[bl[b]];}
+    if(found)mkt=found;
+  }catch(e){}
+  if(mkt[0]==='com')return;
+  var links=document.querySelectorAll('a[href*="ebay.com/sch"]');
+  for(var j=0;j<links.length;j++){var h=links[j].getAttribute('href');h=h.replace('//www.ebay.com/','//www.ebay.'+mkt[0]+'/').replace('mkrid=711-53200-19255-0','mkrid='+mkt[1]);links[j].setAttribute('href',h);}
+})();
+</script>'''
+
 def page(did, d):
     e = html.escape
     name = d["name"]
@@ -138,6 +156,8 @@ def page(did, d):
   .btn-p{{background:var(--teal);color:#06110f}}
   .btn-g{{background:transparent;border:1px solid var(--line);color:var(--txt)}}
   .open{{display:block;text-align:center;background:var(--accent);color:#06110f;font-weight:800;text-decoration:none;padding:16px;border-radius:12px;margin:26px 0;font-size:16px}}
+  .discord{{display:block;text-align:center;border:1px solid rgba(88,101,242,.5);color:#9aa6ff;font-weight:700;text-decoration:none;padding:13px;border-radius:12px;margin:0 0 26px;font-size:14px}}
+  .discord:hover{{background:rgba(88,101,242,.12);border-color:#5865F2}}
   .others{{display:flex;gap:8px 16px;flex-wrap:wrap;margin-top:10px}}
   .others a{{color:var(--teal);text-decoration:none;font-size:14px}}
   footer{{margin-top:40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:16px}}
@@ -157,7 +177,8 @@ def page(did, d):
     <a class="btn btn-g" href="{ebay(name,True)}" rel="nofollow sponsored" target="_blank">Recently sold &#8599;</a>
   </div>
   {sales_html}
-  <a class="open" href="/">Open {e(name)}'s full live market on F1 Card Index &rarr;</a>
+  <a class="open" href="/#{did}">Open {e(name)}'s full live market on F1 Card Index &rarr;</a>
+  <a class="discord" href="{DISCORD}" target="_blank" rel="noopener">Join the F1 Card Index community on Discord &#8599;</a>
   <h2>All Drivers</h2>
   <div class="others">{others}</div>
   <footer>
@@ -166,6 +187,7 @@ def page(did, d):
     Logos and driver names are referenced for identification only. &copy; F1 Card Index.
   </footer>
 </div>
+{GEO_SCRIPT}
 </body>
 </html>'''
 

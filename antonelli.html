@@ -71,5 +71,21 @@
     Logos and driver names are referenced for identification only. &copy; F1 Card Index.
   </footer>
 </div>
+<script>
+(function(){
+  var M={US:['com','711-53200-19255-0'],GB:['co.uk','710-53481-19255-0'],AU:['com.au','705-53470-19255-0'],CA:['ca','706-53473-19255-0'],DE:['de','707-53477-19255-0'],FR:['fr','709-53476-19255-0'],IT:['it','724-53478-19255-0'],ES:['es','1185-53479-19255-0'],NL:['nl','1346-53482-19255-0'],AT:['at','5221-53469-19255-0'],BE:['be','1553-53471-19255-0'],CH:['ch','5222-53480-19255-0'],IE:['ie','5282-53468-19255-0'],PL:['pl','4908-226936-19255-0']};
+  var mkt=M.US;
+  try{
+    var langs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'en-US'];
+    var found=null;
+    for(var i=0;i<langs.length;i++){var m=/[-_]([A-Za-z]{2})(?:[-_]|$)/.exec(langs[i]||'');if(m){var cc=m[1].toUpperCase();if(M[cc]){found=M[cc];break;}}}
+    if(!found){var b=((navigator.language||'en').split(/[-_]/)[0]||'en').toLowerCase();var bl={de:'DE',fr:'FR',it:'IT',es:'ES',nl:'NL',pl:'PL'};if(bl[b]&&M[bl[b]])found=M[bl[b]];}
+    if(found)mkt=found;
+  }catch(e){}
+  if(mkt[0]==='com')return;
+  var links=document.querySelectorAll('a[href*="ebay.com/sch"]');
+  for(var j=0;j<links.length;j++){var h=links[j].getAttribute('href');h=h.replace('//www.ebay.com/','//www.ebay.'+mkt[0]+'/').replace('mkrid=711-53200-19255-0','mkrid='+mkt[1]);links[j].setAttribute('href',h);}
+})();
+</script>
 </body>
 </html>

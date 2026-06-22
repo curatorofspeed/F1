@@ -658,12 +658,51 @@ const money=n=>state.currency+Number(n).toLocaleString(undefined,{maximumFractio
 function ago(d){if(!d)return '—';const diff=(Date.now()-new Date(d).getTime())/86400000;if(diff<1)return 'today';if(diff<2)return 'yesterday';if(diff<31)return Math.round(diff)+'d ago';return new Date(d).toLocaleDateString();}
 function teamPillStyle(color){return `background:${color}22;color:${color};border:1px solid ${color}55`;}
 function defaultPromos(){return [];}
+// eBay marketplaces — official EPN rotation IDs (developer.ebay.com). campid stays constant; tld+mkrid swap per locale.
+const EBAY_MKTS={
+  US:{tld:'com',mkrid:'711-53200-19255-0'},
+  GB:{tld:'co.uk',mkrid:'710-53481-19255-0'},
+  AU:{tld:'com.au',mkrid:'705-53470-19255-0'},
+  CA:{tld:'ca',mkrid:'706-53473-19255-0'},
+  DE:{tld:'de',mkrid:'707-53477-19255-0'},
+  FR:{tld:'fr',mkrid:'709-53476-19255-0'},
+  IT:{tld:'it',mkrid:'724-53478-19255-0'},
+  ES:{tld:'es',mkrid:'1185-53479-19255-0'},
+  NL:{tld:'nl',mkrid:'1346-53482-19255-0'},
+  AT:{tld:'at',mkrid:'5221-53469-19255-0'},
+  BE:{tld:'be',mkrid:'1553-53471-19255-0'},
+  CH:{tld:'ch',mkrid:'5222-53480-19255-0'},
+  IE:{tld:'ie',mkrid:'5282-53468-19255-0'},
+  PL:{tld:'pl',mkrid:'4908-226936-19255-0'}
+};
+let _ebayMkt=null;
+function ebayMarket(){
+  if(_ebayMkt)return _ebayMkt;
+  let mkt=EBAY_MKTS.US;
+  try{
+    const langs=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'en-US'];
+    let found=null;
+    for(const l of langs){
+      const m=/[-_]([A-Za-z]{2})(?:[-_]|$)/.exec(l||'');
+      if(m){const cc=m[1].toUpperCase();if(EBAY_MKTS[cc]){found=EBAY_MKTS[cc];break;}}
+    }
+    if(!found){
+      const base=((navigator.language||'en').split(/[-_]/)[0]||'en').toLowerCase();
+      const byLang={de:'DE',fr:'FR',it:'IT',es:'ES',nl:'NL',pl:'PL'};
+      if(byLang[base])found=EBAY_MKTS[byLang[base]];
+    }
+    if(found)mkt=found;
+  }catch(e){}
+  _ebayMkt=mkt;return mkt;
+}
 function wrapEbay(url){
   if(!url||!state.ebayCampid)return url;
   if(!/ebay\.com/i.test(url))return url;
   if(/[?&]campid=/.test(url))return url;
+  const mkt=ebayMarket();
+  if(mkt.tld!=='com')url=url.replace('//www.ebay.com/','//www.ebay.'+mkt.tld+'/');
   const sep=url.includes('?')?'&':'?';
-  let u=url+sep+'mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid='+encodeURIComponent(state.ebayCampid)+'&toolid=10001';
+  let u=url+sep+'mkevt=1&mkcid=1&mkrid='+mkt.mkrid+'&campid='+encodeURIComponent(state.ebayCampid)+'&toolid=10001';
   if(state.ebayCustomid)u+='&customid='+encodeURIComponent(state.ebayCustomid);
   return u;
 }
