@@ -77,6 +77,22 @@
   h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:clamp(36px,8vw,66px);line-height:.9;letter-spacing:.5px;text-transform:uppercase;cursor:pointer}
   h1 .red{color:#ED1C24}
   .tagline{color:var(--muted);font-size:14px;margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .navsearch{position:relative;max-width:460px;margin:16px auto 2px}
+  .navsearch .ns-mag{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;pointer-events:none}
+  #navSearch{width:100%;padding:11px 38px 11px 42px;border:1px solid var(--line);border-radius:11px;background:var(--panel);font-family:'Sora',sans-serif;font-size:14px;color:var(--txt);outline:none;transition:.15s}
+  #navSearch::placeholder{color:var(--muted);opacity:.8}
+  #navSearch:focus{border-color:var(--teal-dim);box-shadow:0 0 0 3px var(--teal-dim)}
+  .ns-clear{position:absolute;right:11px;top:50%;transform:translateY(-50%);border:none;background:none;color:var(--muted);font-size:19px;cursor:pointer;display:none;padding:5px;line-height:1}
+  .ns-results{position:absolute;left:0;right:0;top:calc(100% + 7px);background:var(--panel);border:1px solid var(--line);border-radius:12px;z-index:200;display:none;max-height:344px;overflow-y:auto;text-align:left;box-shadow:0 10px 30px rgba(0,0,0,.16)}
+  .ns-results.on{display:block}
+  .ns-row{display:flex;align-items:center;gap:12px;padding:10px 13px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .ns-row:last-child{border-bottom:none}
+  .ns-row:hover,.ns-row.sel{background:var(--bg)}
+  .ns-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;min-width:30px;text-align:center}
+  .ns-nm{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.3px;line-height:1.1}
+  .ns-tm{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+  .ns-tier{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:2px 6px;text-transform:uppercase;flex-shrink:0}
+  .ns-none{padding:14px 13px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
   .badge{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);color:var(--teal);padding:3px 9px;border-radius:20px;letter-spacing:1px}
 
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
@@ -479,6 +495,12 @@
     <div class="tagline">
       The live market index for Formula 1 cards — what's ending, what just sold, what's next
       <span class="badge" id="updatedBadge">2026 Season</span>
+    </div>
+    <div class="navsearch">
+      <span class="ns-mag" aria-hidden="true">&#9906;</span>
+      <input id="navSearch" type="text" placeholder="Search a driver, team, or code…" autocomplete="off" spellcheck="false" aria-label="Search drivers">
+      <button class="ns-clear" id="navClear" aria-label="Clear search">&times;</button>
+      <div class="ns-results" id="navResults" role="listbox"></div>
     </div>
   </header>
 
@@ -1944,8 +1966,46 @@ function checkAdminHash(){
   else if(h==='#lock'){history.replaceState(null,'',location.pathname+location.search);lockAdmin();}
 }
 
+function nsNorm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+function nsTier(d){return d.tier==='legend'?'Legend':(d.tier==='prospect'?'Prospect':'F1');}
+let nsMatches=[],nsSel=-1;
+function nsRender(){
+  const inp=$('navSearch');if(!inp)return;
+  const box=$('navResults'),clr=$('navClear');
+  const v=nsNorm(inp.value.trim());
+  clr.style.display=inp.value?'block':'none';
+  if(!v){box.classList.remove('on');box.innerHTML='';nsMatches=[];nsSel=-1;return;}
+  const last=d=>d.name.split(' ').slice(-1)[0];
+  nsMatches=(state.drivers||[]).filter(d=>nsNorm(d.name).includes(v)||nsNorm(last(d)).includes(v)||nsNorm(d.team).includes(v)||nsNorm(d.abbr).includes(v)).slice(0,8);
+  nsSel=-1;
+  if(!nsMatches.length){box.innerHTML='<div class="ns-none">No driver matches “'+esc(inp.value.trim())+'”</div>';box.classList.add('on');return;}
+  box.innerHTML=nsMatches.map((d,i)=>{
+    const hasNum=d.number!=null&&d.number!=='';
+    return '<div class="ns-row" data-id="'+esc(d.id)+'" data-i="'+i+'" role="option">'
+      +'<div class="ns-num" style="color:'+(d.color||'var(--txt)')+'">'+(hasNum?esc(String(d.number)):'<span style=\'font-size:12px\'>'+esc(d.abbr)+'</span>')+'</div>'
+      +'<div style="min-width:0"><div class="ns-nm">'+esc(d.name)+'</div><div class="ns-tm">'+esc(d.team)+(hasNum?' · #'+esc(String(d.number)):'')+'</div></div>'
+      +'<span class="ns-tier">'+nsTier(d)+'</span></div>';
+  }).join('');
+  box.classList.add('on');
+}
+function nsHi(){const rows=[...$('navResults').querySelectorAll('.ns-row')];rows.forEach((r,i)=>r.classList.toggle('sel',i===nsSel));if(nsSel>=0&&rows[nsSel])rows[nsSel].scrollIntoView({block:'nearest'});}
+function nsGo(id){const inp=$('navSearch');if(inp)inp.value='';$('navResults').classList.remove('on');$('navClear').style.display='none';nsMatches=[];nsSel=-1;showDriver(id);}
+function wireNavSearch(){
+  const inp=$('navSearch');if(!inp)return;
+  inp.addEventListener('input',nsRender);
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){inp.value='';nsRender();return;}
+    if(!nsMatches.length)return;
+    if(e.key==='ArrowDown'){e.preventDefault();nsSel=Math.min(nsSel+1,nsMatches.length-1);nsHi();}
+    else if(e.key==='ArrowUp'){e.preventDefault();nsSel=Math.max(nsSel-1,0);nsHi();}
+    else if(e.key==='Enter'){e.preventDefault();const pick=nsSel>=0?nsMatches[nsSel]:nsMatches[0];if(pick)nsGo(pick.id);}
+  });
+  $('navClear').addEventListener('click',()=>{inp.value='';nsRender();inp.focus();});
+  $('navResults').addEventListener('click',e=>{const r=e.target.closest('.ns-row');if(r)nsGo(r.dataset.id);});
+  document.addEventListener('click',e=>{if(!e.target.closest('.navsearch')){const b=$('navResults');if(b)b.classList.remove('on');}});
+}
 (async()=>{await load();
-  applyTheme(state.theme||'light');wireThemes();wireViewToggle();
+  applyTheme(state.theme||'light');wireThemes();wireViewToggle();wireNavSearch();
   const h=(location.hash||'').replace(/^#/,'').toLowerCase();
   if(h&&h!=='admin'&&h!=='lock'&&getDriver(h)){showDriver(h,true);}else{showIndex(true);}
   loadLiveResults();applyAdmin();checkAdminHash();
