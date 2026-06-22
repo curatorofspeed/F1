@@ -545,6 +545,12 @@
       <a class="btn primary big" id="homeAuct" href="#" target="_blank" rel="noopener">⏱ Ending in 24hrs ↗</a>
       <a class="btn primary big" id="homeSold" href="#" target="_blank" rel="noopener">✅ Just sold ↗</a>
     </div>
+    <div class="chips" id="homeProdChips" style="margin-top:11px;align-items:center">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">More products</span>
+      <a id="homeDynasty" href="#" target="_blank" rel="noopener">Dynasty</a>
+      <a id="homeEccellenza" href="#" target="_blank" rel="noopener">Eccellenza</a>
+      <a id="homeNow" href="#" target="_blank" rel="noopener">Topps NOW</a>
+    </div>
 
     <div class="sec-h">
       <h2>💰 Recent Notable Sales</h2>
@@ -1091,6 +1097,9 @@ function renderIndex(){
   $('updatedBadge').textContent='2026 Season';
   $('homeAuct').href=homeAuctionLink();
   $('homeSold').href=homeSoldLink();
+  $('homeDynasty').href=homeProductLink('Topps Dynasty Formula 1');
+  $('homeEccellenza').href=homeProductLink('Topps Eccellenza Formula 1');
+  $('homeNow').href=homeProductLink('Topps NOW Formula 1');
   renderTrending();
   renderHomeSales();
   renderRaceStrip();
@@ -1125,6 +1134,7 @@ function cardSrcLink(c,d){
 const HOME_QUERY='Topps Chrome Formula 1';
 function homeAuctionLink(){return wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent(HOME_QUERY)+'&LH_Auction=1&_sop=1');}
 function homeSoldLink(){return wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent(HOME_QUERY)+'&LH_Sold=1&LH_Complete=1&_sop=13');}
+function homeProductLink(q){return wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent(q)+'&LH_Auction=1&_sop=1');}
 
 /* ============================= RACES ============================= */
 const RACES=[
