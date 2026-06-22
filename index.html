@@ -1802,8 +1802,8 @@ function renderFeed(){
 /* ---------- ending soon ---------- */
 function dName(){const d=getDriver(currentDriverId);return d?d.name:'';}
 const SET_LEAD='Topps Chrome Formula 1';
-function auctionLink(q){
-  const nkw=encodeURIComponent((SET_LEAD+' '+dName()+' '+(q||'')).trim());
+function auctionLink(q,lead){
+  const nkw=encodeURIComponent(((lead||SET_LEAD)+' '+dName()+' '+(q||'')).trim());
   let u='https://www.ebay.com/sch/i.html?_nkw='+nkw+'&LH_Auction=1&_sop=1';
   if(auctMax>0)u+='&_udhi='+auctMax;
   return wrapEbay(u);
@@ -1815,12 +1815,13 @@ function soldLink(q){
   return wrapEbay(u);
 }
 function whatnotLink(q){return 'https://www.whatnot.com/search?query='+encodeURIComponent(('Topps Chrome F1 '+dName()+' '+(q||'')).trim());}
-const AUCT_CATS=[['All','',true],['Base','base'],['Refractors','refractor'],['Autographs','autograph'],['Sapphire','Sapphire']];
+const AUCT_CATS=[['All','',true],['Base','base'],['Refractors','refractor'],['Autographs','autograph'],['Sapphire','Sapphire'],['Dynasty','',false,'Topps Dynasty Formula 1'],['Eccellenza','',false,'Topps Eccellenza Formula 1'],['Topps NOW','',false,'Topps NOW Formula 1',true]];
 function renderAuctChips(){
   $('liveAll').href=auctionLink('');
   $('liveSold').href=soldLink('');
   $('liveWn').href=whatnotLink('');
-  $('auctChips').innerHTML=AUCT_CATS.map(c=>`<a class="${c[2]?'all':''}" href="${auctionLink(c[1])}" target="_blank" rel="noopener">${esc(c[0])}</a>`).join('');
+  const _d=getDriver(currentDriverId),_leg=!!(_d&&_d.tier==='legend');
+  $('auctChips').innerHTML=AUCT_CATS.filter(c=>!(c[4]&&_leg)).map(c=>`<a class="${c[2]?'all':''}" href="${auctionLink(c[1],c[3])}" target="_blank" rel="noopener">${esc(c[0])}</a>`).join('');
   $('auctApplied').textContent='eBay: auctions ending soonest | recently sold'+(auctMax>0?' · under '+money(auctMax):'');
 }
 
