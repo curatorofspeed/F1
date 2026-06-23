@@ -689,7 +689,7 @@
 
 <script>
 const KEY='f1CardIndex:v1';
-const SEED_VERSION='2026-06-23-verstappen-full';
+const SEED_VERSION='2026-06-23-norris-full';
 let state={currency:'$',drivers:[],feed:[],lastUpdated:null};
 let currentDriverId=null;
 let endingSoon=[],endingSoonAt=null,auctBidsOnly=false,auctMax=0,showAll=false;
@@ -960,7 +960,7 @@ function seedData(){
     ]},
     {id:'raikkonen',name:'Kimi Räikkönen',abbr:'RAI',team:'Legend',number:7,color:'#e6b65c',tier:'legend',rookieYear:null,record:{txt:'2020 Chrome F1 Gold Refractor /50 PSA 10',price:'$2,805',date:'Jun 2026',src:'eBay'},cards:[]},
   {id:'ricciardo',name:'Daniel Ricciardo',abbr:'RIC',team:'Legend',number:3,color:'#e6b65c',tier:'legend',rookieYear:null,record:{txt:'2025 Chrome F1 Black Raywave /10',price:'$605',date:'Jun 2026',src:'eBay'},cards:[]}
-  ];
+  ];var _ln=state.drivers.find(function(d){return d.id==='norris';});console.log('%cF1CI build 2026-06-23b','color:#16a34a;font-weight:bold','| Norris Top10 entries:',(_ln&&_ln.top10)?_ln.top10.length:0);
   // Strip placeholder estimates — only verified comps stay
   state.drivers.filter(d=>d.id!=='antonelli').forEach(d=>
     d.cards.forEach(c=>{if((c.source||'').includes('est'))c.hist=[];})
