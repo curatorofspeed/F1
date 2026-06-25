@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methodology — How F1 Card Index Tracks Prices & Sales</title>
+<meta name="description" content="How F1 Card Index gathers, verifies, and cleans Formula 1 card sales: sources, deduplication, currency conversion, exclusions, and record rules.">
+<link rel="canonical" href="https://f1cardindex.com/methodology">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="F1 Card Index">
+<meta property="og:title" content="Methodology — How F1 Card Index Tracks Prices & Sales">
+<meta property="og:description" content="How F1 Card Index gathers, verifies, and cleans Formula 1 card sales: sources, deduplication, currency conversion, exclusions, and record rules.">
+<meta property="og:url" content="https://f1cardindex.com/methodology">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Methodology — How F1 Card Index Tracks Prices & Sales">
+<meta name="twitter:description" content="How F1 Card Index gathers, verifies, and cleans Formula 1 card sales: sources, deduplication, currency conversion, exclusions, and record rules.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--teal:#c4cdd2;--teal-dim:#4a5258;--gold:#d9b878;--txt:#eef1f3;--muted:#828c93}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Sora',system-ui,-apple-system,sans-serif;line-height:1.72;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px}
+header.site{border-bottom:1px solid var(--line);background:rgba(12,13,14,.86);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:21px;letter-spacing:1px;text-transform:uppercase;color:var(--txt);display:flex;align-items:center;gap:9px}
+.brand:hover{text-decoration:none}
+.brand .chk{font-size:16px}
+.back{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.back:hover{color:var(--teal);text-decoration:none}
+main{padding:40px 0 6px}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--gold);border:1px solid var(--line);border-radius:20px;padding:3px 12px;margin-bottom:18px}
+h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:42px;line-height:1.04;letter-spacing:.5px;text-transform:uppercase;margin:0 0 8px}
+.lede{color:var(--muted);font-size:15.5px;margin:0 0 28px;max-width:62ch}
+h2{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:25px;letter-spacing:.5px;text-transform:uppercase;margin:36px 0 11px;color:var(--txt)}
+h3{font-weight:600;font-size:17px;margin:24px 0 6px;color:var(--txt)}
+p,li{font-size:15.5px;color:#d6dde1}
+ul,ol{padding-left:21px;margin:10px 0}
+li{margin:6px 0}
+strong{color:var(--txt);font-weight:600}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:17px 20px;margin:22px 0}
+.box.muted{background:var(--panel2)}
+.box p:first-child{margin-top:0}.box p:last-child{margin-bottom:0}
+.upd{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:36px 0}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14.5px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:'JetBrains Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.btn{display:inline-block;background:var(--gold);color:#0c0d0e;font-weight:600;font-size:14px;padding:10px 20px;border-radius:9px;margin:6px 0}
+.btn:hover{text-decoration:none;filter:brightness(1.06)}
+footer.site{border-top:1px solid var(--line);margin-top:48px;padding:28px 0 44px}
+footer.site .links{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:18px}
+footer.site .links a{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+footer.site .links a:hover{color:var(--teal);text-decoration:none}
+footer.site .fine{font-size:12.5px;color:var(--muted);line-height:1.62}
+@media(max-width:560px){h1{font-size:33px}main{padding:30px 0 6px}}</style>
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="brand" href="/"><span class="chk">&#127937;</span> F1 Card Index</a>
+<a class="back" href="/">&larr; Back to market</a>
+</div></header>
+<main><div class="wrap">
+<span class="tag">Methodology</span>
+<h1>Methodology</h1>
+<p class="lede">How sales and prices on F1 Card Index are gathered, verified, and cleaned &mdash; so you know exactly what the numbers mean.</p>
+
+<p>Every board on this Site follows the same rules. The goal is consistency: when you compare two drivers or two cards, you should be comparing like for like.</p>
+
+<h2>Where the data comes from</h2>
+<p>Pricing reflects completed, public transactions aggregated from across the hobby, including:</p>
+<ul>
+<li><strong>Marketplaces</strong> &mdash; eBay sold/completed listings and live-sale platforms such as Whatnot.</li>
+<li><strong>Sold-price tools</strong> &mdash; 130point, which surfaces true sold prices including accepted best offers.</li>
+<li><strong>Auction houses</strong> &mdash; high-end results from houses such as Goldin and Fanatics Collect (including PWCC), which is where most record-level cards trade.</li>
+</ul>
+<p>We aggregate from these public sources rather than maintaining a proprietary price database, and we point you to live tools so you can verify any comp yourself.</p>
+
+<h2>What counts as a sale</h2>
+<p>A tracked sale is a <strong>completed transaction of a single card</strong>. Active or unsold listings are not treated as sales. Where a listing shows an asking price rather than a confirmed sale, it is not counted as a record.</p>
+
+<h2>Records</h2>
+<p>A driver's <strong>record</strong> is the single highest verified sale we have tracked for that driver. Top 10 boards list the ten highest verified sales, sorted by price.</p>
+
+<h2>Deduplication</h2>
+<p>The same physical card often resells more than once. When we can confirm a card is the same copy &mdash; matching serial number or grading certificate &mdash; it appears <strong>once, at its highest verified sale</strong>, rather than padding the board with repeats.</p>
+
+<h2>Distinct parallels</h2>
+<p>Different serial numbers of the same numbered parallel are treated as <strong>distinct cards</strong> and can both appear. A &ldquo;5/5&rdquo; and a &ldquo;2/5&rdquo; of the same parallel are different physical cards. Different patches or print variations are likewise treated separately.</p>
+
+<h2>Currency</h2>
+<p>Foreign-currency sales are converted to <strong>US dollars</strong> at an approximate exchange rate near the time of sale, and recorded at that converted value. Currency conversion can move a card's rank slightly, which is why every figure should be treated as indicative.</p>
+
+<h2>What's excluded</h2>
+<ul>
+<li>Multi-card lots and bundles (we track single-card sales).</li>
+<li>Non-card memorabilia.</li>
+<li>Unsold or merely listed items.</li>
+<li>Sales we cannot reasonably verify.</li>
+</ul>
+
+<h2>Grading</h2>
+<p>Cards trade both raw and graded (PSA, BGS, SGC, and others). Boards note the grade where known. Grade materially affects value, so a raw and a graded copy of the same card are not directly interchangeable.</p>
+
+<h2>Images</h2>
+<p>Thumbnail images are drawn from listing photos for identification only and remain the property of their respective owners.</p>
+
+<h2>How often it updates</h2>
+<p>The live market view (auctions ending soon and recent sold prices) refreshes continuously. Per-driver Top 10 boards are updated as significant new sales surface and are verified before being added.</p>
+
+<div class="box"><p>Bottom line: the numbers here are a carefully cleaned, consistent snapshot &mdash; not gospel. Markets move, sources err, and currencies shift. Always confirm a comp at the source before you act on it.</p></div>
+
+</div></main>
+<footer class="site"><div class="wrap">
+<nav class="links" aria-label="Site pages">
+<a href="/">Market Home</a>
+<a href="/f1-card-price-guide">Price Guide</a>
+<a href="/topps-chrome-f1-guide">Topps Chrome Guide</a>
+<a href="/kimi-antonelli-rookie-card-guide">Antonelli RC Guide</a>
+<a href="/f1-card-market-report">Market Report</a>
+<a href="/about">About</a>
+<a href="/methodology">Methodology</a>
+<a href="/contact">Contact</a>
+<a href="/privacy-policy">Privacy Policy</a>
+<a href="/terms">Terms</a>
+<a href="/disclaimer">Disclaimer</a>
+</nav>
+<div class="fine">F1 Card Index is an independent market tracker and is not affiliated with, endorsed by, or sponsored by Formula 1, the FIA, any Formula 1 team or driver, Topps, Fanatics, eBay, PSA, or any other referenced brand. All trademarks are the property of their respective owners. Information is provided for general and educational purposes only and is not financial or investment advice. Some outbound links are affiliate links. &copy; <span id="yr">2026</span> F1 Card Index.</div>
+</div></footer>
+<script>var y=document.getElementById('yr');if(y)y.textContent=new Date().getFullYear();</script>
+</body>
+</html>
