@@ -184,6 +184,7 @@ def parse_title(title: str) -> dict:
 # CLEANING — encode the judgment calls (exclusions, currency).
 # ----------------------------------------------------------------------------
 def is_excluded(title: str) -> Optional[str]:
+    if not title: return None
     if LOT_PAT.search(title): return "lot"
     if NONCARD_PAT.search(title): return "non_card"
     return None
@@ -198,6 +199,7 @@ def to_usd(price: float, currency: str) -> Optional[float]:
 def build_sale(source: str, source_item_id: str, url: str, title: str,
                price: float, currency: str = "USD", sale_date: str = None,
                sale_type: str = None, bids: int = None, image_url: str = None) -> Optional[Sale]:
+    if not title: return None          # nothing to parse/match on
     excl = is_excluded(title)
     parsed = parse_title(title)
     s = Sale(source=source, source_item_id=source_item_id, url=url, title=title,
@@ -565,58 +567,66 @@ def selftest():
 
 
 def diagnose():
-    """v2: load /buy properly (domcontentloaded, not networkidle), try several
-    search params, and dump the structure of every /api/ JSON the page fetches —
-    so we can pin the exact lots/search endpoint and its field names."""
+    """v3: capture the /api/lots REQUEST (method/url/body/headers) and a FULL lot
+    object, so we can call Goldin's search API directly. Also drives the on-page
+    search box to trigger a real filtered query."""
     ad = GoldinAdapter(); q = "antonelli"
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("Playwright not installed"); return 1
-    SKIP = ("amplitude", "stripe", "braze", "firebase", "reddit", "google",
-            "sentry", "segment", "cloudflareinsights", "doubleclick", "facebook")
-    def interesting(u): return "/api/" in u and not any(s in u for s in SKIP)
-    def api_summary(blob):
-        out = []
-        def walk(o, path):
-            if isinstance(o, list):
-                if o and isinstance(o[0], dict):
-                    out.append(f"        {path or 'root'}[{len(o)}] item_keys={list(o[0].keys())[:14]}")
-            elif isinstance(o, dict):
-                for k, v in o.items(): walk(v, (path + "." + k) if path else k)
-        walk(blob, ""); return out
-    urls = [f"{ad.base}/buy?query={q}", f"{ad.base}/buy?keyword={q}",
-            f"{ad.base}/buy?q={q}", f"{ad.base}/buy?search={q}", f"{ad.base}/buy"]
-    print(f"DIAGNOSE v2 — query='{q}', domcontentloaded + 6s, dumping /api/ JSON\n" + "="*70)
+    reqs, lot_samples = [], []
+    def on_request(req):
+        if "/api/lots" in req.url:
+            hk = {k: v[:60] for k, v in (req.headers or {}).items()
+                  if k.lower() in ("authorization", "x-api-key", "apikey", "content-type",
+                                   "x-algolia-api-key", "x-algolia-application-id")}
+            reqs.append((req.method, req.url, (req.post_data or "")[:700], hk))
+    def on_response(resp):
+        if "/api/lots" in resp.url:
+            try:
+                blob = resp.json()
+                sa = blob.get("searchalgolia") if isinstance(blob, dict) else None
+                lots = (sa.get("lots") if isinstance(sa, dict) else None) or find_lot_array(blob)
+                if lots: lot_samples.append(lots[0])
+            except Exception: pass
+    print("DIAGNOSE v3 — /api/lots request + full lot object\n" + "="*70)
     with sync_playwright() as p:
         br = p.chromium.launch()
         pg = br.new_page(user_agent=UA)
-        captured = []
-        def on_response(resp):
-            u = resp.url
-            if "application/json" in (resp.headers or {}).get("content-type", "") and interesting(u):
-                try: captured.append((u, resp.json()))
-                except Exception: pass
-        pg.on("response", on_response)
-        for url in urls:
-            captured.clear()
-            print(f"\n>>> TRY {url}")
+        pg.on("request", on_request); pg.on("response", on_response)
+        try:
+            pg.goto(f"{ad.base}/buy", wait_until="domcontentloaded", timeout=40000)
+            pg.wait_for_timeout(6000)
+        except Exception as e:
+            print("  goto error:", str(e)[:100])
+        print("\n-- attempting on-page search for 'antonelli' --")
+        typed = False
+        for sel in ["input[type='search']", "input[placeholder*='Search' i]",
+                    "input[name*='search' i]", "[role='searchbox']", "input[type='text']"]:
             try:
-                pg.goto(url, wait_until="domcontentloaded", timeout=40000)
-                pg.wait_for_timeout(6000)
-            except Exception as e:
-                print(f"    goto error: {str(e)[:100]}"); continue
-            try: print(f"    final: {pg.url[:105]} | title: {(pg.title() or '')[:55]}")
-            except Exception: pass
-            anchors = pg.query_selector_all("a[href*='/item/']")
-            print(f"    /item/ links: {len(anchors)} | /api/ JSON responses: {len(captured)}")
-            for u, blob in captured[:10]:
-                print(f"    API {u[:108]}")
-                for line in api_summary(blob)[:8]:
-                    print(line)
+                el = pg.query_selector(sel)
+                if el:
+                    el.click(); el.fill(q); pg.keyboard.press("Enter")
+                    pg.wait_for_timeout(6000); typed = True
+                    print(f"   typed into: {sel}"); break
+            except Exception:
+                continue
+        if not typed:
+            print("   no search box matched — showing the default request format instead")
         br.close()
-    print("\n" + "="*70 + "\nPaste this back — the /api/ call whose item_keys look like cards is our endpoint.")
+    print(f"\n=== /api/lots REQUESTS ({len(reqs)}) ===")
+    for m, u, body, hk in reqs[:8]:
+        print(f"  {m} {u[:170]}")
+        if body: print(f"      body: {body}")
+        if hk:   print(f"      headers: {hk}")
+    print(f"\n=== FULL sample lot ({len(lot_samples)} seen) ===")
+    if lot_samples:
+        for k, v in lot_samples[-1].items():
+            print(f"  {k}: {str(v)[:90]}")
+    print("\n" + "="*70 + "\nPaste this back — I'll wire a direct requests call to the search API.")
     return 0
+
 
 
 
