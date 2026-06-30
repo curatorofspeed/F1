@@ -1,0 +1,62 @@
+# .github/workflows/main.yml
+# First goal: a GREEN run. Offline selftest only — no secrets, no Playwright,
+# no scraping. Auto-finds the worker wherever it lives in the repo.
+name: f1-radar
+
+on:
+  workflow_dispatch:        # manual "Run workflow" button
+  schedule:
+    - cron: "0 */6 * * *"   # every 6h (only matters once the live step is enabled)
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Locate worker
+        id: find
+        run: |
+          f="$(find . -name f1_radar_worker.py | head -n1)"
+          if [ -z "$f" ]; then
+            echo "::error::f1_radar_worker.py not found in the repo. Commit it (any path)."
+            exit 1
+          fi
+          echo "Found worker at: $f"
+          echo "path=$f" >> "$GITHUB_OUTPUT"
+
+      - name: Selftest (offline parser / cleaning / dedup)
+        run: python "${{ steps.find.outputs.path }}" --selftest
+
+  # ---------------------------------------------------------------------------
+  # Enable this once Goldin fetch is wired AND repo secrets SUPABASE_URL +
+  # SUPABASE_SERVICE_KEY are set. Until then it stays off so runs stay green.
+  # ---------------------------------------------------------------------------
+  # ingest:
+  #   needs: selftest
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 20
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-python@v5
+  #       with: { python-version: "3.12" }
+  #     - run: pip install requests playwright && python -m playwright install --with-deps chromium
+  #     - name: Locate worker
+  #       id: find
+  #       run: echo "path=$(find . -name f1_radar_worker.py | head -n1)" >> "$GITHUB_OUTPUT"
+  #     - name: Ingest -> Supabase (pending rows)
+  #       env:
+  #         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  #         SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  #       run: python "${{ steps.find.outputs.path }}"
