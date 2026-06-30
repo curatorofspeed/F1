@@ -12,14 +12,18 @@ WHAT'S FULLY BUILT & TESTED HERE (run `python f1_radar_worker.py --selftest`):
   - The DEDUP rule (same physical card -> keep highest sale)
   - Normalization into the canonical sale schema
 
-WHAT NEEDS YOUR LIVE ACCESS (clearly marked TODO in GoldinAdapter.search):
-  - Goldin is a JS SPA; the search/results data comes from a backend API.
-    Discover it once via browser devtools (Network tab -> filter XHR while
-    searching "Antonelli") and paste the endpoint into _SEARCH_API below,
-    OR use the Playwright render fallback (works without finding the API).
-  - Item pages DO expose title/grade/image via og: meta over plain HTTP
-    (confirmed), so fetch_item works without a browser; only the live
-    price/bids/date need the API or a render.
+THE GOLDIN FETCH (now self-discovering — devtools optional):
+  - _search_render() renders the page with Playwright and SNIFFS the JSON the
+    page fetches from Goldin's own backend, then normalizes it (handles
+    Algolia-style hits, GraphQL edges/node, and varied field names). It does
+    NOT need the API endpoint or fragile DOM selectors. A DOM scrape of /item/
+    links is the fallback if no JSON is seen.
+  - The only thing to verify live is the SEARCH URL pattern (_search_urls):
+    run once with Playwright installed + --dry-run and check the output. If it's
+    empty, tweak _search_urls to match how goldin.co forms a search.
+  - Optional fast path: set _SEARCH_API to hit the backend directly (skip the browser).
+  - Item pages also expose title/grade/image via og: meta over plain HTTP
+    (confirmed) — fetch_item_meta uses that without a browser.
 """
 from __future__ import annotations
 import os, re, sys, json, time, html, argparse, datetime as dt
@@ -303,32 +307,137 @@ class GoldinAdapter(Adapter):
             })
         return out
 
+    def _search_urls(self, q: str):
+        """Candidate result URLs to try (Goldin's marketplace lives at /buy).
+        First that yields lots wins. --diagnose shows which one actually works."""
+        from urllib.parse import quote
+        qq = quote(q)
+        return [f"{self.base}/buy?query={qq}",
+                f"{self.base}/search?query={qq}",
+                f"{self.base}/buy?search={qq}",
+                f"{self.base}/search?q={qq}",
+                f"{self.base}/buy?q={qq}",
+                f"{self.base}/marketplace?query={qq}"]
+
     def _search_render(self, q: str) -> list[dict]:
-        """Fallback for the SPA: render search results with Playwright.
-        Works without knowing the API. `pip install playwright && playwright install chromium`."""
+        """Render Goldin with Playwright and SNIFF the JSON its own page fetches from
+        the backend — robust to not knowing the exact API shape. DOM scrape of /item/
+        links is the fallback. `pip install playwright && playwright install chromium`."""
         try:
             from playwright.sync_api import sync_playwright
         except ImportError:
             print("  [goldin] Playwright not installed and _SEARCH_API unset — skipping.", file=sys.stderr)
             return []
-        results = []
+        out = []
         with sync_playwright() as p:
             br = p.chromium.launch()
             pg = br.new_page(user_agent=UA)
-            # TODO(owner): confirm the sold-results URL pattern + card/grid selectors
-            pg.goto(f"{self.base}/search?query={q}", wait_until="networkidle", timeout=45000)
-            cards = pg.query_selector_all("[data-testid='lot-card'], a[href*='/item/']")
-            for c in cards:
-                href = c.get_attribute("href") or ""
-                if "/item/" not in href: continue
-                results.append({
-                    "id": href.rstrip("/").split("/")[-1],
-                    "url": href if href.startswith("http") else self.base + href,
-                    "title": (c.inner_text() or "").strip().split("\n")[0],
-                    "price": None, "sale_date": None, "image_url": None,
-                })
+            captured = []
+            def on_response(resp):
+                if "application/json" in (resp.headers or {}).get("content-type", ""):
+                    try: captured.append(resp.json())
+                    except Exception: pass
+            pg.on("response", on_response)
+            for url in self._search_urls(q):
+                captured.clear()
+                try:
+                    pg.goto(url, wait_until="networkidle", timeout=45000)
+                    pg.wait_for_timeout(2500)
+                except Exception:
+                    continue
+                # 1) preferred: parse the backend JSON the page already fetched
+                for blob in captured:
+                    lots = find_lot_array(blob)
+                    if lots:
+                        out = [x for x in (normalize_goldin_lot(self.base, l) for l in lots) if x]
+                        if out: break
+                if out: break
+                # 2) fallback: scrape rendered /item/ links from the DOM
+                dom = self._scrape_dom(pg)
+                if dom: out = dom; break
             br.close()
-        return results
+        return out
+
+    def _scrape_dom(self, pg) -> list[dict]:
+        seen, rows = set(), []
+        for a in pg.query_selector_all("a[href*='/item/']"):
+            href = a.get_attribute("href") or ""
+            if "/item/" not in href: continue
+            url = href if href.startswith("http") else self.base + href
+            if url in seen: continue
+            seen.add(url)
+            txt = (a.inner_text() or "").strip()
+            pm = re.search(r"\$([\d,]+)", txt)
+            img = a.query_selector("img")
+            rows.append({"id": url.rstrip("/").split("/")[-1], "url": url,
+                         "title": txt.split("\n")[0] if txt else None,
+                         "price": float(pm.group(1).replace(",", "")) if pm else None,
+                         "currency": "USD", "sale_date": None, "sale_type": None,
+                         "bids": None, "image_url": (img.get_attribute("src") if img else None)})
+        return rows
+
+
+# --- Goldin JSON sniffing (robust to unknown backend shape) -----------------
+_TITLE_KEYS = ("title", "name", "lottitle", "itemtitle", "lotname")
+_PRICE_KEYS = ("soldprice", "finalprice", "saleprice", "hammerprice", "winningbid",
+               "currentbid", "highbid", "currentprice", "price", "amount")
+_ID_KEYS    = ("slug", "objectid", "id", "lotid", "itemid", "_id")
+_DATE_KEYS  = ("soldat", "closedat", "enddate", "endtime", "saledate", "closedon")
+_IMG_KEYS   = ("image", "imageurl", "imageurls", "images", "thumbnail", "thumb", "primaryimage")
+_BID_KEYS   = ("bidcount", "bids", "numbids", "totalbids")
+
+def _lc(d): return {str(k).lower(): v for k, v in d.items()} if isinstance(d, dict) else {}
+def _first(d, keys):
+    for k in keys:
+        if k in d and d[k] not in (None, "", []): return d[k]
+    return None
+def is_lot_like(d) -> bool:
+    if not isinstance(d, dict): return False
+    dl = _lc(d)
+    return _first(dl, _TITLE_KEYS) is not None and (
+        _first(dl, _PRICE_KEYS) is not None or _first(dl, _BID_KEYS) is not None
+        or "/item/" in str(_first(dl, _ID_KEYS) or ""))
+def find_lot_array(blob, _depth=0):
+    """Recursively locate the first array of lot-like dicts inside arbitrary JSON."""
+    if _depth > 8: return []
+    if isinstance(blob, list):
+        sample = [x for x in blob[:5] if isinstance(x, dict)]
+        if sample and sum(1 for x in sample if is_lot_like(x)) >= max(1, len(sample) // 2):
+            return [x for x in blob if isinstance(x, dict)]
+        for x in blob:
+            got = find_lot_array(x, _depth + 1)
+            if got: return got
+        return []
+    if isinstance(blob, dict):
+        for k in ("hits", "results", "items", "lots", "data", "edges", "records", "documents"):
+            if k in blob:
+                got = find_lot_array(blob[k], _depth + 1)
+                if got: return got
+        for v in blob.values():
+            got = find_lot_array(v, _depth + 1)
+            if got: return got
+    return []
+def _money(v):
+    if v is None: return None
+    if isinstance(v, (int, float)): return float(v)
+    m = re.search(r"[\d,.]+", str(v))
+    return float(m.group(0).replace(",", "")) if m else None
+def normalize_goldin_lot(base, lot):
+    d = _lc(lot)
+    if isinstance(d.get("node"), dict): d = _lc(d["node"])   # GraphQL edges -> node
+    slug, title = _first(d, _ID_KEYS), _first(d, _TITLE_KEYS)
+    if not (slug and title): return None
+    img = _first(d, _IMG_KEYS)
+    if isinstance(img, list): img = img[0] if img else None
+    if isinstance(img, dict): img = img.get("url") or img.get("src")
+    date = _first(d, _DATE_KEYS)
+    slug_s = str(slug)
+    return {"id": slug_s,
+            "url": slug_s if slug_s.startswith("http") else f"{base}/item/{slug_s}",
+            "title": title, "price": _money(_first(d, _PRICE_KEYS)),
+            "currency": (d.get("currency") or "USD"),
+            "sale_date": (str(date)[:10] if date else None), "sale_type": "auction",
+            "bids": _first(d, _BID_KEYS), "image_url": img}
 
 
 ADAPTERS = [GoldinAdapter()]   # FanaticsAdapter() next, same shape
@@ -421,9 +530,88 @@ def selftest():
     dpass = len(dd) == 1 and dd[0].price_usd == 79300
     ok &= dpass
     print(f"{'PASS' if dpass else 'FAIL'}  [dedup] same cert kept higher -> {len(dd)} row @ ${dd[0].price_usd:,}")
+    # Goldin JSON sniffing: nested backend payload -> lots -> normalized dicts
+    mock = {"results": [{"hits": [
+        {"objectID": "x1", "slug": "antonelli-sapphire",
+         "title": "2025 Topps Chrome F1 Sapphire Red #8 Kimi Antonelli RC (#3/5) - PSA GEM MT 10",
+         "soldPrice": 79300, "endDate": "2026-06-25T20:27:24Z", "bidCount": 50,
+         "image": "https://cdn/x/a.jpg", "currency": "USD"},
+        {"objectID": "x2",
+         "name": "2020 Topps Chrome F1 Superfractor #1 Lewis Hamilton 1/1 PSA 7",
+         "currentBid": 900000, "soldAt": "2022-04-30", "images": ["https://cdn/x/h.jpg"]},
+        {"junk": "not a lot"},
+    ]}]}
+    lots = find_lot_array(mock)
+    g1 = len(lots) == 3  # the array is returned whole; non-lots dropped at normalize
+    norm = [normalize_goldin_lot("https://goldin.co", l) for l in lots]
+    norm = [n for n in norm if n]
+    g2 = len(norm) == 2
+    a = next((n for n in norm if "antonelli" in n["url"]), {})
+    g3 = (a.get("price") == 79300.0 and a.get("sale_date") == "2026-06-25"
+          and a.get("url") == "https://goldin.co/item/antonelli-sapphire"
+          and a.get("image_url") == "https://cdn/x/a.jpg" and a.get("bids") == 50)
+    h = next((n for n in norm if n["id"] == "x2"), {})
+    g4 = (h.get("price") == 900000.0 and h.get("image_url") == "https://cdn/x/h.jpg"
+          and h.get("url") == "https://goldin.co/item/x2")
+    for label, cond in [("find_lot_array finds nested hits", g1),
+                        ("normalize drops non-lots", g2),
+                        ("antonelli lot fields", g3),
+                        ("hamilton lot (name/currentBid/images[])", g4)]:
+        ok &= cond
+        print(f"{'PASS' if cond else 'FAIL'}  [goldin] {label}")
     print("-"*60)
     print("ALL PASS" if ok else "FAILURES ABOVE")
     return 0 if ok else 1
+
+
+def diagnose():
+    """Render Goldin for one query and report EXACTLY what comes back, so we can
+    target the real search URL + JSON shape. Run via the workflow 'diagnose' mode."""
+    ad = GoldinAdapter(); q = "antonelli"
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("Playwright not installed"); return 1
+    print(f"DIAGNOSE — query='{q}', UA set, capturing JSON responses\n" + "="*70)
+    with sync_playwright() as p:
+        br = p.chromium.launch()
+        pg = br.new_page(user_agent=UA)
+        captured = []
+        def on_response(resp):
+            ct = (resp.headers or {}).get("content-type", "")
+            if "application/json" in ct:
+                try: captured.append((resp.url, resp.json()))
+                except Exception: pass
+        pg.on("response", on_response)
+        for url in ad._search_urls(q):
+            captured.clear()
+            print(f"\n>>> TRY {url}")
+            try:
+                pg.goto(url, wait_until="networkidle", timeout=45000)
+                pg.wait_for_timeout(3000)
+            except Exception as e:
+                print(f"    goto error: {str(e)[:120]}"); continue
+            try: title = (pg.title() or "")[:100]
+            except Exception: title = "?"
+            try: body_len = pg.evaluate("document.body ? document.body.innerText.length : 0")
+            except Exception: body_len = "?"
+            anchors = pg.query_selector_all("a[href*='/item/']")
+            print(f"    final URL : {pg.url[:110]}")
+            print(f"    title     : {title}")
+            print(f"    body text : {body_len} chars   |   /item/ links: {len(anchors)}")
+            for a in anchors[:3]:
+                print(f"        item: {(a.get_attribute('href') or '')[:80]}")
+            print(f"    JSON responses captured: {len(captured)}")
+            for u, blob in captured[:12]:
+                lots = find_lot_array(blob)
+                if isinstance(blob, list): shape = f"list[{len(blob)}]"
+                elif isinstance(blob, dict): shape = "dict{" + ",".join(list(blob.keys())[:8]) + "}"
+                else: shape = type(blob).__name__
+                tag = f"LOTS:{len(lots)}" if lots else "—"
+                print(f"        [{tag:>7}] {u[:78]}  {shape}")
+        br.close()
+    print("\n" + "="*70 + "\nPaste this whole block back to wire the adapter precisely.")
+    return 0
 
 
 if __name__ == "__main__":
@@ -431,6 +619,8 @@ if __name__ == "__main__":
     ap.add_argument("--dry-run", action="store_true", help="fetch + print, no DB write")
     ap.add_argument("--ignore-robots", action="store_true", help="only if you have permission")
     ap.add_argument("--selftest", action="store_true", help="validate parser/cleaning/dedup offline")
+    ap.add_argument("--diagnose", action="store_true", help="render Goldin once and report what it returns")
     a = ap.parse_args()
     if a.selftest: sys.exit(selftest())
+    if a.diagnose: sys.exit(diagnose())
     run(dry=a.dry_run, ignore_robots=a.ignore_robots)

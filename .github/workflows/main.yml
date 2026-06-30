@@ -2,9 +2,15 @@
 name: f1-radar
 
 on:
-  workflow_dispatch:        # manual "Run workflow" button — use this for the first run
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "ingest mode"
+        type: choice
+        options: [run, diagnose, dry-run]
+        default: run
   schedule:
-    - cron: "0 */6 * * *"   # every 6h once you've confirmed it pulls sales
+    - cron: "0 */6 * * *"   # scheduled runs always do a live 'run'
 
 permissions:
   contents: read
@@ -29,7 +35,7 @@ jobs:
         run: python "${{ steps.find.outputs.path }}" --selftest
 
   ingest:
-    needs: selftest          # only run if the code is valid
+    needs: selftest
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -44,8 +50,15 @@ jobs:
       - name: Locate worker
         id: find
         run: echo "path=$(find . -name f1_radar_worker.py | head -n1)" >> "$GITHUB_OUTPUT"
-      - name: Ingest Goldin -> Supabase (writes 'pending' rows)
+      - name: Ingest / diagnose
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-        run: python "${{ steps.find.outputs.path }}"
+        run: |
+          case "${{ github.event.inputs.mode }}" in
+            diagnose) ARG=--diagnose ;;
+            dry-run)  ARG=--dry-run ;;
+            *)        ARG= ;;
+          esac
+          echo "Running with: ${ARG:-(live run)}"
+          python "${{ steps.find.outputs.path }}" $ARG
