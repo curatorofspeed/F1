@@ -341,8 +341,8 @@ class GoldinAdapter(Adapter):
             for url in self._search_urls(q):
                 captured.clear()
                 try:
-                    pg.goto(url, wait_until="networkidle", timeout=45000)
-                    pg.wait_for_timeout(2500)
+                    pg.goto(url, wait_until="domcontentloaded", timeout=40000)
+                    pg.wait_for_timeout(6000)   # Goldin never goes networkidle; fixed wait for its API calls
                 except Exception:
                     continue
                 # 1) preferred: parse the backend JSON the page already fetched
@@ -565,53 +565,59 @@ def selftest():
 
 
 def diagnose():
-    """Render Goldin for one query and report EXACTLY what comes back, so we can
-    target the real search URL + JSON shape. Run via the workflow 'diagnose' mode."""
+    """v2: load /buy properly (domcontentloaded, not networkidle), try several
+    search params, and dump the structure of every /api/ JSON the page fetches —
+    so we can pin the exact lots/search endpoint and its field names."""
     ad = GoldinAdapter(); q = "antonelli"
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("Playwright not installed"); return 1
-    print(f"DIAGNOSE — query='{q}', UA set, capturing JSON responses\n" + "="*70)
+    SKIP = ("amplitude", "stripe", "braze", "firebase", "reddit", "google",
+            "sentry", "segment", "cloudflareinsights", "doubleclick", "facebook")
+    def interesting(u): return "/api/" in u and not any(s in u for s in SKIP)
+    def api_summary(blob):
+        out = []
+        def walk(o, path):
+            if isinstance(o, list):
+                if o and isinstance(o[0], dict):
+                    out.append(f"        {path or 'root'}[{len(o)}] item_keys={list(o[0].keys())[:14]}")
+            elif isinstance(o, dict):
+                for k, v in o.items(): walk(v, (path + "." + k) if path else k)
+        walk(blob, ""); return out
+    urls = [f"{ad.base}/buy?query={q}", f"{ad.base}/buy?keyword={q}",
+            f"{ad.base}/buy?q={q}", f"{ad.base}/buy?search={q}", f"{ad.base}/buy"]
+    print(f"DIAGNOSE v2 — query='{q}', domcontentloaded + 6s, dumping /api/ JSON\n" + "="*70)
     with sync_playwright() as p:
         br = p.chromium.launch()
         pg = br.new_page(user_agent=UA)
         captured = []
         def on_response(resp):
-            ct = (resp.headers or {}).get("content-type", "")
-            if "application/json" in ct:
-                try: captured.append((resp.url, resp.json()))
+            u = resp.url
+            if "application/json" in (resp.headers or {}).get("content-type", "") and interesting(u):
+                try: captured.append((u, resp.json()))
                 except Exception: pass
         pg.on("response", on_response)
-        for url in ad._search_urls(q):
+        for url in urls:
             captured.clear()
             print(f"\n>>> TRY {url}")
             try:
-                pg.goto(url, wait_until="networkidle", timeout=45000)
-                pg.wait_for_timeout(3000)
+                pg.goto(url, wait_until="domcontentloaded", timeout=40000)
+                pg.wait_for_timeout(6000)
             except Exception as e:
-                print(f"    goto error: {str(e)[:120]}"); continue
-            try: title = (pg.title() or "")[:100]
-            except Exception: title = "?"
-            try: body_len = pg.evaluate("document.body ? document.body.innerText.length : 0")
-            except Exception: body_len = "?"
+                print(f"    goto error: {str(e)[:100]}"); continue
+            try: print(f"    final: {pg.url[:105]} | title: {(pg.title() or '')[:55]}")
+            except Exception: pass
             anchors = pg.query_selector_all("a[href*='/item/']")
-            print(f"    final URL : {pg.url[:110]}")
-            print(f"    title     : {title}")
-            print(f"    body text : {body_len} chars   |   /item/ links: {len(anchors)}")
-            for a in anchors[:3]:
-                print(f"        item: {(a.get_attribute('href') or '')[:80]}")
-            print(f"    JSON responses captured: {len(captured)}")
-            for u, blob in captured[:12]:
-                lots = find_lot_array(blob)
-                if isinstance(blob, list): shape = f"list[{len(blob)}]"
-                elif isinstance(blob, dict): shape = "dict{" + ",".join(list(blob.keys())[:8]) + "}"
-                else: shape = type(blob).__name__
-                tag = f"LOTS:{len(lots)}" if lots else "—"
-                print(f"        [{tag:>7}] {u[:78]}  {shape}")
+            print(f"    /item/ links: {len(anchors)} | /api/ JSON responses: {len(captured)}")
+            for u, blob in captured[:10]:
+                print(f"    API {u[:108]}")
+                for line in api_summary(blob)[:8]:
+                    print(line)
         br.close()
-    print("\n" + "="*70 + "\nPaste this whole block back to wire the adapter precisely.")
+    print("\n" + "="*70 + "\nPaste this back — the /api/ call whose item_keys look like cards is our endpoint.")
     return 0
+
 
 
 if __name__ == "__main__":
