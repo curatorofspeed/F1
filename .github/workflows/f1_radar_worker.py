@@ -680,13 +680,56 @@ def diagnose():
 
 
 
+def probe_sold():
+    """POST several queryType/filter variants to lots_v2 to find one that returns
+    ENDED/SOLD lots (past end_timestamp). Direct API — no browser."""
+    from collections import Counter
+    import datetime as _dt
+    api = GoldinAdapter.LOTS_API; kw = "antonelli"
+    variants = [
+        {"queryType": "Featured"},
+        {"queryType": "Ended"}, {"queryType": "Sold"}, {"queryType": "Closed"},
+        {"queryType": "Past"}, {"queryType": "PastAuctions"}, {"queryType": "Archive"},
+        {"queryType": "Prices"}, {"queryType": "PricesRealized"}, {"queryType": "All"},
+        {"queryType": "Featured", "status": "Sold"},
+        {"queryType": "Featured", "sortBy": "end_timestamp", "sortOrder": "desc"},
+    ]
+    now = _dt.datetime.now(_dt.timezone.utc)
+    print("PROBE — looking for a queryType that returns ended/sold lots\n" + "="*72)
+    for v in variants:
+        body = {"search": {**v, "keyword": kw, "size": 12, "from": 0, "hasAnalyticsConsent": False}}
+        try:
+            r = requests.post(api, json=body, timeout=20,
+                              headers={"User-Agent": UA, "Content-Type": "application/json",
+                                       "Origin": "https://goldin.co", "Referer": "https://goldin.co/"})
+            code, data = r.status_code, r.json()
+        except Exception as e:
+            print(f"  {str(v):54} -> ERROR {str(e)[:40]}"); continue
+        lots = ((data or {}).get("searchalgolia") or {}).get("lots") or []
+        st = Counter((l.get("status") or "?") for l in lots)
+        past = 0
+        for l in lots:
+            e = (l.get("end_timestamp") or "")
+            try:
+                if e and _dt.datetime.fromisoformat(e.replace("Z", "+00:00")) < now: past += 1
+            except Exception: pass
+        print(f"  HTTP{code} {str(v):50} -> {len(lots):2} lots | status={dict(st)} | past_end={past}")
+        if lots:
+            s = lots[0]
+            print(f"          e.g. end={s.get('end_timestamp')} price={s.get('current_price')} '{(s.get('title') or '')[:42]}'")
+    print("\n" + "="*72 + "\nWinner = the variant with status like Sold/Closed or past_end>0.")
+    return 0
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="fetch + print, no DB write")
     ap.add_argument("--ignore-robots", action="store_true", help="only if you have permission")
     ap.add_argument("--selftest", action="store_true", help="validate parser/cleaning/dedup offline")
     ap.add_argument("--diagnose", action="store_true", help="render Goldin once and report what it returns")
+    ap.add_argument("--probe", action="store_true", help="try queryType variants to find sold/ended lots")
     a = ap.parse_args()
     if a.selftest: sys.exit(selftest())
     if a.diagnose: sys.exit(diagnose())
+    if a.probe: sys.exit(probe_sold())
     run(dry=a.dry_run, ignore_robots=a.ignore_robots)

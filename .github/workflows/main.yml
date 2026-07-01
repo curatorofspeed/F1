@@ -7,7 +7,7 @@ on:
       mode:
         description: "ingest mode"
         type: choice
-        options: [run, diagnose, dry-run]
+        options: [run, diagnose, dry-run, probe]
         default: run
   schedule:
     - cron: "0 */6 * * *"   # scheduled runs always do a live 'run'
@@ -58,6 +58,7 @@ jobs:
           case "${{ github.event.inputs.mode }}" in
             diagnose) ARG=--diagnose ;;
             dry-run)  ARG=--dry-run ;;
+            probe)    ARG=--probe ;;
             *)        ARG= ;;
           esac
           echo "Running with: ${ARG:-(live run)}"
