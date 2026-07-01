@@ -260,10 +260,10 @@ class GoldinAdapter(Adapter):
     source = "goldin"
     base = "https://goldin.co"
 
-    # TODO(owner): discover the real search endpoint once (devtools -> Network ->
-    # XHR while searching). Goldin is a Next.js SPA; the results JSON comes from a
-    # backend call (commonly an Algolia or internal /api search). Paste it here.
-    _SEARCH_API = ""   # e.g. "https://<host>/api/search?q={q}&status=sold&sort=date_desc"
+    # Confirmed live (captured from goldin.co): keyword search is a JSON POST,
+    # no auth header. Lots come back under data["searchalgolia"]["lots"].
+    LOTS_API = "https://d1wu47wucybvr3.cloudfront.net/api/lots_v2"
+    IMG_BASE = "https://d2tt46f3mh26nl.cloudfront.net/public/Lots"
 
     def fetch_item_meta(self, url: str) -> dict:
         """Plain-HTTP og: meta extraction — CONFIRMED to work (title/grade/image)."""
@@ -275,38 +275,67 @@ class GoldinAdapter(Adapter):
         return {"title": og("title"), "image_url": og("image"), "url": url}
 
     def search(self, driver: dict) -> list[Sale]:
-        q = driver["aliases"][0]
-        rows = self._search_api(q) if self._SEARCH_API else self._search_render(q)
+        """Direct call to Goldin's confirmed lots_v2 search — no browser needed.
+        Body format captured live: JSON POST, keyword search, no auth header."""
+        body = {"search": {"queryType": "Featured", "keyword": driver["aliases"][0],
+                           "size": 80, "from": 0, "hasAnalyticsConsent": False}}
+        try:
+            r = requests.post(self.LOTS_API, json=body, timeout=25,
+                              headers={"User-Agent": UA, "Content-Type": "application/json",
+                                       "Origin": self.base, "Referer": self.base + "/"})
+            data = r.json()
+        except Exception as e:
+            print(f"  [goldin] api error: {str(e)[:80]} — trying render fallback")
+            return self._render_fallback(driver)
+        lots = ((data or {}).get("searchalgolia") or {}).get("lots") or []
         sales = []
-        for it in rows:
-            s = build_sale(self.source, it["id"], it["url"], it["title"],
+        for lot in lots:
+            it = self._lot_to_item(lot)
+            if not it:
+                continue
+            s = build_sale(self.source, it["id"], it["url"], it["title"], price=it["price"],
+                           currency="USD", sale_date=it["sale_date"], sale_type=it["sale_type"],
+                           bids=it["bids"], image_url=it["image_url"])
+            if not s or s.driver_id != driver["id"]:
+                continue
+            if it["live"]:
+                s.flags.append("live_auction")        # current bid, NOT final — don't approve as a comp
+            if it["premium"]:
+                s.flags.append(f"buyer_premium:{it['premium']}")
+            sales.append(s)
+        return sales
+
+    def _lot_to_item(self, lot: dict) -> Optional[dict]:
+        """Map a Goldin lots_v2 lot -> our normalized item dict."""
+        title, slug = lot.get("title"), lot.get("meta_slug")
+        if not (title and slug):
+            return None
+        try:
+            price = float(lot["current_price"]) if lot.get("current_price") is not None else None
+        except Exception:
+            price = None
+        status = (lot.get("status") or "").lower()
+        lid, pimg = lot.get("lot_id"), lot.get("primary_image_name")
+        return {
+            "id": slug, "url": f"{self.base}/item/{slug}", "title": title, "price": price,
+            "sale_date": (lot.get("end_timestamp") or "")[:10] or None,
+            "sale_type": "buy_now" if lot.get("auction_type") == "Fixed_Price" else "auction",
+            "bids": (int(lot["number_of_bids"]) if lot.get("number_of_bids") else None),
+            "image_url": (f"{self.IMG_BASE}/{lid}/{pimg}@1x" if (lid and pimg) else None),
+            "live": status in ("live", "open", "active", ""),
+            "premium": lot.get("buyer_premium"),
+        }
+
+    def _render_fallback(self, driver: dict) -> list[Sale]:
+        """Playwright render path — only used if the direct API call fails."""
+        out = []
+        for it in self._search_render(driver["aliases"][0]):
+            s = build_sale(self.source, it["id"], it["url"], it.get("title"),
                            price=it.get("price"), currency=it.get("currency", "USD"),
                            sale_date=it.get("sale_date"), sale_type=it.get("sale_type"),
                            bids=it.get("bids"), image_url=it.get("image_url"))
             if s and s.driver_id == driver["id"]:
-                sales.append(s)
-        return sales
-
-    def _search_api(self, q: str) -> list[dict]:
-        """Primary path once _SEARCH_API is known. Map their JSON -> our dict."""
-        url = self._SEARCH_API.format(q=requests.utils.quote(q))
-        r = requests.get(url, headers={"User-Agent": UA, "Accept": "application/json"}, timeout=25)
-        data = r.json()
-        items = data.get("hits") or data.get("results") or data.get("items") or []
-        out = []
-        for it in items:
-            # field names are placeholders — align to the real payload you find:
-            out.append({
-                "id": str(it.get("objectID") or it.get("id") or it.get("slug")),
-                "url": self.base + "/item/" + str(it.get("slug") or it.get("id")),
-                "title": it.get("title") or it.get("name"),
-                "price": it.get("soldPrice") or it.get("currentBid") or it.get("price"),
-                "currency": it.get("currency", "USD"),
-                "sale_date": (it.get("soldAt") or it.get("endDate") or "")[:10] or None,
-                "sale_type": "auction",
-                "bids": it.get("bidCount") or it.get("bids"),
-                "image_url": it.get("image") or it.get("imageUrl"),
-            })
+                out.append(s)
         return out
 
     def _search_urls(self, q: str):
@@ -559,6 +588,27 @@ def selftest():
                         ("normalize drops non-lots", g2),
                         ("antonelli lot fields", g3),
                         ("hamilton lot (name/currentBid/images[])", g4)]:
+        ok &= cond
+        print(f"{'PASS' if cond else 'FAIL'}  [goldin] {label}")
+    # Map the REAL captured Goldin lot through _lot_to_item + build_sale
+    real_lot = {"auction_type": "Weekly", "buyer_premium": 22.0, "current_price": 275.0,
+                "end_timestamp": "2026-07-03T02:00:00Z",
+                "lot_id": "202606-2222-0355-1ae3725c-94de-452c-ad7b-8277644099ae",
+                "meta_slug": "2025-topps-chrome-helmet-collection-hc-1-kimi-antonelli-rookie-card-psgek50",
+                "number_of_bids": 22.0, "primary_image_name": "5eccec1c-8d20-4188-9c5c-6966978423d0",
+                "status": "Live",
+                "title": "2025 Topps Chrome Helmet Collection #HC-1 Kimi Antonelli Rookie Card - PSA GEM MT 10"}
+    it = GoldinAdapter()._lot_to_item(real_lot)
+    l1 = (it and it["price"] == 275.0 and it["live"] is True and it["bids"] == 22
+          and it["url"].endswith("/item/2025-topps-chrome-helmet-collection-hc-1-kimi-antonelli-rookie-card-psgek50")
+          and it["sale_date"] == "2026-07-03"
+          and it["image_url"] == "https://d2tt46f3mh26nl.cloudfront.net/public/Lots/202606-2222-0355-1ae3725c-94de-452c-ad7b-8277644099ae/5eccec1c-8d20-4188-9c5c-6966978423d0@1x")
+    s = build_sale("goldin", it["id"], it["url"], it["title"], price=it["price"],
+                   sale_date=it["sale_date"], sale_type=it["sale_type"], bids=it["bids"])
+    l2 = (s and s.driver_id == "antonelli" and s.is_rookie and s.set_name == "Topps Chrome"
+          and s.price_usd == 275)
+    for label, cond in [("_lot_to_item maps fields", bool(l1)),
+                        ("build_sale matches driver/RC/set", bool(l2))]:
         ok &= cond
         print(f"{'PASS' if cond else 'FAIL'}  [goldin] {label}")
     print("-"*60)
