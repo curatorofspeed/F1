@@ -491,6 +491,93 @@ def upsert(sales: list[Sale]):
     if r.status_code >= 300: print("   ", r.text[:400])
 
 
+# ----------------------------------------------------------------------------
+# WATCH-AND-CAPTURE — when a tracked live auction closes, record its final price.
+#   B: read the closed lot's item page.  A (fallback): re-query the keyword search.
+#   The live run logs which method won, so we learn what's actually reliable.
+# ----------------------------------------------------------------------------
+_FINAL_PRICE_KEYS = ("sold_price", "final_price", "realized_price", "hammer_price",
+                     "winning_bid", "current_price", "price")
+
+def _extract_price_from_html(h: str):
+    """Pure: pull a final price out of embedded JSON in the item page HTML."""
+    for key in _FINAL_PRICE_KEYS:
+        m = re.search(r'"%s"\s*:\s*"?([\d][\d,]*(?:\.\d+)?)' % key, h or "")
+        if m:
+            try: return float(m.group(1).replace(",", "")), f"item:{key}"
+            except Exception: pass
+    return None, None
+
+def _final_price_from_item(url: str):
+    """B: fetch the item page and extract the final price if it's embedded."""
+    try:
+        h = requests.get(url, headers={"User-Agent": UA}, timeout=20).text
+    except Exception:
+        return None, None
+    return _extract_price_from_html(h)
+
+def _final_price_from_search(driver_id: str, slug: str):
+    """A: re-query the keyword search and match the closed lot by slug (final bid)."""
+    d = next((x for x in DRIVERS if x["id"] == driver_id), None)
+    if not d: return None, None
+    ad = GoldinAdapter()
+    body = {"search": {"queryType": "Featured", "keyword": d["aliases"][0],
+                       "size": 80, "from": 0, "hasAnalyticsConsent": False}}
+    try:
+        r = requests.post(ad.LOTS_API, json=body, timeout=20,
+                          headers={"User-Agent": UA, "Content-Type": "application/json",
+                                   "Origin": ad.base, "Referer": ad.base + "/"})
+        lots = ((r.json() or {}).get("searchalgolia") or {}).get("lots") or []
+    except Exception:
+        return None, None
+    for lot in lots:
+        if lot.get("meta_slug") == slug and lot.get("current_price") is not None:
+            try: return float(lot["current_price"]), "search"
+            except Exception: return None, None
+    return None, None
+
+def finalize_closed():
+    """Find live_auction rows whose end date has passed; record their final price.
+    Preserves status (never un-approves), drops the live flag, tags for review."""
+    url = os.environ.get("SUPABASE_URL"); key = os.environ.get("SUPABASE_SERVICE_KEY")
+    if not (url and key): return
+    headers = {"apikey": key, "Authorization": f"Bearer {key}"}
+    today = dt.date.today().isoformat()
+    sel = "source_item_id,url,driver_id,price_usd,flags,sale_date"
+    q = (f"{url}/rest/v1/f1_sales?flags=cs.%7Blive_auction%7D"
+         f"&sale_date=lt.{today}&select={sel}")
+    try:
+        rows = requests.get(q, headers=headers, timeout=30).json()
+    except Exception as e:
+        print(f"  [finalize] read error: {str(e)[:80]}"); return
+    if not isinstance(rows, list) or not rows:
+        print("  [finalize] no closed live auctions yet"); return
+    print(f"  [finalize] {len(rows)} closed auctions to finalize")
+    b = a = miss = 0
+    for row in rows:
+        slug = row["source_item_id"]
+        itemurl = row.get("url") or f"https://goldin.co/item/{slug}"
+        price, method = _final_price_from_item(itemurl)                       # B
+        if price is None:
+            price, method = _final_price_from_search(row.get("driver_id"), slug)  # A
+        if price is None:
+            miss += 1; continue
+        flags = [f for f in (row.get("flags") or []) if f != "live_auction"]
+        flags += ["closing_price_verify", f"finalized:{method}"]
+        patch = {"price_usd": round(price), "price_original": price,
+                 "flags": flags, "sale_type": "auction"}
+        try:
+            requests.patch(
+                f"{url}/rest/v1/f1_sales?source=eq.goldin&source_item_id=eq.{slug}",
+                headers={**headers, "Content-Type": "application/json", "Prefer": "return=minimal"},
+                data=json.dumps(patch), timeout=20)
+        except Exception:
+            pass
+        a += 1 if method == "search" else 0
+        b += 1 if method != "search" else 0
+    print(f"  [finalize] item-page(B): {b}, search(A): {a}, unresolved: {miss}")
+
+
 def run(dry: bool, ignore_robots: bool):
     all_sales: list[Sale] = []
     for ad in ADAPTERS:
@@ -511,6 +598,7 @@ def run(dry: bool, ignore_robots: bool):
             print(f"  ${s.price_usd or 0:>8,.0f}  {s.driver_id or '?':12} {s.grade:7} {s.title[:48]}")
     else:
         upsert(clean)
+        finalize_closed()
 
 
 # ----------------------------------------------------------------------------
@@ -611,6 +699,15 @@ def selftest():
                         ("build_sale matches driver/RC/set", bool(l2))]:
         ok &= cond
         print(f"{'PASS' if cond else 'FAIL'}  [goldin] {label}")
+    # watch-and-capture: final-price extraction from embedded item-page JSON
+    wp, wm = _extract_price_from_html('{"lot":{"status":"Sold","sold_price":79300,"current_price":74000}}')
+    w1 = (wp == 79300.0 and wm == "item:sold_price")   # prefers sold_price over current_price
+    wp2, _ = _extract_price_from_html("<html>no price embedded</html>")
+    w2 = (wp2 is None)
+    for label, cond in [("final-price prefers sold_price", w1),
+                        ("final-price None when absent", w2)]:
+        ok &= cond
+        print(f"{'PASS' if cond else 'FAIL'}  [watch] {label}")
     print("-"*60)
     print("ALL PASS" if ok else "FAILURES ABOVE")
     return 0 if ok else 1
