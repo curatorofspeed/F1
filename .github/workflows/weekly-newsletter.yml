@@ -1,20 +1,19 @@
 name: Weekly newsletter
 
-# Reliable Friday trigger. Use this OR the vercel.json cron — not both, or you'll
-# send twice (the once-per-week DB lock will actually stop the double send, but
-# still: pick one). GitHub Actions gives precise timing and a manual "Run" button.
+# Reliable Friday trigger. Use this OR the vercel.json cron — not both.
+# GitHub Actions gives precise timing and a manual "Run workflow" button.
 
 on:
   schedule:
-    - cron: '0 14 * * 5'      # Fridays 14:00 UTC ≈ 7:00am PT (PDT). See SETUP.md re: DST.
-  workflow_dispatch: {}        # lets you trigger a send by hand from the Actions tab
+    - cron: '0 14 * * 5'      # Fridays 14:00 UTC ≈ 7:00am PT (PDT)
+  workflow_dispatch: {}        # manual "Run workflow" button in the Actions tab
 
 jobs:
   send:
     runs-on: ubuntu-latest
     steps:
-     - name: Trigger newsletter send
-        run:
+      - name: Trigger newsletter send
+        run: |
           curl -fsS -L --location-trusted -X POST \
             "https://f1cardindex.com/api/send-newsletter?test=DREW.LARRIGAN@gmail.com" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
