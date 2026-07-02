@@ -90,6 +90,45 @@
   .ns-none{padding:14px 13px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
   .badge{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);color:var(--teal);padding:3px 9px;border-radius:20px;letter-spacing:1px}
 
+  /* live sales ticker */
+  .ticker{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden;font-family:'JetBrains Mono',monospace;margin-bottom:14px}
+  .tk-live{display:flex;align-items:center;gap:7px;padding:0 13px;font-size:11px;font-weight:700;letter-spacing:1.6px;color:var(--up);background:var(--panel2);border-right:1px solid var(--line);flex:0 0 auto;position:relative;z-index:2}
+  .tk-live .dot{width:7px;height:7px;border-radius:50%;background:var(--up);animation:tkpulse 2.2s ease-out infinite}
+  @keyframes tkpulse{0%{box-shadow:0 0 0 0 rgba(57,224,138,.55)}70%{box-shadow:0 0 0 8px rgba(57,224,138,0)}100%{box-shadow:0 0 0 0 rgba(57,224,138,0)}}
+  .tk-view{overflow:hidden;flex:1 1 auto}
+  .tk-track{display:inline-flex;white-space:nowrap;animation:tkscroll 60s linear infinite;will-change:transform}
+  .ticker:hover .tk-track{animation-play-state:paused}
+  @keyframes tkscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .tk-item{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;font-size:12px;border-right:1px solid var(--line);cursor:pointer}
+  .tk-item:hover .tk-nm{color:var(--gold)}
+  .tk-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .tk-nm{font-weight:700;color:var(--txt);letter-spacing:.4px;transition:color .14s}
+  .tk-cd{color:var(--muted)}
+  .tk-pr{color:var(--gold);font-weight:700}
+  .tk-item.tk-rec .tk-pr{color:var(--gold)}
+  .tk-item.tk-rec .tk-nm::after{content:'';}
+
+  /* wordmark + index-scale snapshot */
+  .head-main{display:flex;justify-content:space-between;align-items:flex-end;gap:22px;flex-wrap:wrap}
+  .head-id{min-width:0;flex:1 1 auto}
+  .head-snap{display:flex;gap:9px;flex:0 0 auto;padding-bottom:3px}
+  .snap{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 15px;text-align:right;min-width:120px}
+  .snap-v{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:21px;color:var(--txt);line-height:1}
+  .snap-l{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-top:5px}
+
+  /* quick-jump chips */
+  .quickchips{display:flex;flex-wrap:wrap;gap:7px;max-width:460px;margin:11px auto 0}
+  .qchip{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 11px 5px 9px;cursor:pointer;transition:.14s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.3px}
+  .qchip:hover{color:var(--txt);border-color:var(--teal-dim)}
+  .qchip .qd{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+  @media(max-width:560px){
+    .head-snap{width:100%;justify-content:space-between;gap:7px}
+    .snap{flex:1;min-width:0;padding:8px 11px}
+    .snap-v{font-size:18px}
+    .tk-item{padding:8px 12px}
+  }
+  @media(prefers-reduced-motion:reduce){.tk-track{animation:none}.tk-live .dot{animation:none}}
+
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
   .dtiles{grid-template-columns:repeat(2,1fr)}
   .tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
@@ -556,11 +595,23 @@
 <body>
 <div class="wrap">
   <header>
+    <div class="ticker" id="ticker" aria-label="Recent verified sales">
+      <span class="tk-live"><i class="dot"></i>LIVE</span>
+      <div class="tk-view"><div class="tk-track" id="tkTrack"></div></div>
+    </div>
     <div class="stripe"><i></i><i></i><i></i><i></i><i></i></div>
-    <h1 id="homeTitle">F1 <span class="red">Card Index</span></h1>
-    <div class="tagline">
-      The live market index for Formula 1 cards — what's ending, what just sold, what's next
-      <span class="badge" id="updatedBadge">2026 Season</span>
+    <div class="head-main">
+      <div class="head-id">
+        <h1 id="homeTitle">F1 <span class="red">Card Index</span></h1>
+        <div class="tagline">
+          The live market index for Formula 1 cards — what's ending, what just sold, what's next
+          <span class="badge" id="updatedBadge">2026 Season</span>
+        </div>
+      </div>
+      <div class="head-snap" id="headSnap">
+        <div class="snap"><div class="snap-v" id="snapVol">—</div><div class="snap-l">Market volume tracked</div></div>
+        <div class="snap"><div class="snap-v" id="snapCount">—</div><div class="snap-l">Verified sales on file</div></div>
+      </div>
     </div>
     <div class="navsearch">
       <span class="ns-mag" aria-hidden="true">&#9906;</span>
@@ -568,6 +619,7 @@
       <button class="ns-clear" id="navClear" aria-label="Clear search">&times;</button>
       <div class="ns-results" id="navResults" role="listbox"></div>
     </div>
+    <div class="quickchips" id="quickChips" aria-label="Jump to top drivers"></div>
   </header>
 
   <!-- ===== INDEX VIEW ===== -->
@@ -1259,6 +1311,7 @@ function renderIndex(){
   $('homeEccellenza').href=homeProductLink('Topps Eccellenza Formula 1');
   $('homeNow').href=homeProductLink('Topps NOW Formula 1');
   renderTrending();
+  renderHeaderExtras();
   renderHomeSales();
   renderGlobalTop();
   renderDriverLeaderboard();
@@ -1438,6 +1491,52 @@ function mostRecentResult(){
   const done=RACES.filter(r=>rr[r.id]).map(r=>({r,d:new Date(r.date)})).filter(x=>x.d<=today).sort((a,b)=>b.d-a.d);
   if(!done.length)return null;
   return {race:done[0].r,res:rr[done[0].r.id]};
+}
+function renderHeaderExtras(){
+  // Live ticker — most recent verified sales, scrolling like an exchange tape
+  const tk=$('tkTrack');
+  if(tk){
+    const recent=(state.feed||[]).filter(f=>f.price>0).slice()
+      .sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,14);
+    const item=f=>{
+      const d=getDriver(f.driver);
+      const col=d?d.color:'var(--muted)';
+      const nm=esc((d?lastName(d.name):(f.driver||'—')).toUpperCase());
+      const card=esc((f.card||'').replace(/^\d{4}\s+/,'').slice(0,32));
+      const rec=f.record?' \u2605':'';
+      return '<span class="tk-item'+(f.record?' tk-rec':'')+'"'+(d?' onclick="showDriver(\''+d.id+'\')"':'')+'>'
+        +'<span class="tk-dot" style="background:'+col+'"></span>'
+        +'<span class="tk-nm">'+nm+'</span>'
+        +'<span class="tk-cd">'+card+'</span>'
+        +'<span class="tk-pr">'+money(f.price)+rec+'</span></span>';
+    };
+    if(recent.length){
+      const seq=recent.map(item).join('');
+      tk.innerHTML=seq+seq; // duplicate track for a seamless loop
+      tk.style.animationDuration=Math.max(34,recent.length*4.6)+'s';
+    }else{tk.innerHTML='';}
+  }
+  // Index-scale snapshot — total logged volume and distinct sale count
+  // (dedupe across boards + feed so shared record sales aren't counted twice)
+  const seen={};let vol=0,cnt=0;
+  const tally=(driver,card,price)=>{
+    if(!(price>0))return;
+    const k=(driver||'')+'|'+(card||'')+'|'+price;
+    if(seen[k])return;seen[k]=1;vol+=price;cnt++;
+  };
+  gtAll().forEach(x=>tally(x.d.id,x.s.card,x.s.price));
+  (state.feed||[]).forEach(f=>tally(f.driver,f.card,f.price));
+  const sv=$('snapVol'),sc=$('snapCount');
+  if(sv)sv.textContent=vol>=1e6?('$'+(vol/1e6).toFixed(1)+'M'):money(vol);
+  if(sc)sc.textContent=cnt.toLocaleString('en-US');
+  // Quick-jump chips — top drivers by record sale
+  const qc=$('quickChips');
+  if(qc){
+    const top=state.drivers.map(d=>({d,top:Math.max(0,...(d.top10||[]).map(s=>s.price||0))}))
+      .filter(x=>x.top>0).sort((a,b)=>b.top-a.top).slice(0,6);
+    qc.innerHTML=top.map(x=>'<span class="qchip" onclick="showDriver(\''+x.d.id+'\')">'
+      +'<span class="qd" style="background:'+x.d.color+'"></span>'+esc(lastName(x.d.name))+'</span>').join('');
+  }
 }
 function renderTrending(){
   const box=$('trendingStrip');if(!box)return;
