@@ -1,0 +1,58 @@
+<!-- ============================================================================
+     GIVEAWAY BANNER — paste this whole block into index.html where you want it
+     (e.g. right after the hero, or just above the newsletter signup section).
+     Self-contained: its own styles + script, unique gv- IDs, no dependencies.
+     Uses the same enter_giveaway() RPC as the standalone page.
+     ============================================================================ -->
+<section id="gvBanner" style="max-width:940px;margin:28px auto;padding:0 16px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <div style="background:linear-gradient(120deg,#fffdf8,#f4ecda);border:1px solid #e6ddcb;border-radius:16px;padding:22px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;box-shadow:0 14px 40px -22px rgba(120,80,20,.4);">
+    <div id="gvCard" style="flex:0 0 auto;"></div>
+    <div style="flex:1;min-width:240px;">
+      <div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#9a6b1f;font-weight:600;">◆ Free Giveaway</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.01em;color:#191510;margin:7px 0 4px;line-height:1.15;">Win a Kimi Antonelli Rookie Card</div>
+      <div style="font-size:14px;color:#6f6555;line-height:1.5;margin-bottom:14px;">Free to enter — one email, one entry. Winner drawn <span id="gvDate"></span>. Entering also gets you the weekly newsletter.</div>
+      <div id="gvForm" style="display:flex;gap:8px;flex-wrap:wrap;max-width:460px;">
+        <input id="gvEmail" type="email" placeholder="you@email.com" autocomplete="email" style="flex:1;min-width:180px;background:#fff;border:1px solid #e6ddcb;border-radius:10px;color:#191510;font-size:15px;padding:12px 14px;">
+        <button id="gvEnter" style="background:#9a6b1f;color:#fff;font-weight:700;font-size:15px;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;white-space:nowrap;">Enter to win</button>
+      </div>
+      <div id="gvMsg" style="font-size:13px;min-height:16px;margin-top:9px;"></div>
+      <div style="font-size:11px;color:#9a8f79;margin-top:8px;line-height:1.6;">No purchase necessary. US, 18+. <a id="gvRules" href="/giveaway-rules.html" style="color:#9a6b1f;">Official Rules</a>.</div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var SUPABASE_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
+  var SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
+  var END_DATE='2026-08-01T23:59:59';   // ← match the standalone page
+  var CARD_IMAGE='https://xvpvvzvmozusfvyebvyq.supabase.co/storage/v1/object/sign/photos/anotnelliRC.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yZjk2YTUxMy03OGUzLTRhODktOWMwZS1mYWE1NzIyMTlmNjMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwaG90b3MvYW5vdG5lbGxpUkMucG5nIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4MzAzNDkyNiwiZXhwIjoxODE0NTcwOTI2fQ.FYT5ug6-c1pGmqQSTxvWHWMKdr4yAm-QALXDqRDjJ3Q';  // your card photo
+  var g=function(id){return document.getElementById(id);};
+  g('gvDate').textContent=new Date(END_DATE).toLocaleDateString('en-US',{month:'long',day:'numeric'});
+  g('gvCard').innerHTML = CARD_IMAGE
+    ? '<img src="'+CARD_IMAGE+'" alt="Antonelli rookie card" style="width:84px;border-radius:9px;box-shadow:0 10px 24px -8px rgba(120,80,20,.5);transform:rotate(-4deg);">'
+    : '';
+  var busy=false;
+  function enter(){
+    var email=(g('gvEmail').value||'').trim(), msg=g('gvMsg');
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.style.color='#b23b3b'; msg.textContent='Enter a valid email.'; return; }
+    if(busy) return; busy=true;
+    var btn=g('gvEnter'), orig=btn.textContent; btn.disabled=true; btn.textContent='Entering…'; msg.textContent='';
+    fetch(SUPABASE_URL+'/rest/v1/rpc/enter_giveaway',{
+      method:'POST',
+      headers:{apikey:SUPABASE_ANON,Authorization:'Bearer '+SUPABASE_ANON,'Content-Type':'application/json',Accept:'application/json'},
+      body:JSON.stringify({entry_email:email})
+    }).then(function(r){return r.text().then(function(t){return {ok:r.ok,t:t};});})
+      .then(function(res){
+        busy=false;
+        if(!res.ok){ msg.style.color='#b23b3b'; msg.textContent='Something went wrong — try again.'; btn.disabled=false; btn.textContent=orig; return; }
+        var s=res.t.replace(/"/g,'');
+        g('gvForm').style.display='none';
+        msg.style.color='#2f7d4f';
+        msg.textContent = (s==='already_entered') ? "🏁 You're already entered — good luck!" : "🏁 You're in! Good luck — check your inbox for the weekly.";
+      }).catch(function(){ busy=false; msg.style.color='#b23b3b'; msg.textContent='Network hiccup — try again.'; btn.disabled=false; btn.textContent=orig; });
+  }
+  g('gvEnter').addEventListener('click',enter);
+  g('gvEmail').addEventListener('keydown',function(e){ if(e.key==='Enter') enter(); });
+})();
+</script>
+<!-- ===== END GIVEAWAY BANNER ===== -->
