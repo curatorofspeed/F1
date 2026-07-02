@@ -13,7 +13,9 @@ jobs:
   send:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger newsletter send
+- name: Trigger newsletter send
         run: |
-          curl -fsS -X POST "https://f1cardindex.com/api/send-newsletter" \
+          curl -fsS -L --location-trusted -X POST \
+            "https://f1cardindex.com/api/send-newsletter?test=DREW.LARRIGAN@gmail.com" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+ 
