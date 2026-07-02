@@ -90,6 +90,16 @@
   .ns-none{padding:14px 13px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
   .badge{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);color:var(--teal);padding:3px 9px;border-radius:20px;letter-spacing:1px}
 
+  /* next-race circuit map */
+  .tile-next{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .tile-next .nx-info{min-width:0}
+  .nx-circuit{width:72px;height:72px;flex:0 0 auto;overflow:visible}
+  .nx-circuit path{fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.92;
+    stroke-dasharray:1;stroke-dashoffset:0;animation:nxdraw 1.4s ease-out both}
+  @keyframes nxdraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+  @media(max-width:560px){.nx-circuit{width:58px;height:58px}}
+  @media(prefers-reduced-motion:reduce){.nx-circuit path{animation:none;stroke-dasharray:none}}
+
   /* live sales ticker */
   .ticker{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden;font-family:'JetBrains Mono',monospace;margin-bottom:14px}
   .tk-live{display:flex;align-items:center;gap:7px;padding:0 13px;font-size:11px;font-weight:700;letter-spacing:1.6px;color:var(--up);background:var(--panel2);border-right:1px solid var(--line);flex:0 0 auto;position:relative;z-index:2}
@@ -286,6 +296,29 @@
   .amz-btn:hover .az{color:var(--teal)}
   .amz-num{min-width:36px;justify-content:center;padding:8px 0;font-family:'JetBrains Mono',monospace}
   .rbadge-inline{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;padding:2px 7px;border-radius:6px;border:1px solid;flex:0 0 auto;white-space:nowrap}
+  /* set checklist cards */
+  .setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .setcard{display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;text-decoration:none;transition:.15s}
+  .setcard:hover{border-color:var(--gold);transform:translateY(-2px)}
+  .sc-yr{font-family:'JetBrains Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--gold)}
+  .sc-nm{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;color:var(--txt);line-height:1.1}
+  .sc-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
+  /* weekly-report signup */
+  .signup{background:linear-gradient(100deg,rgba(217,184,120,.12),var(--panel));border:1px solid rgba(217,184,120,.4);border-radius:14px;padding:17px 19px;margin:8px 0 6px}
+  .signup-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold)}
+  .signup-h{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:22px;text-transform:uppercase;letter-spacing:.5px;margin:5px 0 3px;color:var(--txt)}
+  .signup-s{font-size:13px;color:var(--muted);margin:0 0 13px;max-width:60ch}
+  .signup-form{display:flex;gap:8px;flex-wrap:wrap;position:relative}
+  .signup-form input[type=email]{flex:1 1 220px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px 14px;color:var(--txt);font-family:'Sora',sans-serif;font-size:14.5px}
+  .signup-form input[type=email]:focus{outline:none;border-color:var(--gold)}
+  .signup-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+  .signup-form button{flex:0 0 auto;background:var(--gold);color:#0c0d0e;font-weight:700;font-size:14px;border:none;border-radius:9px;padding:11px 22px;cursor:pointer;transition:.14s;font-family:'Sora',sans-serif}
+  .signup-form button:hover{filter:brightness(1.06)}
+  .signup-form button:disabled{opacity:.6;cursor:default}
+  .signup-msg{font-size:13px;margin-top:10px}
+  .signup-msg.ok{color:var(--up)}
+  .signup-msg.err{color:#ff6b6b}
+  .signup.done .signup-form{display:none}
   .community{display:flex;align-items:center;gap:14px;background:linear-gradient(100deg,rgba(88,101,242,.14),var(--panel));border:1px solid rgba(88,101,242,.42);border-radius:14px;padding:15px 18px;margin:8px 0 6px;text-decoration:none;color:var(--txt);transition:.15s}
   .community:hover{transform:translateY(-2px);border-color:#5865F2;box-shadow:0 6px 24px rgba(88,101,242,.18)}
   .community:active{transform:scale(.99)}
@@ -627,7 +660,7 @@
     <div class="trending" id="trendingStrip"></div>
     <div class="tiles">
       <div class="tile"><div class="lab">Drivers Tracked</div><div class="val" id="iDrivers">0</div><div class="vsub">F1 · F2/F3 · legends</div></div>
-      <div class="tile" id="iNextTile" style="cursor:pointer"><div class="lab">🏁 Next Race</div><div class="val" id="iNext" style="font-size:21px">—</div><div class="vsub" id="iNextSub">&nbsp;</div></div>
+      <div class="tile tile-next" id="iNextTile" style="cursor:pointer"><div class="nx-info"><div class="lab">🏁 Next Race</div><div class="val" id="iNext" style="font-size:21px">—</div><div class="vsub" id="iNextSub">&nbsp;</div></div><svg class="nx-circuit" id="iNextCircuit" viewBox="0 0 100 100" aria-hidden="true"></svg></div>
       <div class="tile gold" id="iTopTile" style="display:none"><div class="lab">Top Verified Sale</div><div class="val" id="iTop">—</div><div class="vsub" id="iTopSub">&nbsp;</div></div>
       <div class="tile"><div class="lab">2026 Calendar</div><div class="val" id="iRaces">22</div><div class="vsub">Grand Prix weekends</div></div>
     </div>
@@ -721,6 +754,20 @@
     </div>
     <div class="drivers" id="driversBox"></div>
 
+    <div class="signup" id="signupCard">
+      <div class="signup-head">
+        <span class="signup-eyebrow">📩 The Weekly Index</span>
+        <h2 class="signup-h">Get the F1 card market in your inbox</h2>
+        <p class="signup-s">Record sales, biggest movers, and the race-week watchlist — one email every Friday. Free.</p>
+      </div>
+      <div class="signup-form" id="signupForm">
+        <input id="signupEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Email address">
+        <input id="signupHp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="signup-hp">
+        <button id="signupBtn" type="button">Subscribe</button>
+      </div>
+      <div class="signup-msg" id="signupMsg" role="status"></div>
+    </div>
+
     <a class="community" href="https://discord.gg/DX2mrhtqY8" target="_blank" rel="noopener">
       <span class="community-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg></span>
       <span class="community-txt">
@@ -729,6 +776,10 @@
       </span>
       <span class="community-go">Join &rarr;</span>
     </a>
+
+    <div class="sec-h" style="margin-top:10px"><h2>📋 Set Checklists</h2><a class="sub" href="/sets" style="color:var(--gold)">All checklists →</a></div>
+    <div class="mff-note" id="setsNote">Base sets, full parallel ladders with print runs, inserts &amp; autographs — Topps Chrome, Sapphire &amp; Dynasty.</div>
+    <div class="setgrid" id="homeSets" style="margin-bottom:16px"></div>
 
     <div class="sec-h" style="margin-top:10px"><h2>🛒 Collector Gear</h2><span class="sub">Amazon · affiliate</span></div>
     <div id="homeGear" style="margin-bottom:8px"></div>
@@ -804,6 +855,7 @@
 
   <div class="foot">
     <nav class="foot-links" aria-label="Site pages">
+      <a href="/sets">Set Checklists</a>
       <a href="/f1-card-price-guide">Price Guide</a>
       <a href="/topps-chrome-f1-guide">Topps Chrome Guide</a>
       <a href="/kimi-antonelli-rookie-card-guide">Antonelli RC Guide</a>
@@ -1297,7 +1349,11 @@ function renderIndex(){
     $('iNext').textContent=nr.race.short;
     $('iNextSub').textContent=nr.days<=2?'🔴 this weekend':'in '+nr.days+' day'+(nr.days===1?'':'s');
     $('iNextTile').onclick=()=>showRacePage(nr.race.id);
-  }else{$('iNext').textContent='—';$('iNextSub').textContent='season complete';}
+    const cir=$('iNextCircuit');
+    if(cir){const cp=(typeof CIRCUITS!=='undefined')&&CIRCUITS[nr.race.id];
+      if(cp){cir.innerHTML='<path pathLength="1" d="'+cp+'"/>';cir.style.display='';}
+      else{cir.innerHTML='';cir.style.display='none';}}
+  }else{$('iNext').textContent='—';$('iNextSub').textContent='season complete';const cir=$('iNextCircuit');if(cir){cir.innerHTML='';cir.style.display='none';}}
   // Top verified sale — only count real comps (conf high/medium), label honestly
   let top=null;
   cards.forEach(x=>{if(last(x.c)>0&&(top===null||last(x.c)>top.price))top={price:last(x.c),name:x.d.name,parallel:x.c.parallel};});
@@ -1312,6 +1368,7 @@ function renderIndex(){
   $('homeNow').href=homeProductLink('Topps NOW Formula 1');
   renderTrending();
   renderHeaderExtras();
+  renderHomeSets();
   renderHomeSales();
   renderGlobalTop();
   renderDriverLeaderboard();
@@ -1351,6 +1408,456 @@ function homeSoldLink(){return wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+
 function homeProductLink(q){return wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent(q)+'&LH_Auction=1&_sop=1');}
 
 /* ============================= RACES ============================= */
+/* ============================================================================
+   F1 Card Index — SETS checklist data
+   Factual set data (card numbers, driver names, parallel names + print runs,
+   insert names, box config) compiled from Topps official checklists, Beckett,
+   and checklist databases. Facts only; restructured, not copied.
+   Base card enumeration lists the driver portion (the most-searched part);
+   the full 200-card base also includes cars/winners/legends/duos/logos subsets
+   as noted per set.
+   ============================================================================ */
+/* ============================================================================
+   F1 Card Index — SETS checklist data
+   Factual set data (card numbers, driver names, parallel names + print runs,
+   insert names, box config) compiled from Topps official checklists, Beckett,
+   and checklist databases. Facts only; restructured, not copied.
+   Base card enumeration lists the driver portion (the most-searched part);
+   the full 200-card base also includes cars/winners/legends/duos/logos subsets
+   as noted per set.
+   ============================================================================ */
+const SETS = {
+
+  '2025-topps-chrome-f1': {
+    year: 2025, brand: 'Topps Chrome', line: 'Formula 1', tier: 'Flagship',
+    name: '2025 Topps Chrome Formula 1',
+    released: 'January 2026', baseSize: 200,
+    blurb: "The flagship F1 Chrome release for the 2025 season — a 200-card base set with a 30-plus parallel rainbow, F1's 75th-anniversary Diamond packs, and the first-ever Chrome on-card autograph (Lewis Hamilton).",
+    config: 'Hobby: 8 cards/pack, plus one 75th Anniversary Diamond pack per box. Value blaster and LogoFractor editions released separately.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'F3 Drivers', 'F1 Cars', 'Grand Prix Winners', 'Pole Position', 'Driver of the Day', 'F1 Award Winners', 'F1 Legends', 'F1 Duo Cards', 'F1 Team Logo Cards', 'F1 On The Move', 'F1 Team Principals'],
+    baseNote: 'The first 72 base cards feature F1, F2 and F3 drivers plus F1 cars; the remainder is filled by the subsets above.',
+    baseDrivers: [
+      [1, 'Max Verstappen', 'Red Bull'], [2, 'Yuki Tsunoda', 'Red Bull'], [3, 'Charles Leclerc', 'Ferrari'], [4, 'Lewis Hamilton', 'Ferrari'], [5, 'Lando Norris', 'McLaren'],
+      [6, 'Oscar Piastri', 'McLaren'], [7, 'George Russell', 'Mercedes'], [8, 'Kimi Antonelli', 'Mercedes', 'RC'], [9, 'Fernando Alonso', 'Aston Martin'], [10, 'Lance Stroll', 'Aston Martin'],
+      [11, 'Liam Lawson', 'Racing Bulls', 'RC'], [12, 'Isack Hadjar', 'Racing Bulls', 'RC'], [13, 'Esteban Ocon', 'Haas'], [14, 'Oliver Bearman', 'Haas', 'RC'], [15, 'Franco Colapinto', 'Alpine'],
+      [16, 'Pierre Gasly', 'Alpine'], [17, 'Alex Albon', 'Williams'], [18, 'Carlos Sainz', 'Williams'], [19, 'Nico Hulkenberg', 'Kick Sauber'], [20, 'Gabriel Bortoleto', 'Kick Sauber', 'RC']
+    ],
+    parallels: [
+      ['Refractor', null, '1:5 Hobby'], ['B&W RayWave Refractor', null, 'Value'], ['B&W Lazer Refractor', null, '1:7 Hobby'], ['Checker Flag Refractor', null, '1:20 Hobby'],
+      ['Teal Refractor', 299, '1:49 Hobby'], ['Pink Refractor', 250, '1:58 Hobby'], ['Pink Checker Flag Refractor', 250, '1:31 Hobby'],
+      ['Aqua Refractor', 199, '1:73 Hobby'], ['Aqua Checker Flag Refractor', 199, '1:39 Hobby'],
+      ['Blue Refractor', 150, '1:97 Hobby'], ['Blue RayWave Refractor', 150, 'Value'], ['Blue Checker Flag Refractor', 150, '1:52 Hobby'],
+      ['Green Refractor', 99, '1:146 Hobby'], ['Green RayWave Refractor', 99, 'Value'], ['Green Checker Flag Refractor', 99, '1:78 Hobby'],
+      ['F1 75th Anniversary Refractor', 75, '1:103 Hobby · Hobby-only'], ['Gold Refractor', 50, '1:289 Hobby'], ['Gold RayWave Refractor', 50, 'Value'], ['Gold Checker Flag Refractor', 50, '1:155 Hobby'],
+      ['Orange Refractor', 25, '1:577 Hobby'], ['Black Refractor', 10, null], ['Red Refractor', 5, null], ['SuperFractor', 1, '1:23,234 Hobby'], ['Printing Plates', 1, '4 plates per card']
+    ],
+    autos: [
+      ['Chrome Autographs', '66-card set, ~1:77 Hobby, 11 parallels (to SuperFractor 1/1)'],
+      ['On-Card Chrome Autographs', 'Lewis Hamilton only — the first Chrome on-card F1 auto; Hobby-only, Red /5 & SuperFractor 1/1'],
+      ['Circuit Masters Signatures', 'F1 legends, ~1:836 Hobby'],
+      ['1975 Speed Wheel Signatures', '~1:4,985 Hobby'],
+      ['Futuro Autographs', '~1:4,315 Hobby'],
+      ['F1 Debut Patch Autographs', '1/1 helmet patch — Gabriel Bortoleto & Isack Hadjar']
+    ],
+    inserts: [
+      ['1975 Speed Wheels', 'common'], ['Ace of Trades', 'common'], ['F1 Chrome Diamond Drives', 'common'], ['Floor It', 'common'], ['Helmet Collection', 'common'], ['Speed Demons', 'common'],
+      ['Helix', 'chase'], ['Futuro', 'chase'], ['Ultrasonic', 'chase'], ['The Grid', 'chase'], ['Vegas at Night', 'SP'], ['The Chain', 'SP'], ['Neon Nations', 'SP'],
+      ['Diamond Anniversary Relics', '1/1 — real diamond embedded; one per base driver']
+    ],
+    keyCards: ['Kimi Antonelli RC (#8)', 'Lewis Hamilton Ferrari-era first Chrome on-card auto', 'Gabriel Bortoleto RC (#20)', 'Isack Hadjar & Liam Lawson RCs']
+  },
+
+  '2025-topps-chrome-sapphire-f1': {
+    year: 2025, brand: 'Topps Chrome', line: 'Sapphire Edition', tier: 'Premium parallel set',
+    name: '2025 Topps Chrome Sapphire Formula 1',
+    released: 'February 12, 2026', baseSize: 200,
+    blurb: "The Sapphire treatment of the 2025 Chrome base — the same 200-card lineup in Sapphire's signature blue cracked-ice finish, with Sapphire-only parallels, exclusive Infinite Sapphire and Sapphire Selections inserts, and the largest rookie lineup in an F1 Topps release.",
+    config: 'Hobby: 4 cards/pack, 8 packs/box, 10 boxes/case. Every box guarantees a combined four parallels or short prints.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'F3 Drivers', 'F1 Cars', 'F1 Duos', 'F1 Team Logo Cards', 'F1 Legends'],
+    baseNote: 'Mirrors the 200-card 2025 Chrome base set in Sapphire blue.',
+    baseDrivers: [
+      [1, 'Max Verstappen', 'Red Bull'], [2, 'Yuki Tsunoda', 'Red Bull'], [3, 'Charles Leclerc', 'Ferrari'], [4, 'Lewis Hamilton', 'Ferrari'], [5, 'Lando Norris', 'McLaren'],
+      [6, 'Oscar Piastri', 'McLaren'], [7, 'George Russell', 'Mercedes'], [8, 'Kimi Antonelli', 'Mercedes', 'RC'], [9, 'Fernando Alonso', 'Aston Martin'], [10, 'Lance Stroll', 'Aston Martin'],
+      [11, 'Liam Lawson', 'Racing Bulls', 'RC'], [12, 'Isack Hadjar', 'Racing Bulls', 'RC'], [13, 'Esteban Ocon', 'Haas'], [14, 'Oliver Bearman', 'Haas', 'RC'], [15, 'Franco Colapinto', 'Alpine'],
+      [16, 'Pierre Gasly', 'Alpine'], [17, 'Alex Albon', 'Williams'], [18, 'Carlos Sainz', 'Williams'], [19, 'Nico Hulkenberg', 'Kick Sauber'], [20, 'Gabriel Bortoleto', 'Kick Sauber', 'RC']
+    ],
+    parallels: [
+      ['Base Sapphire', null, '1 per pack'], ['Yellow Sapphire', 75, '1:6'], ['Gold Sapphire', 50, '1:9'], ['Orange Sapphire', 25, '1:17'],
+      ['B&W Sapphire', 15, '1:21'], ['Black Sapphire', 10, '1:42'], ['Red Sapphire', 5, '1:84'], ['Padparadscha Sapphire', 1, '1:419']
+    ],
+    autos: [
+      ['Sapphire Autographs', '~1:26 packs — parallels: Orange /25, Black /10, Red /5, Padparadscha 1/1']
+    ],
+    inserts: [
+      ['Infinite Sapphire', 'Sapphire-exclusive insert, 1/1 SuperFractor parallel'],
+      ['Sapphire Selections', 'Sapphire-exclusive insert, 1/1 SuperFractor parallel'],
+      ['Helmet Collection', 'Sapphire version'], ['Speed Demons', 'Sapphire version'], ['Floor It', 'Sapphire version'], ['1975 Speed Wheels', 'Sapphire version'], ['Ace of Trades', 'Sapphire version']
+    ],
+    keyCards: ['Kimi Antonelli RC (#8)', 'Padparadscha Sapphire 1/1 of any base card', 'Largest rookie lineup in an F1 Topps release']
+  },
+
+  '2024-topps-chrome-f1': {
+    year: 2024, brand: 'Topps Chrome', line: 'Formula 1', tier: 'Flagship',
+    name: '2024 Topps Chrome Formula 1',
+    released: 'November 22, 2024', baseSize: 200,
+    blurb: "The inaugural-era Chrome F1 flagship for the 2024 season — a 200-card base with nearly 30 parallels, deep inserts, and the debut Chrome rookie cards of Andrea Kimi Antonelli (#22) and others.",
+    config: 'Hobby: 8 cards/pack, 12 packs/box, 12 boxes/case. Also Qualifying Lap and Value blaster boxes with their own exclusives.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'F3 Drivers', 'F1 Cars', 'Grand Prix Winners'],
+    baseNote: 'F1 drivers lead the checklist, followed by F2/F3 up-and-comers, race cars, and winners.',
+    baseDrivers: [
+      [1, 'Max Verstappen', 'Red Bull'], [2, 'Sergio Perez', 'Red Bull'], [3, 'Charles Leclerc', 'Ferrari'], [4, 'Carlos Sainz', 'Ferrari'], [5, 'George Russell', 'Mercedes'],
+      [6, 'Lewis Hamilton', 'Mercedes'], [7, 'Lando Norris', 'McLaren'], [8, 'Oscar Piastri', 'McLaren'], [9, 'Esteban Ocon', 'Alpine'], [10, 'Pierre Gasly', 'Alpine'],
+      [11, 'Fernando Alonso', 'Aston Martin'], [12, 'Lance Stroll', 'Aston Martin'], [13, 'Valtteri Bottas', 'Kick Sauber'], [14, 'Zhou Guanyu', 'Kick Sauber'], [15, 'Nico Hulkenberg', 'Haas'],
+      [16, 'Kevin Magnussen', 'Haas'], [17, 'Yuki Tsunoda', 'RB'], [18, 'Daniel Ricciardo', 'RB'], [19, 'Alexander Albon', 'Williams'], [20, 'Logan Sargeant', 'Williams'],
+      [22, 'Andrea Kimi Antonelli', 'F2', 'RC'], [28, 'Gabriel Bortoleto', 'F2'], [41, 'Isack Hadjar', 'F2']
+    ],
+    parallels: [
+      ['Refractor', null, '1:3 Hobby'], ['Checker Flag Refractor', null, '1 per box'], ['Purple/Green Refractor', null, '1:6 Hobby'], ['Gold/Purple Refractor', null, '1:24 Hobby'],
+      ['Orange/Red Refractor', null, '1:36 Hobby'], ['Red/Green Refractor', null, '1:72 Hobby'], ['Mini-Diamond Refractor', 299, null], ['Fuchsia Lava Refractor', 225, null],
+      ['Purple Checker Flag Refractor', 199, 'Hobby-only'], ['Aqua Sonar Refractor', 150, null], ['Green Refractor', 99, null], ['Pink Refractor', 75, null],
+      ['Gold Refractor', 50, null], ['Gold Checker Flag Refractor', 50, 'Hobby-only'], ['Orange Refractor', 25, null], ['Orange Checker Flag Refractor', 25, 'Hobby-only'],
+      ['Black Refractor', 10, null], ['Red Refractor', 5, null], ['Red Checker Flag Refractor', 5, 'Hobby-only'], ['SuperFractor', 1, null], ['Printing Plates', 1, '4 plates per card'],
+      ['Sepia Refractor', null, 'Value-exclusive']
+    ],
+    autos: [
+      ['Chrome Autographs', 'Orange /25, Black, Red /5, SuperFractor 1/1'],
+      ['1954 Topps Signatures', 'Orange /25, Red /5, SuperFractor 1/1'],
+      ['Circuit Masters Signatures', 'Orange /25, Red /5, SuperFractor 1/1'],
+      ['Futuro Autographs', '/50, Orange /25, Red /5, SuperFractor 1/1']
+    ],
+    inserts: [
+      ['1954 Topps', 'common'], ['Camber', 'common'], ['Helmet Collection', 'common · new'], ['Re-Charged', 'common · new'], ['Speed Demons', 'common'],
+      ['F1 Armour', '/50 · chase'], ['Futuro', 'chase'], ['Hidden Gems', 'chase'], ['Inside Trax', 'chase'], ['The Grid', 'chase · new'], ['Turn Up the Lights', 'chase'], ['Ultrasonic', 'chase']
+    ],
+    keyCards: ['Andrea Kimi Antonelli RC (#22)', 'Gabriel Bortoleto (#28)', 'Isack Hadjar (#41)', 'Any SuperFractor 1/1']
+  },
+
+  '2024-topps-chrome-sapphire-f1': {
+    year: 2024, brand: 'Topps Chrome', line: 'Sapphire Edition', tier: 'Premium parallel set',
+    name: '2024 Topps Chrome Sapphire Formula 1',
+    released: 'January 2025 (EQL raffle)', baseSize: 200,
+    blurb: "The 2024 Chrome base reimagined in Sapphire's blue cracked-ice finish — a compact, high-end box with four guaranteed parallels or short prints each, topped by the one-of-one Padparadscha Sapphire.",
+    config: 'Sapphire configuration — every box delivers four parallels or short prints. Released via EQL raffle at $279.99.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'F3 Drivers', 'F1 Cars'],
+    baseNote: 'Pulls the same 200-card lineup as 2024 Chrome F1, in Sapphire blue.',
+    baseDrivers: [
+      [1, 'Max Verstappen', 'Red Bull'], [2, 'Sergio Perez', 'Red Bull'], [3, 'Charles Leclerc', 'Ferrari'], [4, 'Carlos Sainz', 'Ferrari'], [5, 'George Russell', 'Mercedes'],
+      [6, 'Lewis Hamilton', 'Mercedes'], [7, 'Lando Norris', 'McLaren'], [8, 'Oscar Piastri', 'McLaren'], [22, 'Andrea Kimi Antonelli', 'F2', 'RC']
+    ],
+    parallels: [
+      ['Base Sapphire', null, '1 per pack'], ['Aqua Sapphire', 99, null], ['Gold Sapphire', 50, null], ['Orange Sapphire', 25, null],
+      ['B&W Image Sapphire', 15, null], ['Purple Sapphire', 10, null], ['Red Sapphire', 5, null], ['Padparadscha Sapphire', 1, null]
+    ],
+    autos: [
+      ['Sapphire Autographs', 'Padparadscha Sapphire 1/1 parallel']
+    ],
+    inserts: [
+      ['Camber', 'Sapphire version'], ['Helmet Collection', 'Sapphire version'], ['Speed Demons', 'Sapphire version']
+    ],
+    keyCards: ['Andrea Kimi Antonelli RC (#22)', 'Padparadscha Sapphire 1/1 of any base card']
+  },
+
+  '2024-topps-dynasty-f1': {
+    year: 2024, brand: 'Topps Dynasty', line: 'Formula 1', tier: 'Ultra high-end',
+    name: '2024 Topps Dynasty Formula 1',
+    released: '2025', baseSize: null,
+    blurb: "The ultra high-end, all-autograph F1 product — one encased premium autograph relic per box, every card numbered to 10 or less. Jumbo multi-color patches, race-worn suit and glove swatches, and 1/1 chases from F1's biggest stars, team principals, and legends including Mika Häkkinen and Michael Schumacher.",
+    config: 'One Premium Relic Autograph card per box, encased. Every card numbered /10 or less.',
+    subsets: ['Dynasty Autograph Patch', 'Relic Autographs', 'Legendary Patch Autographs', 'Constructor Team Relics', 'Book Cards'],
+    baseNote: 'Not a base-set product — every card is an on-card autograph memorabilia hit. Card tiers and parallels below.',
+    baseDrivers: [],
+    parallels: [
+      ['Dynasty Autograph Patch', 10, 'base tier — jumbo patch + on-card auto'],
+      ['— Red Patch', 5, '~1:21 packs'], ['— Black Patch', 2, '~1:22 packs'], ['— Gold Patch', 1, '~1:42 packs'],
+      ['Dual / Triple Relic Autographs', 10, 'Red /5, Black /2, Gold 1/1'],
+      ['Jumbo Relic Autographs', 10, null],
+      ['Legendary Patch Autographs', 10, 'Mika Häkkinen race-worn; Logo 1/1'],
+      ['Autograph Racing Glove', 10, 'Jumbo variation 1/1'], ['Autograph Suit Zipper', 10, 'Jumbo variation 1/1'],
+      ['Autograph Flags', 2, 'Jumbo Patch variation 1/1'], ['Autograph Suit Nameplate', 2, '1/1 variation'],
+      ['Constructor Team Dual Relic Autographs', 10, 'Red /5, Gold 1/1'],
+      ['Autograph Relic Books', 5, null], ['Dual Autographed Relic Books', 5, null], ['Cut Autograph Relic Booklet Nameplates', 1, 'Michael Schumacher cut signatures']
+    ],
+    autos: [
+      ['Signers include', 'Max Verstappen, Lewis Hamilton, Lando Norris, Oscar Piastri, plus team principals and legends Mika Häkkinen & Michael Schumacher (cut)']
+    ],
+    inserts: [],
+    keyCards: ['Any Gold 1/1 patch auto', 'Mika Häkkinen Legendary Patch Auto', 'Michael Schumacher cut-signature booklet 1/1']
+  },
+
+'2025-topps-dynasty-f1': {
+    year: 2025, brand: 'Topps Dynasty', line: 'Formula 1', tier: 'Ultra high-end',
+    name: '2025 Topps Dynasty Formula 1',
+    released: 'November 19, 2025', baseSize: null,
+    blurb: "The 2025 ultra high-end, all-autograph release — one encased on-card auto relic per box, every card /10 or less. New for the 75th anniversary: Legendary 75 Patch Autos, the first-ever Topps cut signature of Ayrton Senna, plus Liquid Silver/Gold, Diamond Relic Autos, and the brand's first inscription cards (Hamilton, Hadjar, Stella).",
+    config: 'One encased autograph relic per box. Every card /10 or less. Initial release via EQL raffle at $1,199.99.',
+    subsets: ['Patch Autographs', 'Single/Dual/Triple Relic Autos', 'Legendary 75 Patch Autos', 'Constructor Team Relics', 'Cut Signature Booklets'],
+    baseNote: 'All-autograph product — card tiers and parallels below.',
+    baseDrivers: [],
+    parallels: [
+      ['Patch Autographs', 10, '~1:13 packs · oversized swatch + hard-signed auto'],
+      ['— Red', 5, '~1:14'], ['— Black', 2, '~1:34'], ['— Gold', 1, '~1:59'],
+      ['Flags / Racing Gloves / Suit Zippers', 5, null], ['Suit Nameplates', 2, null],
+      ['Single-Driver Dual Relic Autographs', 10, 'two patches + auto'],
+      ['Triple Relic Autographs', 10, null],
+      ['Constructor Team Dual Relic Autographs', 10, 'teammate pairs'],
+      ['Legendary 75 Patch Autographs', 10, "die-cut '75' race-used relic window"],
+      ['Jumbo Relic / Jumbo Flag Relic Autos', 10, 'Constructor Logo 1/1 parallel'],
+      ['Legends Precious Relics', 10, null], ['Diamond Relic Autographs', 1, 'real embedded diamond'],
+      ['Cut Signature Booklets', 1, 'first-ever Topps Ayrton Senna cut signature; also Michael Schumacher'],
+      ['Liquid Silver / Liquid Gold', 1, 'SSP inserts, Liquid Gold 1/1']
+    ],
+    autos: [['First inscriptions', 'Andrea Stella, Isack Hadjar, Lewis Hamilton — the brand\'s first inscription cards']],
+    inserts: [],
+    keyCards: ['Ayrton Senna first-ever Topps cut signature', 'Legendary 75 Patch Autos', 'Diamond Relic Auto 1/1']
+  },
+
+  '2023-topps-chrome-f1': {
+    year: 2023, brand: 'Topps Chrome', line: 'Formula 1', tier: 'Flagship',
+    name: '2023 Topps Chrome Formula 1',
+    released: 'March 2024', baseSize: 200,
+    blurb: "Year four of Chrome F1 — a 200-card base with a 20-plus parallel rainbow, and for the first time a set of F1 Legends bookending the checklist, including Ayrton Senna and Michael Schumacher.",
+    config: 'Hobby and Hobby LITE. Autographs average about one per three hobby boxes.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Crew', 'Cars', 'Grand Prix Winners', 'Driver of the Day', 'Award Winners', 'F1 Legends'],
+    baseNote: 'F1 racer cards mixed with subsets; five F1 Legends (Senna, Schumacher and others) bookend the 200-card set.',
+    baseDrivers: [],
+    parallels: [
+      ['Refractor', null, null], ['Checker Flag Refractor', null, null], ['Purple Refractor', 399, null], ['Purple Checker Flag Refractor', 199, null],
+      ['Pink Refractor', 75, null], ['Green Refractor', 99, null], ['Gold Refractor', 50, null], ['Gold Wave Refractor', 50, null], ['Gold Checker Flag Refractor', 50, 'Hobby'],
+      ['Orange Refractor', 25, null], ['Orange Wave Refractor', 25, null], ['Orange Checker Flag Refractor', 25, null],
+      ['Red Refractor', 5, null], ['Red Wave Refractor', 5, null], ['Red Checker Flag Refractor', 5, 'Hobby'],
+      ['SuperFractor', 1, null], ['Printing Plates', 1, '4 plates per card'], ['B&W RayWave / RayWave parallels', null, 'Hobby LITE exclusives']
+    ],
+    autos: [['Chrome Autographs', '60+ signers, ~1:57 packs — Green /99, Gold /50, Orange /25, Red /5, SuperFractor 1/1']],
+    inserts: [
+      ['Camber', '~1:3'], ['Autos of 1977', '~1:6'], ['Speed Demons', '~1:6'],
+      ["Constructor's Crest", '/199 base, ~1:336'], ['Art du Grand Prix', '~1:721'],
+      ['Celebrations Variations', '10 cards'], ['Image Variations', '10 cards']
+    ],
+    keyCards: ['Ayrton Senna & Michael Schumacher Legends — first F1 Legends in Chrome', 'Any SuperFractor 1/1']
+  },
+
+  '2023-topps-chrome-sapphire-f1': {
+    year: 2023, brand: 'Topps Chrome', line: 'Sapphire Edition', tier: 'Premium parallel set',
+    name: '2023 Topps Chrome Sapphire Formula 1',
+    released: 'February 2024', baseSize: 200,
+    blurb: "The 2023 Chrome base in Sapphire's blue cracked-ice finish — a simplified, sharply reduced-quantity checklist with seven parallels (all /99 and under), image variations of legends including Senna and Schumacher, and Sapphire Selections with autograph versions.",
+    config: 'Hobby: 4 cards/pack, 8 packs/box — four total parallels or variations per box.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Cars', 'F1 Legends'],
+    baseNote: 'Same 200 cards as 2023 Chrome F1, with blue borders and shard background.',
+    baseDrivers: [],
+    parallels: [
+      ['Base Sapphire', null, null], ['Parallels', 99, 'seven versions, all /99 and under, down to Padparadscha 1/1'], ['Padparadscha Sapphire', 1, null]
+    ],
+    autos: [['Sapphire Selections Autographs', '/5 — auto versions of the 10-card Sapphire Selections insert']],
+    inserts: [
+      ['Image Variations', '10 cards /99 — incl. Senna & Schumacher'],
+      ['Sapphire Selections', '10 cards, ~1:114 packs']
+    ],
+    keyCards: ['Ayrton Senna & Michael Schumacher image variations /99', 'Padparadscha Sapphire 1/1']
+  },
+
+  '2023-topps-dynasty-f1': {
+    year: 2023, brand: 'Topps Dynasty', line: 'Formula 1', tier: 'Ultra high-end',
+    name: '2023 Topps Dynasty Formula 1',
+    released: 'March 8, 2024', baseSize: null,
+    blurb: "One on-card autograph patch per box, every card encased and /10 or less. Led by current drivers and former legends including Nigel Mansell, with Flag, Glove, Suit Nameplate and Zipper swatch variations plus dual and triple relic autos.",
+    config: 'One card per box, 5 boxes per case. ~$1,150 per box. Every card /10 or less.',
+    subsets: ['Autographed Patch', 'Relic Autographs', 'Constructor Team Relics'],
+    baseNote: 'All-autograph product — card tiers and parallels below.',
+    baseDrivers: [],
+    parallels: [
+      ['Dynasty Autographed Patch', 10, 'base tier'], ['— Red', 5, null], ['— Black', 2, null], ['— Gold', 1, null],
+      ['Single-Driver Dual Relic Autographs', 10, null], ['Single-Driver Triple Relic Autographs', 10, null],
+      ['Constructor Team Dual Relic Autographs', 10, null],
+      ['Autograph Flag / Jumbo Flag Patch', 2, null], ['Autograph Glove / Nameplate / Zipper', 10, 'jumbo variations']
+    ],
+    autos: [['Signers include', 'Current F1 drivers, team principals, and legends including Nigel Mansell']],
+    inserts: [],
+    keyCards: ['Lewis Hamilton Patch Auto /10', 'Nigel Mansell legend auto', 'Any Gold 1/1']
+  },
+
+  '2022-topps-chrome-f1': {
+    year: 2022, brand: 'Topps Chrome', line: 'Formula 1', tier: 'Flagship',
+    name: '2022 Topps Chrome Formula 1',
+    released: 'December 2022', baseSize: 200,
+    blurb: "Year three — the base set grew to 200 cards (from 175) with roughly 26 parallels across Hobby and Hobby LITE, four all-new inserts, and Hobby-exclusive Chrome Autographs.",
+    config: 'Hobby and Hobby LITE (LITE skips autos, adds exclusive B&W RayWave refractors). ~26 parallels across formats.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Cars', 'Crew', 'Grand Prix Winners'],
+    baseNote: '200-card base covering F1 and F2 racers, crew, cars and race highlights.',
+    baseDrivers: [],
+    parallels: [
+      ['Refractor', null, null], ['Checker Flag Refractor', null, null], ['Purple Refractor', 399, null], ['Purple Checker Flag Refractor', 199, null],
+      ['Pink Refractor', 75, null], ['Green Refractor', 99, null], ['Gold Refractor', 50, null], ['Gold Wave Refractor', 50, null], ['Gold Checker Flag Refractor', 50, null],
+      ['Orange Refractor', 25, null], ['Orange Wave Refractor', 25, null], ['Orange Checker Flag Refractor', 25, null],
+      ['Red Refractor', 5, null], ['Red Wave Refractor', 5, null], ['Red Checker Flag Refractor', 5, 'Hobby'],
+      ['SuperFractor', 1, null], ['Printing Plates', 1, '4 plates per card'],
+      ['B&W RayWave Refractor', null, '~1:4 · LITE'], ['Pink RayWave', 75, 'LITE'], ['Red RayWave', 5, 'LITE'], ['Black RayWave', 1, 'LITE']
+    ],
+    autos: [['Chrome Autographs', '51 cards, ~1:63 packs, Hobby only — Green /99, Gold /50, Gold Wave /50, Orange /25, Red /5, SuperFractor 1/1']],
+    inserts: [
+      ['1968 Topps Hot Rods', '~1:3'], ['Constructors Coalition', '~1:6 · new'], ['Speed Demons', '~1:6 · new'], ['Art du Grand Prix', 'new · Automobilist artwork'], ['Image Variations', '~1:500 SP']
+    ],
+    keyCards: ['Any SuperFractor 1/1', 'Chrome Autographs of top drivers']
+  },
+
+  '2022-topps-chrome-sapphire-f1': {
+    year: 2022, brand: 'Topps Chrome', line: 'Sapphire Edition', tier: 'Premium parallel set',
+    name: '2022 Topps Chrome Sapphire Formula 1',
+    released: 'January 2023', baseSize: 200,
+    blurb: "The 2022 Chrome base in Sapphire blue — blue borders and a triangle-pattern background, with color parallels and 10 image variations, sold as a Topps website exclusive.",
+    config: 'Hobby: 4 cards/pack, 8 packs/box — four total parallels and variations per box. No autographs.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Cars', '2021 Season Moments'],
+    baseNote: 'Same 200 cards as 2022 Chrome F1, in Sapphire blue.',
+    baseDrivers: [],
+    parallels: [
+      ['Base Sapphire', null, null], ['Color parallels', null, 'multiple numbered tiers to Padparadscha 1/1'], ['Padparadscha Sapphire', 1, null]
+    ],
+    autos: [],
+    inserts: [['Image Variations', '10 cards']],
+    keyCards: ['Padparadscha Sapphire 1/1 of any base card']
+  },
+
+  '2022-topps-dynasty-f1': {
+    year: 2022, brand: 'Topps Dynasty', line: 'Formula 1', tier: 'Ultra high-end',
+    name: '2022 Topps Dynasty Formula 1',
+    released: 'March 1, 2023', baseSize: null,
+    blurb: "One encased on-card autograph patch per box, every card /10 or less. The Dynasty Autograph Patch line anchors it, with Red /5, Black /2 and Gold 1/1 parallels, plus dual and triple relic autos and constructor teammate pairs.",
+    config: 'One card per box, 5 boxes per case. Every card /10 or less.',
+    subsets: ['Autographed Patch', 'Relic Autographs', 'Constructor Team Relics'],
+    baseNote: 'All-autograph product — card tiers and parallels below.',
+    baseDrivers: [],
+    parallels: [
+      ['Dynasty Autograph Patch', 10, 'base tier'], ['— Red Patch', 5, null], ['— Black Patch', 2, null], ['— Gold Multi-Color', 1, null],
+      ['Single Driver Dual Relic Autographs', 10, 'Red /5, Black /2, Gold 1/1'], ['Single Driver Triple Relic Autographs', 10, null],
+      ['Constructor Team Dual Relic Autographs', 10, null],
+      ['Autograph Flag', 2, 'Jumbo 1/1'], ['Autograph Racing Glove', 10, 'Jumbo 1/1'], ['Autograph Suit Nameplate', 2, null], ['Autograph Suit Zipper', 10, null]
+    ],
+    autos: [['Signers include', 'F1 drivers and team principals across the 2022 grid']],
+    inserts: [],
+    keyCards: ['George Russell Patch Auto /10', 'Any Gold Multi-Color 1/1']
+  },
+
+  '2021-topps-chrome-f1': {
+    year: 2021, brand: 'Topps Chrome', line: 'Formula 1', tier: 'Flagship',
+    name: '2021 Topps Chrome Formula 1',
+    released: 'March 9, 2021', baseSize: 175,
+    blurb: "Year two — a 175-card base on the flagship design, introducing Checker Flag and RayWave parallels and the Hobby LITE format. Home to the debut F1 cards of Yuki Tsunoda, Mick Schumacher and Nikita Mazepin in the F1 Freshest subset.",
+    config: 'Hobby (18 packs), Hobby LITE (RayWave exclusives, no autos), and Value Box SE. Autographs Hobby-only, not guaranteed.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Cars', 'Crew', 'F1 Freshest'],
+    baseNote: 'F1 and F2 subjects plus cars and crew; rookies sit in the F1 Freshest subset (#173–175).',
+    baseDrivers: [
+      [1, 'Lewis Hamilton', 'Mercedes'], [2, 'Valtteri Bottas', 'Mercedes'], [3, 'Max Verstappen', 'Red Bull'], [4, 'Sergio Perez', 'Red Bull'],
+      [7, 'Sebastian Vettel', 'Aston Martin'], [9, 'Fernando Alonso', 'Alpine'], [15, 'Kimi Räikkönen', 'Alfa Romeo'],
+      [173, 'Yuki Tsunoda', 'AlphaTauri', 'RC'], [174, 'Mick Schumacher', 'Haas', 'RC'], [175, 'Nikita Mazepin', 'Haas', 'RC']
+    ],
+    parallels: [
+      ['Refractor', null, '1:3'], ['Checker Flag Refractor', null, '1 per box'], ['Purple/Green Refractor', null, '1:36'], ['Gold/Purple Refractor', null, '1:79'],
+      ['Orange/Red Refractor', null, '1:98'], ['Red/Green Refractor', null, '1:187'], ['Purple Refractor', 399, null], ['Purple Checker Flag Refractor', 199, null],
+      ['Green RayWave Refractor', 99, 'LITE'], ['Gold Refractor', 50, null], ['Gold Wave Refractor', 50, null], ['Gold Checker Flag Refractor', 50, 'Hobby'], ['Gold RayWave Refractor', 50, 'LITE'],
+      ['Orange Refractor', 25, null], ['Orange Wave Refractor', 25, null], ['Orange Checker Flag Refractor', 25, null],
+      ['Red Refractor', 5, null], ['Red Wave Refractor', 5, null], ['Red Checker Flag Refractor', 5, 'Hobby'], ['Red RayWave Refractor', 5, 'LITE'],
+      ['Black RayWave Refractor', 1, 'LITE'], ['SuperFractor', 1, null], ['Printing Plates', 1, '4 plates per card']
+    ],
+    autos: [['Chrome Autographs', 'Hobby only, on-sticker — Green /99, Gold /50, Gold Wave /50, Orange /25, Red /5, SuperFractor 1/1']],
+    inserts: [
+      ['Path to the Podium', '~1:6'], ['Redliners', '~1:6'], ['Topps 1961 Sports Cars', 'cars insert']
+    ],
+    keyCards: ['Yuki Tsunoda RC (#173)', 'Mick Schumacher RC (#174)', 'Verstappen championship-season base', 'Any SuperFractor 1/1']
+  },
+
+  '2021-topps-chrome-sapphire-f1': {
+    year: 2021, brand: 'Topps Chrome', line: 'Sapphire Edition', tier: 'Premium parallel set',
+    name: '2021 Topps Chrome Sapphire Formula 1',
+    released: 'May 6, 2022', baseSize: 175,
+    blurb: "The follow-up to the benchmark 2020 Sapphire — the 175-card 2021 base in blue cracked-ice, with a deep parallel run topped by Padparadscha 1/1 and short-print image variations. A smaller, tightly limited Topps-exclusive release.",
+    config: 'Hobby: 4 cards/pack, 8 packs/box — four parallels or variations per box. No autographs.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Cars', 'F1 Freshest'],
+    baseNote: 'Mirrors the 175-card 2021 Chrome base in Sapphire blue.',
+    baseDrivers: [
+      [1, 'Lewis Hamilton', 'Mercedes'], [2, 'Valtteri Bottas', 'Mercedes'], [3, 'Max Verstappen', 'Red Bull'], [4, 'Sergio Perez', 'Red Bull'],
+      [7, 'Sebastian Vettel', 'Aston Martin'], [9, 'Fernando Alonso', 'Alpine'], [15, 'Kimi Räikkönen', 'Alfa Romeo'],
+      [173, 'Yuki Tsunoda', 'AlphaTauri', 'RC'], [174, 'Mick Schumacher', 'Haas', 'RC'], [175, 'Nikita Mazepin', 'Haas', 'RC']
+    ],
+    parallels: [
+      ['Chartreuse Sapphire', 199, '~1:6'], ['Negative (Sepia) Sapphire', 100, null], ['Aqua Sapphire', 99, '~1:11'], ['Green Sapphire', 75, '~1:15'],
+      ['Gold Sapphire', 50, '~1:22'], ['Orange Sapphire', 25, '~1:43'], ['B&W Sapphire', 15, '~1:71'], ['Purple Sapphire', 10, '~1:106'],
+      ['Red Sapphire', 5, '~1:211'], ['Padparadscha Sapphire', 1, '~1:1,038']
+    ],
+    autos: [],
+    inserts: [['Image Variations', '10 drivers, ~1 per 6 boxes']],
+    keyCards: ['Yuki Tsunoda RC (#173)', 'Mick Schumacher RC (#174)', 'Padparadscha Sapphire 1/1']
+  },
+
+  '2021-topps-dynasty-f1': {
+    year: 2021, brand: 'Topps Dynasty', line: 'Formula 1', tier: 'Ultra high-end',
+    name: '2021 Topps Dynasty Formula 1',
+    released: '2021', baseSize: null,
+    blurb: "The debut of Dynasty in Formula 1 — the ultra high-end, all-autograph format arriving on the grid. One encased on-card auto patch per box, every card /10 or less, anchored by the Dynasty Autograph Patch line with dual-relic autos of top drivers.",
+    config: 'One encased autograph patch per box. Every card /10 or less.',
+    subsets: ['Autographed Patch', 'Dual Relic Autographs'],
+    baseNote: 'All-autograph product and the first Dynasty F1 release — card tiers below.',
+    baseDrivers: [],
+    parallels: [
+      ['Dynasty Autograph Patch', 10, 'base tier — on-card auto + patch'], ['— Red', 5, null], ['— Black', 2, null], ['— Gold', 1, null],
+      ['Single Driver Dual Relic Autographs', 10, null]
+    ],
+    autos: [['Signers include', 'Top F1 drivers across the 2021 grid (e.g. Lando Norris dual-patch autos)']],
+    inserts: [],
+    keyCards: ['First Dynasty F1 autographs', 'Lando Norris dual-patch auto /10', 'Any Gold 1/1']
+  },
+
+  '2020-topps-chrome-f1': {
+    year: 2020, brand: 'Topps Chrome', line: 'Formula 1', tier: 'Flagship · debut',
+    name: '2020 Topps Chrome Formula 1',
+    released: 'April 2021', baseSize: 200,
+    blurb: "The first-ever Topps Chrome Formula 1 product — the foundational set of the modern F1 card market, home to the George Russell, Lando Norris and Alexander Albon rookie cards and the SuperFractors that hold the sport's all-time price records (the Hamilton 1/1 famously sold for $900,000).",
+    config: 'Hobby: 4 cards/pack, 18 packs/box, 12 boxes/case — 10 parallels or short prints and 9 inserts per box. Autographs ~1 per 2 boxes.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Team Logos (#112–132)', 'Grand Prix Winners (#133–153)', 'Driver of the Day (#154–173)', 'Award Winners (#194–197)', 'F1 Freshest (#198–200)'],
+    baseNote: 'The 200-card debut base covers F1 and F2 drivers, team principals, crews and cars, with the George Russell "F1 Freshest" rookie a standout.',
+    baseDrivers: [
+      [1, 'Lewis Hamilton', 'Mercedes'], [2, 'Valtteri Bottas', 'Mercedes'], [3, 'Sebastian Vettel', 'Ferrari'], [4, 'Charles Leclerc', 'Ferrari'],
+      [5, 'Alexander Albon', 'Red Bull', 'RC'], [6, 'Max Verstappen', 'Red Bull'], [7, 'Lando Norris', 'McLaren', 'RC'],
+      [10, 'Esteban Ocon', 'Renault'], [11, 'Pierre Gasly', 'AlphaTauri'], [19, 'George Russell', 'Williams', 'RC']
+    ],
+    parallels: [
+      ['Refractor', null, null], ['Purple Refractor', 399, null], ['Gold Refractor', 50, null], ['Gold Wave Refractor', 50, null],
+      ['Orange Refractor', 25, null], ['Orange Wave Refractor', 25, null], ['Red Refractor', 5, null], ['Red Wave Refractor', 5, null],
+      ['SuperFractor', 1, null], ['Printing Plates', 1, '4 plates per card'],
+      ['70th Anniversary Gold', null, null], ['70th Anniversary Orange', null, null], ['70th Anniversary Red', null, null], ['70th Anniversary SuperFractor', 1, null],
+      ['Image Variations', null, 'SP — 10 drivers, posed vs. standing photo']
+    ],
+    autos: [['Chrome Autographs', '52 cards (F1A), ~1 per 2 boxes — Green /99, Gold /50, Gold Wave /50, Orange /25, Red /5, SuperFractor 1/1']],
+    inserts: [
+      ['1954 Topps World on Wheels', '35 cards, ~1:3'], ['Track Tags', '~1:6']
+    ],
+    keyCards: ['George Russell RC (#19)', 'Lando Norris RC (#7)', 'Alexander Albon RC (#5)', 'Lewis Hamilton SuperFractor 1/1 — $900K record', 'Max Verstappen SuperFractor 1/1']
+  },
+
+  '2020-topps-chrome-sapphire-f1': {
+    year: 2020, brand: 'Topps Chrome', line: 'Sapphire Edition', tier: 'Premium parallel set · debut',
+    name: '2020 Topps Chrome Sapphire Formula 1',
+    released: 'May 2021', baseSize: 200,
+    blurb: "The debut Sapphire F1 and the benchmark of the category — the entire 200-card 2020 base in Sapphire blue cracked-ice, a tiny Topps-exclusive print run whose Padparadscha 1/1s trade among the most valuable F1 cards in existence.",
+    config: 'Hobby: 4 cards/pack, 8 packs/box — four parallels or short prints per box. Topps website exclusive ($99.99). No inserts or autos.',
+    subsets: ['F1 Drivers', 'F2 Drivers', 'Team Logos', 'Grand Prix Winners', 'F1 Freshest'],
+    baseNote: 'The full 200-card 2020 Chrome base in Sapphire blue.',
+    baseDrivers: [
+      [1, 'Lewis Hamilton', 'Mercedes'], [2, 'Valtteri Bottas', 'Mercedes'], [3, 'Sebastian Vettel', 'Ferrari'], [4, 'Charles Leclerc', 'Ferrari'],
+      [5, 'Alexander Albon', 'Red Bull', 'RC'], [6, 'Max Verstappen', 'Red Bull'], [7, 'Lando Norris', 'McLaren', 'RC'],
+      [10, 'Esteban Ocon', 'Renault'], [11, 'Pierre Gasly', 'AlphaTauri'], [19, 'George Russell', 'Williams', 'RC']
+    ],
+    parallels: [
+      ['Base Sapphire', null, null], ['Aqua Sapphire', 99, null], ['70th Anniversary Sapphire', 70, null], ['Gold Sapphire', 50, null],
+      ['Orange Sapphire', 25, null], ['Purple Sapphire', 10, null], ['Red Sapphire', 5, null], ['Padparadscha Sapphire', 1, null],
+      ['Image Variations', null, 'SP, ~1:21 packs']
+    ],
+    autos: [],
+    inserts: [],
+    keyCards: ['George Russell RC (#19) Sapphire', 'Lando Norris RC (#7) Sapphire', 'Hamilton & Verstappen Padparadscha Sapphire 1/1 — record-tier cards']
+  }
+};
+/* Circuit outlines derived from OpenStreetMap via the bacinger/f1-circuits dataset (ODbL). Simplified for display. */
+const CIRCUITS={aus:'M43.0,69.5 L32.4,58.8 L33.3,55.1 L32.8,52.3 L22.2,40.6 L16.5,31.0 L17.3,30.0 L22.8,28.5 L22.8,18.8 L23.5,17.9 L29.8,13.5 L39.8,9.0 L43.9,11.5 L50.2,12.9 L53.1,15.6 L54.3,18.3 L55.7,28.1 L52.6,33.7 L51.0,43.0 L51.6,48.3 L53.2,52.0 L56.1,55.8 L61.0,60.1 L63.0,60.9 L68.9,61.4 L76.6,67.9 L79.4,72.4 L83.4,86.6 L72.9,91.0 L70.5,89.8 L65.6,81.5 L64.8,81.5 L61.2,85.3 L58.6,85.3 Z',chn:'M30.8,78.4 L22.1,80.1 L19.0,78.7 L17.6,77.1 L16.8,73.1 L18.3,70.0 L21.2,69.3 L22.8,70.2 L23.1,71.5 L22.3,74.8 L24.3,76.6 L26.2,75.9 L26.9,74.5 L27.4,70.3 L14.6,54.8 L9.0,39.1 L10.0,38.3 L11.2,38.5 L13.4,40.2 L17.1,44.6 L23.1,55.0 L25.1,57.1 L27.7,58.3 L30.6,58.6 L34.7,57.0 L37.0,54.7 L40.5,47.7 L43.6,45.8 L46.1,45.8 L48.0,46.8 L52.7,54.1 L55.0,53.9 L57.8,50.2 L57.9,48.2 L42.2,22.0 L40.9,21.9 L37.5,24.8 L35.8,23.9 L34.1,21.1 L34.2,17.8 L35.4,15.6 L37.5,14.4 L41.0,14.1 L44.8,15.6 L47.6,18.8 L90.7,84.0 L91.0,85.5 L89.7,85.9 L86.1,83.7 L74.6,68.3 Z',jpn:'M79.0,51.5 L90.5,65.6 L91.0,67.8 L90.2,70.5 L89.0,71.7 L87.6,71.9 L86.2,71.1 L81.4,64.1 L76.6,63.1 L74.2,57.4 L67.6,55.3 L66.6,52.4 L68.0,47.7 L67.2,45.9 L65.5,44.8 L61.6,43.5 L58.7,43.7 L55.0,45.9 L50.0,51.8 L43.4,52.4 L40.6,40.0 L42.3,34.4 L41.7,33.6 L40.7,33.8 L37.3,39.3 L35.3,41.0 L33.5,41.8 L29.1,42.0 L23.4,40.1 L20.6,38.1 L18.4,35.1 L15.4,28.6 L11.1,28.5 L9.2,30.0 L9.0,31.5 L10.0,33.3 L18.1,39.5 L43.8,49.1 L46.1,48.7 L50.0,46.8 L58.4,39.6 L60.4,40.8 L63.6,38.8 L66.7,39.0 L70.8,41.6 Z',mia:'M49.5,42.8 L60.9,50.3 L60.4,51.4 L57.3,54.0 L57.1,58.9 L54.3,61.8 L50.3,63.0 L46.1,62.7 L31.3,54.2 L28.7,54.1 L23.0,56.8 L20.4,56.0 L18.0,53.8 L15.4,52.9 L12.4,53.6 L10.2,55.0 L9.0,57.8 L9.3,59.9 L10.6,60.9 L14.6,60.6 L23.3,62.4 L38.1,61.9 L49.4,65.7 L56.3,66.3 L60.0,65.7 L75.3,60.1 L82.8,56.3 L86.3,53.6 L83.3,51.0 L82.7,48.9 L83.7,46.9 L88.3,46.5 L89.7,45.3 L91.0,43.0 L89.7,41.8 L90.7,37.6 L90.2,36.6 L19.8,33.7 L18.9,33.9 L19.1,35.5 L23.5,38.6 L26.1,38.8 L33.2,36.1 L38.1,36.2 Z',can:'M59.0,68.4 L61.2,79.1 L60.7,87.5 L63.3,89.4 L62.0,91.0 L58.4,90.3 L54.6,88.3 L50.1,84.3 L49.9,80.7 L43.2,73.1 L42.7,64.2 L39.5,63.8 L37.6,61.3 L36.7,53.2 L37.0,46.4 L39.1,36.5 L42.6,34.0 L44.6,26.5 L45.5,17.7 L44.5,9.1 L45.6,9.4 L46.1,13.6 L52.3,29.0 L58.3,57.8 L57.1,59.7 Z',mon:'M59.5,25.0 L60.5,21.6 L69.7,9.2 L72.0,9.8 L72.7,12.9 L75.8,17.5 L76.8,16.4 L74.0,13.1 L74.1,11.1 L78.9,9.3 L80.7,9.5 L80.7,16.1 L79.0,25.5 L76.3,31.1 L71.5,36.7 L60.3,42.5 L48.0,45.5 L46.7,47.5 L44.1,47.0 L26.1,49.6 L24.8,51.7 L23.3,55.9 L23.1,61.8 L25.8,65.0 L27.5,74.5 L25.9,76.2 L25.8,77.7 L29.2,84.7 L33.8,87.7 L34.5,89.2 L33.7,90.1 L28.0,90.9 L23.5,83.3 L20.3,72.2 L19.0,59.4 L20.6,48.5 L22.8,47.5 L30.5,46.5 L39.1,44.1 L43.8,43.4 L51.6,40.0 L60.2,38.3 L63.1,35.9 L64.1,32.3 L62.8,28.5 Z',esp:'M69.3,45.6 L42.7,87.3 L40.8,87.6 L37.4,85.7 L35.5,85.5 L28.7,89.9 L25.4,91.0 L21.8,90.5 L19.1,88.6 L16.7,84.2 L16.5,80.7 L17.3,77.2 L18.5,74.1 L28.4,58.7 L30.5,58.0 L32.8,58.7 L35.0,61.5 L35.3,64.2 L33.7,69.0 L27.4,78.9 L27.4,80.8 L28.5,82.1 L30.4,82.2 L41.5,77.0 L45.1,73.6 L49.2,66.8 L48.8,64.3 L45.4,61.9 L44.1,60.0 L39.0,48.0 L38.9,45.0 L40.0,42.5 L41.7,40.9 L73.5,24.2 L73.3,21.6 L72.0,20.6 L69.0,19.7 L66.3,20.0 L60.6,23.6 L58.4,23.5 L56.6,22.4 L55.8,20.8 L55.9,18.1 L57.1,16.5 L65.0,10.0 L69.0,9.0 L70.8,9.6 L80.7,15.9 L83.0,18.5 L83.3,23.1 Z',aut:'M63.7,70.5 L43.0,75.9 L31.3,58.6 L21.2,39.0 L9.3,26.4 L9.0,25.2 L14.2,24.3 L21.5,24.2 L47.2,28.3 L60.5,29.2 L61.3,30.6 L60.9,32.2 L58.7,35.1 L55.0,37.7 L50.0,38.9 L36.9,37.1 L34.4,37.7 L32.5,39.3 L31.6,41.6 L32.1,44.8 L37.1,53.6 L39.3,55.4 L42.4,55.6 L44.0,55.0 L49.0,49.9 L54.5,47.9 L83.2,47.2 L86.8,48.5 L88.3,51.0 L90.9,59.6 L90.6,61.4 L84.6,64.6 Z',gbr:'M54.7,9.8 L65.2,9.1 L67.2,10.0 L68.7,12.4 L71.0,22.2 L71.6,33.7 L73.7,38.1 L71.9,45.5 L74.2,49.7 L74.5,51.8 L73.4,54.0 L68.5,57.3 L51.1,88.2 L49.3,90.3 L46.5,90.9 L43.9,89.7 L41.0,84.4 L33.1,75.1 L32.2,74.9 L29.8,76.6 L28.3,75.8 L26.2,73.0 L25.5,70.0 L41.0,49.7 L49.6,50.2 L52.0,49.7 L61.4,43.1 L62.4,44.0 L63.9,48.6 L65.0,49.0 L66.0,48.2 L67.4,44.1 L67.4,40.2 L44.7,19.4 L42.2,18.4 L40.1,19.1 L38.7,24.7 L37.4,25.7 L35.5,25.6 L34.0,23.9 L34.1,22.4 L37.5,15.6 L41.6,11.8 L44.1,10.8 Z',bel:'M40.0,17.7 L35.5,9.8 L36.0,9.0 L41.6,11.6 L46.7,15.4 L54.9,25.0 L58.4,27.6 L60.0,32.9 L66.9,44.8 L75.3,74.2 L72.9,77.5 L73.8,81.8 L73.2,83.7 L62.6,91.0 L60.8,90.4 L60.5,88.2 L65.4,84.7 L66.2,82.6 L63.9,75.5 L62.0,64.8 L59.3,62.3 L55.1,62.1 L52.6,63.2 L50.7,65.9 L45.7,77.8 L43.1,79.0 L40.2,77.7 L38.0,77.9 L32.3,85.8 L30.1,85.9 L25.9,82.9 L24.9,81.2 L24.8,79.0 L27.8,72.9 L33.3,67.6 L43.6,61.5 L48.4,52.3 L48.5,49.4 L45.2,41.0 L44.3,35.7 L44.0,29.9 L46.1,29.6 L46.4,29.0 Z',hun:'M31.8,70.8 L14.3,56.9 L13.8,55.0 L15.8,53.7 L23.9,54.7 L28.5,57.1 L39.6,65.9 L41.9,66.5 L43.8,65.6 L44.9,62.6 L41.3,55.9 L41.1,53.5 L51.3,32.4 L55.9,25.7 L52.9,13.8 L53.2,11.4 L55.6,9.1 L59.2,9.7 L63.4,12.7 L70.6,20.3 L70.9,21.9 L69.6,24.2 L72.6,34.3 L73.9,35.2 L80.2,36.4 L81.7,37.9 L82.0,39.9 L80.9,50.6 L85.7,59.2 L86.0,63.0 L68.6,82.8 L67.2,82.6 L58.2,73.7 L56.3,73.0 L54.8,73.5 L53.7,75.2 L54.1,77.3 L62.4,84.3 L63.0,85.8 L62.4,89.2 L59.9,90.9 L57.8,90.9 L55.8,89.8 Z',ned:'M19.0,47.0 L31.7,16.6 L34.7,15.1 L37.5,16.8 L37.9,19.1 L33.1,31.9 L32.6,39.9 L30.5,41.9 L23.6,45.0 L23.2,47.3 L24.5,49.3 L27.1,49.6 L34.9,47.2 L41.6,46.4 L54.7,48.5 L59.1,47.4 L67.7,42.7 L74.6,41.8 L83.4,42.4 L87.4,43.8 L90.4,47.6 L91.0,50.9 L90.3,54.3 L83.7,64.2 L80.3,71.6 L76.7,72.4 L72.5,71.9 L67.6,69.9 L65.1,68.1 L63.2,65.3 L64.5,62.8 L65.8,61.9 L74.6,59.8 L79.3,57.5 L80.1,54.5 L79.5,53.0 L76.9,51.1 L63.7,50.3 L56.7,51.2 L43.1,55.3 L34.9,59.3 L34.1,59.2 L31.4,55.9 L28.5,56.5 L27.4,58.6 L30.9,79.3 L30.6,81.8 L28.2,84.5 L19.4,84.9 L15.7,84.0 L12.1,81.7 L9.9,78.4 L9.0,74.5 L9.8,69.4 Z',ita:'M27.8,61.1 L29.8,38.1 L31.5,37.1 L30.4,32.2 L30.8,25.5 L33.3,19.8 L36.0,17.4 L40.8,15.4 L57.5,14.0 L58.4,12.4 L69.2,9.1 L72.0,9.7 L72.9,11.5 L73.5,21.4 L60.2,29.1 L41.5,45.6 L41.4,49.1 L38.9,52.8 L35.1,88.6 L34.4,89.9 L32.2,91.0 L29.8,90.3 L27.8,88.3 L26.6,85.3 L26.3,75.4 Z',mad:'M56.8,86.5 L48.3,88.0 L47.5,90.5 L44.6,91.0 L41.5,90.2 L30.3,73.2 L28.6,69.6 L27.5,66.0 L27.3,60.8 L27.6,58.4 L29.6,53.9 L28.8,53.2 L29.4,51.7 L28.7,48.6 L24.6,38.8 L26.4,35.8 L24.7,32.3 L24.5,26.7 L24.7,24.8 L28.4,20.9 L26.3,13.5 L27.0,10.9 L29.2,9.2 L32.2,9.1 L35.2,11.2 L36.1,12.7 L36.3,16.0 L35.7,17.7 L27.2,29.9 L27.4,30.7 L33.5,36.1 L34.0,43.0 L35.3,45.3 L38.6,47.4 L44.7,47.4 L47.4,46.1 L52.6,54.4 L54.5,55.2 L59.8,54.7 L61.6,55.4 L63.3,57.6 L65.7,70.8 L68.1,69.9 L72.8,69.8 L75.4,81.2 L74.8,83.3 Z',aze:'M84.4,35.4 L90.4,32.8 L91.0,31.8 L85.9,20.3 L85.3,20.0 L54.7,33.1 L54.1,34.5 L56.9,42.0 L45.5,48.5 L45.9,50.9 L34.1,60.4 L33.1,59.8 L30.9,53.4 L27.0,52.3 L25.7,50.0 L21.8,51.1 L12.0,56.6 L9.0,65.2 L9.8,74.1 L17.6,78.5 L22.2,79.8 L26.4,73.2 L33.3,66.7 L34.9,60.7 L44.6,53.1 Z',sgp:'M89.2,43.7 L91.0,57.7 L87.6,63.0 L72.0,61.6 L70.9,60.7 L70.3,57.6 L42.4,55.6 L32.3,47.4 L31.0,47.4 L30.0,48.1 L29.0,51.3 L24.2,75.6 L22.4,76.6 L20.3,73.6 L14.7,68.4 L14.6,64.3 L11.7,63.0 L9.2,60.6 L9.0,58.7 L19.8,39.4 L22.1,38.1 L30.6,45.3 L36.8,34.9 L55.4,45.1 L77.9,46.6 L79.8,46.0 L81.2,44.4 L81.2,41.1 L77.8,29.9 L78.1,25.4 L79.3,23.5 L80.5,23.6 L83.7,26.3 L86.2,26.5 L87.2,27.3 Z',usa:'M25.4,64.9 L32.9,70.8 L37.6,73.5 L38.0,72.6 L35.5,65.2 L35.9,62.6 L37.2,60.7 L44.6,56.0 L47.2,51.6 L50.4,49.9 L51.6,45.8 L53.1,44.0 L56.6,42.7 L62.3,45.0 L67.9,40.5 L69.7,41.0 L71.4,42.9 L79.9,41.0 L90.3,28.5 L90.9,26.9 L90.0,26.5 L75.7,30.8 L61.9,33.9 L38.7,36.9 L38.4,37.5 L42.4,42.7 L43.7,45.5 L42.9,46.1 L40.0,46.0 L36.3,41.0 L33.7,40.9 L33.6,41.7 L37.8,49.0 L37.8,50.3 L36.5,53.6 L33.0,55.3 L30.3,55.3 L27.2,53.8 L21.9,46.6 L20.9,46.1 L9.8,50.6 L9.0,51.6 L9.6,52.3 Z',mex:'M24.0,21.6 L69.9,27.5 L88.8,30.8 L88.5,35.6 L91.0,37.4 L90.2,42.2 L81.6,57.8 L72.8,71.7 L72.8,72.7 L75.8,74.7 L75.7,75.5 L70.6,79.3 L68.6,78.9 L70.5,60.9 L65.6,56.8 L63.3,52.8 L61.6,51.9 L53.2,50.5 L50.4,45.1 L41.9,40.6 L20.2,37.1 L18.7,27.1 L17.8,27.0 L15.7,29.0 L9.2,27.4 L9.2,25.7 L10.3,23.5 L13.5,20.8 L15.8,20.4 Z',bra:'M29.1,67.9 L34.2,87.5 L36.4,90.7 L38.9,90.8 L42.7,87.3 L44.1,87.0 L50.5,89.8 L55.7,89.5 L60.0,87.1 L62.7,83.4 L75.7,34.9 L75.1,31.8 L73.2,30.7 L65.6,29.4 L62.0,30.0 L59.9,31.2 L56.5,34.9 L42.4,54.2 L39.8,55.9 L35.6,55.8 L31.6,53.6 L30.2,50.8 L28.9,44.1 L28.9,41.5 L30.0,39.8 L31.7,39.7 L36.6,42.2 L39.0,41.0 L39.8,39.3 L39.7,37.6 L38.6,35.8 L33.4,30.0 L31.9,23.7 L32.7,21.7 L34.8,21.7 L41.7,29.0 L45.1,29.9 L48.7,29.3 L51.9,26.7 L59.3,14.8 L59.0,12.7 L57.2,11.5 L49.8,9.0 L42.5,10.3 L34.7,13.8 L30.1,18.4 L27.2,28.3 L24.1,44.4 L24.5,48.5 Z',lvg:'M70.5,81.8 L73.6,78.1 L72.9,76.3 L69.7,76.1 L66.0,79.0 L64.0,79.3 L61.4,77.9 L59.9,75.3 L59.6,39.3 L60.3,38.5 L69.9,38.6 L72.9,36.6 L74.6,31.9 L74.5,31.2 L72.7,30.5 L72.2,29.3 L73.8,24.7 L71.4,24.0 L55.3,23.1 L52.2,20.7 L48.8,13.1 L47.5,11.7 L44.7,10.2 L39.6,9.1 L29.8,28.0 L27.1,38.0 L26.1,47.5 L25.4,88.0 L31.2,90.9 L56.7,90.9 L63.8,89.2 Z',qat:'M27.5,58.6 L15.5,36.8 L15.4,34.5 L16.5,32.9 L18.7,32.1 L28.4,37.5 L31.6,37.4 L33.2,35.4 L33.1,26.9 L33.9,24.2 L46.8,9.9 L49.5,9.0 L51.3,9.7 L54.9,13.2 L55.5,15.8 L54.7,17.5 L46.8,26.2 L46.4,27.5 L47.0,28.6 L48.9,28.9 L63.5,23.0 L66.5,23.5 L67.8,26.1 L67.0,28.6 L62.4,34.2 L60.0,40.8 L50.6,43.6 L49.4,44.5 L49.1,47.1 L53.7,51.5 L60.9,54.2 L78.7,53.1 L81.8,55.6 L84.5,60.7 L84.7,62.4 L79.8,71.1 L78.5,72.0 L76.5,72.2 L63.0,69.5 L60.2,70.3 L50.2,89.4 L47.4,91.0 L44.6,89.7 Z',abu:'M49.5,54.9 L60.9,53.4 L62.0,52.7 L62.4,51.4 L59.6,41.5 L53.2,38.5 L51.0,35.5 L52.5,24.3 L50.8,10.5 L49.0,9.0 L47.5,10.3 L30.8,62.8 L33.7,62.8 L36.0,69.5 L37.8,72.5 L52.0,84.3 L65.4,91.0 L68.0,90.3 L69.2,87.8 L68.7,85.6 L67.1,84.0 L55.8,82.7 L50.2,79.0 L48.9,73.1 L54.1,71.6 L54.5,67.0 L53.9,66.1 L51.4,65.7 L42.3,67.0 L39.4,65.8 L36.0,59.8 L36.1,57.0 Z'};
 const RACES=[
   {id:'aus',r:1,name:'Australian Grand Prix',short:'Australia',circuit:'Albert Park',city:'Melbourne',country:'Australia',flag:'🇦🇺',date:'2026-03-08',range:'Mar 6–8',sprint:false,watch:['antonelli','verstappen','hamilton','norris','leclerc']},
   {id:'chn',r:2,name:'Chinese Grand Prix',short:'China',circuit:'Shanghai International',city:'Shanghai',country:'China',flag:'🇨🇳',date:'2026-03-15',range:'Mar 13–15',sprint:true,watch:['antonelli','verstappen','hamilton','norris','piastri']},
@@ -1414,6 +1921,45 @@ function fillAdSlot(id){
   el.innerHTML='<ins class="adsbygoogle" style="display:block" data-ad-client="'+ADSENSE_CLIENT
     +'" data-ad-slot="'+esc(slot)+'" data-ad-format="auto" data-full-width-responsive="true"></ins>';
   try{(window.adsbygoogle=window.adsbygoogle||[]).push({});el.dataset.adFilled='1';}catch(e){}
+}
+function initSignup(){
+  const btn=$('signupBtn'),inp=$('signupEmail'),hp=$('signupHp'),msg=$('signupMsg'),card=$('signupCard');
+  if(!btn||!inp)return;
+  const LS_KEY='f1ci_subscribed';
+  if(localStorage.getItem(LS_KEY)){
+    card.classList.add('done');msg.className='signup-msg ok';
+    msg.textContent="You're on the list — check your inbox each Friday.";return;
+  }
+  const submit=async()=>{
+    const email=(inp.value||'').trim();
+    if(hp&&hp.value){return;}                        // honeypot tripped → silently ignore
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      msg.className='signup-msg err';msg.textContent='Please enter a valid email address.';inp.focus();return;
+    }
+    btn.disabled=true;msg.className='signup-msg';msg.textContent='Subscribing…';
+    let ok=false;
+    if(SUPABASE_URL&&SUPABASE_ANON_KEY){
+      try{
+        const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/subscribers',{
+          method:'POST',
+          headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,
+            'Content-Type':'application/json',Prefer:'return=minimal,resolution=ignore-duplicates'},
+          body:JSON.stringify({email:email.toLowerCase(),source:'homepage'})
+        });
+        ok=r.ok||r.status===409;                     // 409 = already subscribed → treat as success
+      }catch(e){ok=false;}
+    }
+    if(ok){
+      try{localStorage.setItem(LS_KEY,'1');}catch(e){}
+      card.classList.add('done');msg.className='signup-msg ok';
+      msg.textContent="You're in. First report lands this Friday.";
+    }else{
+      btn.disabled=false;msg.className='signup-msg err';
+      msg.textContent='Something went wrong — please try again in a moment.';
+    }
+  };
+  btn.addEventListener('click',submit);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 }
 function initAdsense(){
   if(!ADSENSE_CLIENT||!/^ca-pub-\d+$/.test(ADSENSE_CLIENT))return;
@@ -1491,6 +2037,20 @@ function mostRecentResult(){
   const done=RACES.filter(r=>rr[r.id]).map(r=>({r,d:new Date(r.date)})).filter(x=>x.d<=today).sort((a,b)=>b.d-a.d);
   if(!done.length)return null;
   return {race:done[0].r,res:rr[done[0].r.id]};
+}
+function renderHomeSets(){
+  const box=$('homeSets');if(!box||typeof SETS==='undefined')return;
+  const lineRank={'Formula 1':0,'Sapphire Edition':1};
+  const order=Object.keys(SETS).sort((a,b)=>SETS[b].year-SETS[a].year
+    || (lineRank[SETS[a].line]??2)-(lineRank[SETS[b].line]??2)
+    || (SETS[a].brand>SETS[b].brand?1:-1));
+  box.innerHTML=order.map(slug=>{
+    const s=SETS[slug];
+    return '<a class="setcard" href="/sets/'+slug+'">'
+      +'<span class="sc-yr">'+s.year+' · '+esc(s.tier)+'</span>'
+      +'<span class="sc-nm">'+esc(s.name.replace(s.year+' ',''))+'</span>'
+      +'<span class="sc-meta">'+(s.baseSize?s.baseSize+'-card base · ':'')+s.parallels.length+' parallels</span></a>';
+  }).join('');
 }
 function renderHeaderExtras(){
   // Live ticker — most recent verified sales, scrolling like an exchange tape
@@ -2516,7 +3076,7 @@ async function loadSupabaseSales(){
   applyTheme(state.theme||'light');wireThemes();wireViewToggle();wireNavSearch();
   const h=(location.hash||'').replace(/^#/,'').toLowerCase();
   if(h&&h!=='admin'&&h!=='lock'&&getDriver(h)){showDriver(h,true);}else{showIndex(true);}
-  loadLiveResults();applyAdmin();checkAdminHash();loadSupabaseSales();initAdsense();
+  loadLiveResults();applyAdmin();checkAdminHash();loadSupabaseSales();initAdsense();initSignup();
   window.addEventListener('hashchange',routeHash);
 })();
 </script>
