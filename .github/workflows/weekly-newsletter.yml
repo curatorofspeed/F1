@@ -1,12 +1,9 @@
 name: Weekly newsletter
 
-# Reliable Friday trigger. Use this OR the vercel.json cron — not both.
-# GitHub Actions gives precise timing and a manual "Run workflow" button.
-
 on:
   schedule:
-    - cron: '0 14 * * 5'      # Fridays 14:00 UTC ≈ 7:00am PT (PDT)
-  workflow_dispatch: {}        # manual "Run workflow" button in the Actions tab
+    - cron: '0 14 * * 5'      # Fridays ~7am PT
+  workflow_dispatch: {}        # manual "Run workflow" button
 
 jobs:
   send:
@@ -14,6 +11,6 @@ jobs:
     steps:
       - name: Trigger newsletter send
         run: |
-      curl -fsS -L --location-trusted -X POST \
+          curl -fsS -L --location-trusted -X POST \
             "https://www.f1cardindex.com/api/send-newsletter" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
