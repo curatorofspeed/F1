@@ -180,6 +180,11 @@
   .dlb-bar{height:100%;border-radius:6px;transition:width .6s cubic-bezier(.22,1,.36,1);min-width:4px}
   .dlb-val{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;color:var(--txt);white-space:nowrap}
   .dlb-toggle .vt{font-size:11px;padding:5px 10px;font-weight:600}
+  /* rankings race animation */
+  .dlb-trackwrap{position:relative}
+  .dlb-bar{transition:width .85s cubic-bezier(.22,1,.36,1)}
+  .dlb-car{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);font-size:15px;line-height:1;transition:left .85s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:2;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+  @media(prefers-reduced-motion:reduce){.dlb-bar,.dlb-car{transition:none!important}}
   .sec-h{display:flex;justify-content:space-between;align-items:center;margin:22px 0 12px;flex-wrap:wrap;gap:10px}
   .sec-h h2{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:23px;text-transform:uppercase;letter-spacing:1px}
   .sec-h .sub{color:var(--muted);font-size:12px}
@@ -2869,14 +2874,15 @@ function renderDriverLeaderboard(){
   rows.sort((a,b)=>b[key]-a[key]);
   const max=rows[0][key]||1;
   box.innerHTML=rows.map((r,i)=>{
-    const v=r[key],pct=Math.max(4,Math.round(v/max*100)),c=r.d.color||'#888';
+    const v=r[key],pct=Math.max(4,Math.round(v/max*100)),c=r.d.color||'#888';const dly=(i*0.06).toFixed(2);
     return '<div class="dlb-row'+(i===0?' dlb-r1':'')+'" onclick="showDriver(\''+r.d.id+'\')">'
       +'<div class="dlb-rank">'+(i+1)+'</div>'
       +'<div class="dlb-barwrap"><div class="dlb-label"><span class="dlb-dot" style="background:'+c+'"></span><span class="dlb-name">'+esc(r.d.name)+'</span></div>'
-      +'<div class="dlb-track"><div class="dlb-bar" style="width:'+pct+'%;background:'+c+'"></div></div></div>'
+      +'<div class="dlb-trackwrap"><div class="dlb-track"><div class="dlb-bar" data-w="'+pct+'" style="width:0;background:'+c+';transition-delay:'+dly+'s"></div></div><span class="dlb-car" data-w="'+pct+'" style="left:0;transition-delay:'+dly+'s">🏎️</span></div></div>'
       +'<div class="dlb-val">'+moneyShort(v)+'</div>'
     +'</div>';
   }).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{box.querySelectorAll('.dlb-bar').forEach(el=>{el.style.width=el.dataset.w+'%';});box.querySelectorAll('.dlb-car').forEach(el=>{el.style.left=el.dataset.w+'%';});}));
   if($('dlbSub'))$('dlbSub').textContent=rows.length+(dlbMetric==='top'?' drivers \u00b7 by top sale':' drivers \u00b7 by total tracked');
   const bt=$('dlbTopBtn'),bl=$('dlbTotalBtn');
   if(bt)bt.classList.toggle('on',dlbMetric==='top');
@@ -3202,6 +3208,7 @@ async function loadSupabaseSales(){
     var name=t.getAttribute('data-tab');
     tabs.forEach(function(x){ x.classList.toggle('on', x===t); });
     panels.forEach(function(p){ p.classList.toggle('on', p.getAttribute('data-panel')===name); });
+    if(name==='rank'&&typeof renderDriverLeaderboard==='function'){try{renderDriverLeaderboard();}catch(e){}}
   }); });
 })();
 </script>
