@@ -182,8 +182,9 @@
   .dlb-toggle .vt{font-size:11px;padding:5px 10px;font-weight:600}
   /* rankings race animation */
   .dlb-trackwrap{position:relative}
-  .dlb-bar{transition:width .85s cubic-bezier(.22,1,.36,1)}
-  .dlb-car{position:absolute;top:50%;left:0;transform:translate(-50%,-50%) scaleX(-1);font-size:15px;line-height:1;transition:left .85s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:2;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+  .dlb-bar{transition:width 1.4s cubic-bezier(.22,1,.36,1)}
+  .dlb-car{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);line-height:0;transition:left 1.4s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:2;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.4))}
+  .dlb-car svg{width:22px;height:auto;display:block}
   @media(prefers-reduced-motion:reduce){.dlb-bar,.dlb-car{transition:none!important}}
   .sec-h{display:flex;justify-content:space-between;align-items:center;margin:22px 0 12px;flex-wrap:wrap;gap:10px}
   .sec-h h2{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:23px;text-transform:uppercase;letter-spacing:1px}
@@ -2874,11 +2875,11 @@ function renderDriverLeaderboard(){
   rows.sort((a,b)=>b[key]-a[key]);
   const max=rows[0][key]||1;
   box.innerHTML=rows.map((r,i)=>{
-    const v=r[key],pct=Math.max(4,Math.round(v/max*100)),c=r.d.color||'#888';const dly=(i*0.06).toFixed(2);
+    const v=r[key],pct=Math.max(4,Math.round(v/max*100)),c=r.d.color||'#888';const dly=(i*0.1).toFixed(2);
     return '<div class="dlb-row'+(i===0?' dlb-r1':'')+'" onclick="showDriver(\''+r.d.id+'\')">'
       +'<div class="dlb-rank">'+(i+1)+'</div>'
       +'<div class="dlb-barwrap"><div class="dlb-label"><span class="dlb-dot" style="background:'+c+'"></span><span class="dlb-name">'+esc(r.d.name)+'</span></div>'
-      +'<div class="dlb-trackwrap"><div class="dlb-track"><div class="dlb-bar" data-w="'+pct+'" style="width:0;background:'+c+';transition-delay:'+dly+'s"></div></div><span class="dlb-car" data-w="'+pct+'" style="left:0;transition-delay:'+dly+'s">🏎️</span></div></div>'
+      +'<div class="dlb-trackwrap"><div class="dlb-track"><div class="dlb-bar" data-w="'+pct+'" style="width:0;background:'+c+';transition-delay:'+dly+'s"></div></div><span class="dlb-car" data-w="'+pct+'" style="left:0;transition-delay:'+dly+'s"><svg viewBox="0 0 40 20"><rect x="1" y="4" width="3.5" height="9" rx="1" fill="'+c+'"/><path d="M3 13L3 10L33 10L38 11.5L38 13.5L3 13.5Z" fill="'+c+'"/><path d="M9 10L14 10L17 6L25 6L27 10Z" fill="'+c+'"/><path d="M27 10L38 11L38 8.8L32 8.2Z" fill="'+c+'"/><circle cx="11" cy="14" r="3.9" fill="#1a1a1a"/><circle cx="31" cy="14" r="3.9" fill="#1a1a1a"/><circle cx="11" cy="14" r="1.5" fill="'+c+'"/><circle cx="31" cy="14" r="1.5" fill="'+c+'"/></svg></span></div></div>'
       +'<div class="dlb-val">'+moneyShort(v)+'</div>'
     +'</div>';
   }).join('');
