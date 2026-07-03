@@ -2764,10 +2764,12 @@ function renderLiveHero(){
   const live=(state.liveAuctions||[]).slice().sort((a,b)=>(b.current_bid||0)-(a.current_bid||0));
   if(!live.length){box.style.display='none';box.innerHTML='';return;}
   box.style.display='';
-  const top=live[0],more=live.length-1;
+  const top=live[0];
+  const rest=live.slice(1,10);            // next lots after the hero (up to ~10 total)
+  const extra=live.length-1-rest.length;  // anything beyond the 10 shown
   const img=top.image_url?`<img src="${esc(top.image_url)}" alt="" loading="lazy" onerror="this.style.display='none'">`:'';
   box.innerHTML=`
-    <div class="sec-h"><h2>🔨 Live on Goldin</h2><span class="live-tag">● Live auction</span></div>
+    <div class="sec-h"><h2>🔨 Live on Goldin</h2><span class="live-tag">● Live · ${live.length} auction${live.length>1?'s':''}</span></div>
     <a class="la-hero" href="${esc(wrapSaleUrl(top.url)||'#')}" target="_blank" rel="noopener">
       <div class="la-hero-img">${img}</div>
       <div class="la-hero-body">
@@ -2777,7 +2779,8 @@ function renderLiveHero(){
         <div class="la-hero-go">Bid on Goldin ↗</div>
       </div>
     </a>
-    ${more>0?`<div class="la-more"><a onclick="document.getElementById('driversBox').scrollIntoView({behavior:'smooth',block:'start'})">▸ ${more} more live on Goldin — browse by driver ↓</a></div>`:''}`;
+    ${rest.length?`<div class="la-strip">`+rest.map(a=>{const im=a.image_url?`<img src="${esc(a.image_url)}" alt="" loading="lazy" onerror="this.style.display='none'">`:'';return `<a class="la-card" href="${esc(wrapSaleUrl(a.url)||'#')}" target="_blank" rel="noopener"><div class="la-card-img">${im}</div><div class="la-card-title">${esc(a.title||sbCardName(a))}</div><div class="la-card-meta">${a.bids!=null?a.bids+' bids · ':''}${esc(fmtEndsIn(a.ends_on))}</div><div class="la-card-bid">${money(a.current_bid)}</div></a>`;}).join('')+`</div>`:''}
+    ${extra>0?`<div class="la-more"><a onclick="document.getElementById('driversBox').scrollIntoView({behavior:'smooth',block:'start'})">▸ ${extra} more live on Goldin — browse by driver ↓</a></div>`:''}`;
 }
 function renderLiveAuctions(driverId){
   const box=$('dLiveAuctions');if(!box)return;
