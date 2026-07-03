@@ -647,6 +647,17 @@
 .gv-d-h{font-size:14.5px;font-weight:700;color:var(--txt);line-height:1.3;margin-top:2px}
 .gv-d-go{color:var(--gold);font-weight:700;font-size:13px;white-space:nowrap;flex:0 0 auto}
 /* ===== end giveaway ===== */
+/* ===== Market tabs ===== */
+.mkt{margin-bottom:8px}
+.mkt-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:14px}
+.mkt-tab{background:none;border:none;color:var(--muted);font-family:inherit;font-size:14px;font-weight:600;padding:9px 13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .12s}
+.mkt-tab:hover{color:var(--txt)}
+.mkt-tab.on{color:var(--txt);border-bottom-color:var(--gold)}
+.mkt-panel{display:none}
+.mkt-panel.on{display:block}
+.mkt-phead{display:flex;justify-content:flex-end;align-items:center;gap:10px;min-height:20px;margin-bottom:6px}
+.mkt-phead:empty{display:none}
+/* ===== end market tabs ===== */
 </style>
 </head>
 <body>
@@ -704,34 +715,48 @@
       </div>
     </div>
 
-    <div class="la-wrap" id="liveHero"></div>
+    <!-- ===== MARKET (tabbed) ===== -->
+    <div class="mkt">
+      <div class="mkt-tabs" role="tablist">
+        <button class="mkt-tab on" type="button" data-tab="top">🏆 Top Sales</button>
+        <button class="mkt-tab" type="button" data-tab="live">🔨 Live Auctions</button>
+        <button class="mkt-tab" type="button" data-tab="rank">📊 Rankings</button>
+        <button class="mkt-tab" type="button" data-tab="recent">💰 Recent</button>
+      </div>
 
-    <!-- ===== GLOBAL TOP SALES ===== -->
-    <div class="sec-h">
-      <h2>🏆 Top Sales — Every Driver</h2>
-      <div class="right"><span class="sub" id="gtSub"></span></div>
-    </div>
-    <div class="gt-stats" id="gtStats"></div>
-    <div id="gtBoard"></div>
-    <button class="btn ghost gt-more" id="gtMore" style="display:none">Show more</button>
+      <div class="mkt-panel on" data-panel="top">
+        <div class="mkt-phead"><span class="sub" id="gtSub"></span></div>
+        <div class="gt-stats" id="gtStats"></div>
+        <div id="gtBoard"></div>
+        <button class="btn ghost gt-more" id="gtMore" style="display:none">Show more</button>
+      </div>
 
-    <!-- ===== DRIVER POWER RANKINGS ===== -->
-    <div class="sec-h">
-      <h2>📊 Driver Power Rankings</h2>
-      <div class="right">
-        <span class="sub" id="dlbSub"></span>
-        <div class="view-toggle dlb-toggle">
-          <button class="vt on" id="dlbTotalBtn" onclick="setDlbMetric('total')">Total value</button>
-          <button class="vt" id="dlbTopBtn" onclick="setDlbMetric('top')">Top sale</button>
+      <div class="mkt-panel" data-panel="live">
+        <div class="la-wrap" id="liveHero"></div>
+      </div>
+
+      <div class="mkt-panel" data-panel="rank">
+        <div class="mkt-phead">
+          <span class="sub" id="dlbSub"></span>
+          <div class="view-toggle dlb-toggle">
+            <button class="vt on" id="dlbTotalBtn" onclick="setDlbMetric('total')">Total value</button>
+            <button class="vt" id="dlbTopBtn" onclick="setDlbMetric('top')">Top sale</button>
+          </div>
         </div>
+        <div class="dlb" id="dlbBoard"></div>
+      </div>
+
+      <div class="mkt-panel" data-panel="recent">
+        <div class="mkt-phead"><span class="sub" id="salesAsOf"></span></div>
+        <div class="hsales" id="homeSales"></div>
       </div>
     </div>
-    <div class="dlb" id="dlbBoard"></div>
 
+    <!-- ===== BUY F1 CARDS (affiliate — kept high) ===== -->
     <div class="sec-h">
-      <h2>🔴 Live Card Streams</h2>
+      <h2>🛒 Buy F1 Cards</h2>
       <div class="right">
-        <span class="sub">Live F1 breaks & singles on Whatnot</span>
+        <span class="sub">Live streams · auctions · singles</span>
         <button class="btn ghost admin-only" id="editPromos">Edit codes</button>
       </div>
     </div>
@@ -747,17 +772,9 @@
         <span class="wn-go">↗</span>
       </a>
     </div>
-    <div class="promo" id="promoBox"></div>
-    <div class="promo-disc" id="promoDisc"></div>
-
-    <div class="sec-h">
-      <h2>🔴 Market Signal</h2>
-      <span class="live-tag">● Live · eBay</span>
-    </div>
-    <div class="herosub">F1 Chrome cards ending in the next 24 hours and just sold — across all drivers.</div>
-    <div class="live-cta">
-      <a class="btn primary big" id="homeAuct" href="#" target="_blank" rel="noopener">⏱ Ending in 24hrs ↗</a>
-      <a class="btn primary big" id="homeSold" href="#" target="_blank" rel="noopener">✅ Just sold ↗</a>
+    <div class="live-cta" style="margin-top:11px">
+      <a class="btn primary big" id="homeAuct" href="#" target="_blank" rel="noopener">⏱ eBay: Ending in 24hrs ↗</a>
+      <a class="btn primary big" id="homeSold" href="#" target="_blank" rel="noopener">✅ eBay: Just sold ↗</a>
     </div>
     <div class="chips" id="homeProdChips" style="margin-top:11px;align-items:center">
       <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">More products</span>
@@ -765,24 +782,10 @@
       <a id="homeEccellenza" href="#" target="_blank" rel="noopener">Eccellenza</a>
       <a id="homeNow" href="#" target="_blank" rel="noopener">Topps NOW</a>
     </div>
+    <div class="promo" id="promoBox"></div>
+    <div class="promo-disc" id="promoDisc"></div>
 
-    <div class="sec-h">
-      <h2>💰 Recent Notable Sales</h2>
-      <span class="sub" id="salesAsOf"></span>
-    </div>
-    <div class="hsales" id="homeSales"></div>
-
-    <div class="ad-slot" id="adHome" aria-hidden="true"></div>
-
-    <div class="sec-h">
-      <h2>🏁 Race Calendar</h2>
-      <div class="right" id="racesToggleWrap">
-        <div class="view-toggle"><button class="vt" id="rvGrid" title="Grid view" aria-label="Grid view">▦</button><button class="vt" id="rvList" title="List view" aria-label="List view">☰</button></div>
-        <button class="btn ghost admin-only" id="logResult">+ Log result</button>
-        <button class="btn ghost" id="racesToggle">Show all</button>
-      </div>
-    </div>
-    <div id="raceStrip"></div>
+    <!-- ===== DRIVERS ===== -->
     <div class="sec-h">
       <h2>Drivers</h2>
       <span class="sub">Tap a driver for their full card board</span>
@@ -793,6 +796,29 @@
     </div>
     <div class="drivers" id="driversBox"></div>
 
+    <!-- ===== COLLECTOR GEAR (Amazon) ===== -->
+    <div class="sec-h" style="margin-top:10px"><h2>🛒 Collector Gear</h2><span class="sub">Amazon · affiliate</span></div>
+    <div id="homeGear" style="margin-bottom:8px"></div>
+
+    <div class="ad-slot" id="adHome" aria-hidden="true"></div>
+
+    <!-- ===== RACE CALENDAR ===== -->
+    <div class="sec-h">
+      <h2>🏁 Race Calendar</h2>
+      <div class="right" id="racesToggleWrap">
+        <div class="view-toggle"><button class="vt" id="rvGrid" title="Grid view" aria-label="Grid view">▦</button><button class="vt" id="rvList" title="List view" aria-label="List view">☰</button></div>
+        <button class="btn ghost admin-only" id="logResult">+ Log result</button>
+        <button class="btn ghost" id="racesToggle">Show all</button>
+      </div>
+    </div>
+    <div id="raceStrip"></div>
+
+    <!-- ===== SET CHECKLISTS ===== -->
+    <div class="sec-h" style="margin-top:10px"><h2>📋 Set Checklists</h2><a class="sub" href="/sets" style="color:var(--gold)">All checklists →</a></div>
+    <div class="mff-note" id="setsNote">Base sets, full parallel ladders with print runs, inserts &amp; autographs — Topps Chrome, Sapphire &amp; Dynasty.</div>
+    <div class="setgrid" id="homeSets" style="margin-bottom:16px"></div>
+
+    <!-- ===== NEWSLETTER ===== -->
     <div class="signup" id="signupCard">
       <div class="signup-head">
         <span class="signup-eyebrow">📩 The Weekly Index</span>
@@ -815,13 +841,6 @@
       </span>
       <span class="community-go">Join &rarr;</span>
     </a>
-
-    <div class="sec-h" style="margin-top:10px"><h2>📋 Set Checklists</h2><a class="sub" href="/sets" style="color:var(--gold)">All checklists →</a></div>
-    <div class="mff-note" id="setsNote">Base sets, full parallel ladders with print runs, inserts &amp; autographs — Topps Chrome, Sapphire &amp; Dynasty.</div>
-    <div class="setgrid" id="homeSets" style="margin-bottom:16px"></div>
-
-    <div class="sec-h" style="margin-top:10px"><h2>🛒 Collector Gear</h2><span class="sub">Amazon · affiliate</span></div>
-    <div id="homeGear" style="margin-bottom:8px"></div>
   </div>
 
   <!-- ===== RACE VIEW ===== -->
@@ -2820,11 +2839,11 @@ function renderGlobalTop(){
     gtStat(money(all[0].s.price),'Top Sale',true)+
     gtStat(oneofone,'One-of-Ones');
   if($('gtSub'))$('gtSub').textContent=ndrivers+' drivers \u00b7 ranked by price';
-  const SHOWN=gtExpanded?all.length:15;
+  const SHOWN=gtExpanded?all.length:5;
   box.innerHTML=all.slice(0,SHOWN).map((x,i)=>gtRow(x.s,x.d,i)).join('');
   const more=$('gtMore');
   if(more){
-    if(all.length>15){more.style.display='';more.textContent=gtExpanded?'Show less \u2191':('Show all '+all.length+' sales \u2193');more.onclick=()=>{const collapsing=gtExpanded;gtExpanded=!gtExpanded;renderGlobalTop();if(collapsing){const b=$('gtBoard');if(b)b.scrollIntoView({block:'start',behavior:'smooth'});}};}
+    if(all.length>5){more.style.display='';more.textContent=gtExpanded?'Show less \u2191':('Show all '+all.length+' sales \u2193');more.onclick=()=>{const collapsing=gtExpanded;gtExpanded=!gtExpanded;renderGlobalTop();if(collapsing){const b=$('gtBoard');if(b)b.scrollIntoView({block:'start',behavior:'smooth'});}};}
     else more.style.display='none';
   }
 }
@@ -3164,6 +3183,18 @@ async function loadSupabaseSales(){
   }
   btn.addEventListener('click',enter);
   inp.addEventListener('keydown',function(e){ if(e.key==='Enter') enter(); });
+})();
+</script>
+<script>
+/* Market tabs */
+(function(){
+  var tabs=document.querySelectorAll('.mkt-tab'), panels=document.querySelectorAll('.mkt-panel');
+  if(!tabs.length) return;
+  tabs.forEach(function(t){ t.addEventListener('click',function(){
+    var name=t.getAttribute('data-tab');
+    tabs.forEach(function(x){ x.classList.toggle('on', x===t); });
+    panels.forEach(function(p){ p.classList.toggle('on', p.getAttribute('data-panel')===name); });
+  }); });
 })();
 </script>
 </body>
