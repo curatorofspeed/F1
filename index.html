@@ -723,21 +723,21 @@
     <!-- ===== MARKET (tabbed) ===== -->
     <div class="mkt">
       <div class="mkt-tabs" role="tablist">
-        <button class="mkt-tab on" type="button" data-tab="top">🏆 Top Sales</button>
-        <button class="mkt-tab" type="button" data-tab="live">🔨 Live Auctions</button>
+        <button class="mkt-tab on" type="button" data-tab="live">🔨 Live Auctions</button>
+        <button class="mkt-tab" type="button" data-tab="top">🏆 Top Sales</button>
         <button class="mkt-tab" type="button" data-tab="rank">📊 Rankings</button>
         <button class="mkt-tab" type="button" data-tab="recent">💰 Recent</button>
       </div>
 
-      <div class="mkt-panel on" data-panel="top">
+      <div class="mkt-panel on" data-panel="live">
+        <div class="la-wrap" id="liveHero"></div>
+      </div>
+
+      <div class="mkt-panel" data-panel="top">
         <div class="mkt-phead"><span class="sub" id="gtSub"></span></div>
         <div class="gt-stats" id="gtStats"></div>
         <div id="gtBoard"></div>
         <button class="btn ghost gt-more" id="gtMore" style="display:none">Show more</button>
-      </div>
-
-      <div class="mkt-panel" data-panel="live">
-        <div class="la-wrap" id="liveHero"></div>
       </div>
 
       <div class="mkt-panel" data-panel="rank">
