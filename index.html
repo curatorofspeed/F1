@@ -450,6 +450,11 @@
   .rc-live{background:rgba(255,93,93,.1);color:var(--down);border:1px solid rgba(255,93,93,.3)}
   .rc-next{background:rgba(0,210,190,.08);color:var(--teal);border:1px solid var(--teal-dim)}
   .rc-sprint{background:rgba(230,182,92,.08);color:var(--gold);border:1px solid #3a3017;margin-left:5px}
+  /* circuit watermark on race cards */
+  .rcard{position:relative;overflow:hidden;isolation:isolate}
+  .rc-circuit{position:absolute;right:-6px;bottom:-8px;width:86px;height:86px;opacity:.14;pointer-events:none;z-index:-1}
+  .rc-circuit path{fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .rcard.nxt .rc-circuit,.rcard.live .rc-circuit{opacity:.2}
   /* Race page */
   .race-pg-flag{font-size:52px;line-height:1;margin-bottom:10px}
   .race-pg-title{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:28px;text-transform:uppercase;line-height:1.1;margin-bottom:6px}
@@ -2236,7 +2241,7 @@ function renderRaceStrip(){
     strip.innerHTML='<div class="race-strip">'+list.map(race=>{
       const st=raceStatus(race);
       return '<div class="rcard '+(st==='live'?'live':st==='next'?'nxt':st==='past'?'past':'')+'" onclick="showRacePage(\''+race.id+'\')">'
-        +'<div class="rc-top"><span class="rc-round">R'+race.r+'</span><span class="rc-flag">'+race.flag+'</span></div>'
+        +((typeof CIRCUITS!=='undefined'&&CIRCUITS[race.id])?'<svg class="rc-circuit" viewBox="0 0 100 100" aria-hidden="true"><path pathLength="1" d="'+CIRCUITS[race.id]+'"/></svg>':'')+'<div class="rc-top"><span class="rc-round">R'+race.r+'</span><span class="rc-flag">'+race.flag+'</span></div>'
         +'<div class="rc-name">'+esc(race.name)+'</div>'
         +'<div class="rc-meta">'+esc(race.range)+' · '+esc(race.circuit)+'</div>'
         +(st==='live'?'<div class="rc-badge rc-live">🔴 Race Weekend</div>':st==='next'?'<div class="rc-badge rc-next">Next →</div>':'')
