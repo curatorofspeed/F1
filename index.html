@@ -49,7 +49,6 @@
   html[data-theme="tron"] .btn.primary{box-shadow:0 0 14px rgba(34,233,255,.4)}
   html[data-theme="tron"] .live-tag{text-shadow:0 0 8px currentColor}
   html[data-theme="tron"] .rec-price{text-shadow:0 0 10px rgba(255,210,63,.3)}
-  html[data-theme="tron"] .community-ico{filter:drop-shadow(0 0 6px rgba(125,139,255,.5))}
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     background:var(--bg);color:var(--txt);font-family:'Sora',sans-serif;min-height:100vh;padding-bottom:60px;
@@ -325,17 +324,7 @@
   .signup-msg.ok{color:var(--up)}
   .signup-msg.err{color:#ff6b6b}
   .signup.done .signup-form{display:none}
-  .community{display:flex;align-items:center;gap:14px;background:linear-gradient(100deg,rgba(88,101,242,.14),var(--panel));border:1px solid rgba(88,101,242,.42);border-radius:14px;padding:15px 18px;margin:8px 0 6px;text-decoration:none;color:var(--txt);transition:.15s}
-  .community:hover{transform:translateY(-2px);border-color:#5865F2;box-shadow:0 6px 24px rgba(88,101,242,.18)}
-  .community:active{transform:scale(.99)}
-  .community-ico{color:#7d8bff;flex:0 0 auto;display:flex}
-  .community-txt{flex:1;min-width:0}
-  .community-h{display:block;font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.5px}
-  .community-s{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
-  .community-go{flex:0 0 auto;background:#5865F2;color:#fff;font-weight:700;font-size:13px;padding:9px 16px;border-radius:9px;white-space:nowrap}
   .admin-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  .discord-foot{color:#7d8bff;text-decoration:none;font-size:12.5px;font-weight:600}
-  .discord-foot:hover{color:#9aa6ff;text-decoration:underline}
   .theme-bar{display:flex;align-items:center;gap:8px;margin:0 0 16px;flex-wrap:wrap}
   .theme-lab{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:2px}
   .sw{display:inline-flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:20px;padding:6px 13px 6px 10px;cursor:pointer;font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.5px;transition:.13s}
@@ -843,15 +832,6 @@
       </div>
       <div class="signup-msg" id="signupMsg" role="status"></div>
     </div>
-
-    <a class="community" href="https://discord.gg/DX2mrhtqY8" target="_blank" rel="noopener">
-      <span class="community-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></svg></span>
-      <span class="community-txt">
-        <span class="community-h">Join the community</span>
-        <span class="community-s">Talk grails, drops &amp; race-week movers with other F1 collectors on Discord.</span>
-      </span>
-      <span class="community-go">Join &rarr;</span>
-    </a>
   </div>
 
   <!-- ===== RACE VIEW ===== -->
@@ -979,7 +959,7 @@
       <button class="sw" data-theme="tron" style="--c:#22e9ff">Dark</button>
     </div>
     <div class="disclaimer">Not financial advice. Card values are speculative and move with race results, grading, and parallel print runs. Logos and team names are referenced for identification only.</div>
-    <div class="admin-bar"><a class="discord-foot" href="https://discord.gg/DX2mrhtqY8" target="_blank" rel="noopener">Join the community on Discord ↗</a><span id="adminToggle" class="admin-link">Admin</span></div>
+    <div class="admin-bar"><span id="adminToggle" class="admin-link">Admin</span></div>
   </div>
 </div>
 
