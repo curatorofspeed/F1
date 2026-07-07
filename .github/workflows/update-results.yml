@@ -1,0 +1,19 @@
+name: Update race results
+
+# Pulls the latest F1 race classification into Supabase after each round.
+# Runs Mondays (races are Sundays); also runnable by hand. Idempotent.
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'      # Mondays 11:00 UTC — after Sunday races
+  workflow_dispatch: {}        # manual "Run workflow" button
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull latest F1 result into race_results
+        run: |
+          curl -fsS -L --location-trusted -X POST \
+            "https://www.f1cardindex.com/api/update-results" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
