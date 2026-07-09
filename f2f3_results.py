@@ -65,15 +65,20 @@ def prospect_id(abbr, surname):
 
 
 def parse_driver_cell(text):
-    """'N. TsolovTSOCampos Racing' -> (name='N. Tsolov', abbr='TSO', surname='Tsolov')."""
+    """Pull name + 3-letter abbr from a FIA driver cell. Handles both the glued
+    form 'N. TsolovTSOCampos Racing' and the spaced form 'N. Tsolov TSO Campos'."""
     text = re.sub(r"\s+", " ", text or "").strip()
-    m = re.search(r"^(.*?)([A-Z]{3})([A-Z].*)$", text)  # name | 3-letter abbr | team
+    # the abbr is a standalone 3-uppercase token (or glued run) after the name
+    m = re.search(r"^(.*?)\s*\b([A-Z]{3})\b(?:\s+|(?=[A-Z]))(.*)$", text)
+    if not m:  # fallback: 3 caps glued directly onto the name (no boundary)
+        m = re.search(r"^(.*?)([A-Z]{3})([A-Z].*)$", text)
     if m:
-        name = m.group(1).strip()
-        abbr = m.group(2)
+        name, abbr = m.group(1).strip(), m.group(2)
     else:
         name, abbr = text, ""
-    surname = name.split(".")[-1].strip() if "." in name else name.strip()
+    # surname = last alphabetic token of the name (drop the "N." initial)
+    toks = re.findall(r"[A-Za-zÀ-ÿ'\-]+", name)
+    surname = toks[-1] if toks else name
     return name, abbr, surname
 
 
@@ -82,11 +87,16 @@ def _get(url):
 
 
 def _extract_city(html):
-    for pat in [r'"circuitName"\s*:\s*"([^"]+)"', r'"venue"\s*:\s*"([^"]+)"',
-                r'"city"\s*:\s*"([^"]+)"']:
-        m = re.search(pat, html)
-        if m:
-            return m.group(1).strip()
+    """Find the round venue so results tie to the F1 weekend (gbr, bel, ...).
+    Look in the <title> and the top of the page (not the full calendar, which
+    lists every venue)."""
+    m = re.search(r"<title[^>]*>([^<]+)</title>", html, re.I)
+    title = m.group(1) if m else ""
+    head = html[:3500]                       # round heading area, before the calendar
+    for scope in (title, head):
+        for city in CITY_TO_RACE:
+            if re.search(r"\b" + re.escape(city) + r"\b", scope, re.I):
+                return city
     return ""
 
 
