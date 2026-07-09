@@ -42,19 +42,28 @@ UA = "f1cardindex-radar/1.0 (+https://f1cardindex.com; contact: hello@f1cardinde
 # Keep ids identical to state.drivers ids in index.html so boards line up.
 # ----------------------------------------------------------------------------
 DRIVERS = [
-    {"id": "verstappen",  "name": "Max Verstappen",          "aliases": ["verstappen"]},
-    {"id": "hamilton",    "name": "Lewis Hamilton",          "aliases": ["hamilton"]},
-    {"id": "leclerc",     "name": "Charles Leclerc",         "aliases": ["leclerc"]},
-    {"id": "norris",      "name": "Lando Norris",            "aliases": ["norris"]},
-    {"id": "antonelli",   "name": "Andrea Kimi Antonelli",   "aliases": ["antonelli", "kimi antonelli"]},
-    {"id": "piastri",     "name": "Oscar Piastri",           "aliases": ["piastri"]},
-    {"id": "russell",     "name": "George Russell",          "aliases": ["russell"]},
-    {"id": "alonso",      "name": "Fernando Alonso",         "aliases": ["alonso"]},
-    {"id": "sainz",       "name": "Carlos Sainz",            "aliases": ["sainz"]},
-    {"id": "hadjar",      "name": "Isack Hadjar",            "aliases": ["hadjar"]},
-    {"id": "bearman",     "name": "Oliver Bearman",          "aliases": ["bearman"]},
-    {"id": "bortoleto",   "name": "Gabriel Bortoleto",       "aliases": ["bortoleto"]},
-    # extend to the full grid...
+    {"id": "verstappen",  "name": "Max Verstappen",        "aliases": ["verstappen"]},
+    {"id": "russell",     "name": "George Russell",        "aliases": ["russell"]},
+    {"id": "antonelli",   "name": "Andrea Kimi Antonelli", "aliases": ["antonelli", "kimi antonelli"]},
+    {"id": "leclerc",     "name": "Charles Leclerc",       "aliases": ["leclerc"]},
+    {"id": "hamilton",    "name": "Lewis Hamilton",        "aliases": ["hamilton"]},
+    {"id": "norris",      "name": "Lando Norris",          "aliases": ["norris"]},
+    {"id": "piastri",     "name": "Oscar Piastri",         "aliases": ["piastri"]},
+    {"id": "alonso",      "name": "Fernando Alonso",        "aliases": ["alonso"]},
+    {"id": "stroll",      "name": "Lance Stroll",          "aliases": ["stroll"]},
+    {"id": "sainz",       "name": "Carlos Sainz",          "aliases": ["sainz"]},
+    {"id": "albon",       "name": "Alexander Albon",       "aliases": ["albon"]},
+    {"id": "hadjar",      "name": "Isack Hadjar",          "aliases": ["hadjar"]},
+    {"id": "lawson",      "name": "Liam Lawson",           "aliases": ["lawson", "liam lawson"]},
+    {"id": "lindblad",    "name": "Arvid Lindblad",        "aliases": ["lindblad", "arvid lindblad"]},
+    {"id": "gasly",       "name": "Pierre Gasly",          "aliases": ["gasly"]},
+    {"id": "colapinto",   "name": "Franco Colapinto",      "aliases": ["colapinto"]},
+    {"id": "ocon",        "name": "Esteban Ocon",          "aliases": ["ocon"]},
+    {"id": "bearman",     "name": "Oliver Bearman",        "aliases": ["bearman"]},
+    {"id": "hulkenberg",  "name": "Nico Hulkenberg",       "aliases": ["hulkenberg", "hülkenberg"]},
+    {"id": "bortoleto",   "name": "Gabriel Bortoleto",     "aliases": ["bortoleto"]},
+    {"id": "perez",       "name": "Sergio Perez",          "aliases": ["perez", "pérez", "sergio perez"]},
+    {"id": "bottas",      "name": "Valtteri Bottas",       "aliases": ["bottas"]},
 ]
 ALIAS_TO_DRIVER = {a.lower(): d for d in DRIVERS for a in d["aliases"]}
 
@@ -64,6 +73,17 @@ FX_USD = {"USD": 1.0, "AUD": 0.65, "GBP": 1.27, "EUR": 1.10, "CAD": 0.73}
 # Lots / non-cards we never want on a single-card board
 LOT_PAT = re.compile(r"\b(lot of|lot:|complete set|\(\s*\d+\s*cards?\s*\)|\b\d+\s*card lot)\b", re.I)
 NONCARD_PAT = re.compile(r"\b(ticket|program|magazine|poster|display case|toploader|one-?touch|supplies)\b", re.I)
+
+# A bare surname only counts as a driver if the title also carries an F1 signal —
+# stops "Alexander Hamilton" / "Russell Westbrook" tagging as Lewis / George.
+F1_SIGNAL = re.compile(
+    r"(formula\s*1|formula\s*one|\bf1\b|grand\s*prix|eccellenza|lights\s*out|"
+    r"(chrome|dynasty|sapphire)\s*(formula|f1)|(formula|f1)\s*(chrome|dynasty|sapphire))",
+    re.I)
+# Hard non-F1 markers — reject outright even if a name coincidentally matches.
+NON_F1_PAT = re.compile(
+    r"\b(upper deck|panini|nba|wnba|basketball|nfl|football|mlb|baseball|"
+    r"pokemon|muhammad ali|boxing|hockey|nhl|soccer)\b", re.I)
 
 GRADE_PATS = [
     (re.compile(r"\bPSA\s*(?:GEM\s*MT\s*)?10\b", re.I), "PSA 10"),
@@ -132,10 +152,14 @@ def parse_title(title: str) -> dict:
     t = html.unescape(title or "")
     out: dict = {"flags": []}
 
-    # driver
+    # driver — a full name (or multi-word alias) is enough on its own; a bare
+    # surname only matches when an F1 signal is present in the title.
     low = t.lower()
-    for alias, d in ALIAS_TO_DRIVER.items():
-        if alias in low:
+    has_f1 = bool(F1_SIGNAL.search(t))
+    for d in DRIVERS:
+        strong = [d["name"].lower()] + [a.lower() for a in d["aliases"] if " " in a]
+        surnames = [a.lower() for a in d["aliases"] if " " not in a]
+        if any(s in low for s in strong) or (has_f1 and any(a in low for a in surnames)):
             out["driver_id"] = d["id"]; out["driver_name"] = d["name"]; break
 
     # year
@@ -187,6 +211,7 @@ def is_excluded(title: str) -> Optional[str]:
     if not title: return None
     if LOT_PAT.search(title): return "lot"
     if NONCARD_PAT.search(title): return "non_card"
+    if NON_F1_PAT.search(title): return "non_f1"
     return None
 
 def to_usd(price: float, currency: str) -> Optional[float]:
@@ -208,6 +233,8 @@ def build_sale(source: str, source_item_id: str, url: str, title: str,
              sale_type=sale_type, bids=bids, image_url=image_url,
              **{k: v for k, v in parsed.items() if k != "flags"})
     s.flags = parsed.get("flags", [])
+    if not s.driver_id and s.status != "rejected":
+        s.status = "rejected"; s.flags.append("no_f1_driver")   # not an F1 driver's card
     if excl:
         s.status = "rejected"; s.flags.append(f"excluded:{excl}")
     # auto-flag big sales for human eyes before they hit the public board
