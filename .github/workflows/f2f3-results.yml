@@ -1,0 +1,26 @@
+name: F2/F3 results
+
+# Scrapes the latest F2 & F3 feature-race results into Supabase after each round.
+# Runs in the Actions runner (Python), so it needs the same Supabase secrets your
+# f1-radar worker uses. Mondays, just after the F1 results job. Also run by hand.
+
+on:
+  schedule:
+    - cron: '30 11 * * 1'      # Mondays 11:30 UTC (after the F1 results cron)
+  workflow_dispatch: {}
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests beautifulsoup4
+      - name: Scrape F2/F3 results
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python f2f3_results.py
