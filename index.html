@@ -658,6 +658,7 @@
 .mkt-phead{display:flex;justify-content:flex-end;align-items:center;gap:10px;min-height:20px;margin-bottom:6px}
 .mkt-phead:empty{display:none}
 /* ===== end market tabs ===== */
+.feeder-res{grid-column:1/-1;margin:2px 0 16px}
 </style>
 </head>
 <body>
@@ -2155,7 +2156,6 @@ function renderHeaderExtras(){
       +'<span class="qd" style="background:'+x.d.color+'"></span>'+esc(lastName(x.d.name))+'</span>').join('');
   }
 }
-let _trTimer=null;
 function _f1Chip(item){
   const d=getDriver(item.id);if(!d)return '';
   let badge,arrow,cls;
@@ -2170,51 +2170,45 @@ function _f1Chip(item){
 function _feederChip(item){
   const d=item.id?getDriver(item.id):null;                       // tracked prospect -> colored + clickable
   const name=d?lastName(d.name):String(item.name||'').replace(/^[A-Z]\.\s*/,'').trim();
+  if(!name)return '';                                            // never a bare position chip
   let cls,arrow;
   if(item.pos===1){cls='tr-win';arrow='🏆';}
   else if(item.pos<=3){cls='tr-pod';arrow='▲';}
-  else{cls='tr-pts';arrow='▲';}
+  else if(item.pos<=10){cls='tr-pts';arrow='▲';}
+  else{cls='tr-flat';arrow='·';}
   const color=d?d.color:'#b0a894';
   const attr=d?(' onclick="showDriver(\''+d.id+'\')" style="cursor:pointer;border-left:3px solid '+color+'"')
               :(' style="border-left:3px solid '+color+'"');
   return '<div class="tr-chip '+cls+'"'+attr+'><span class="tr-pos">P'+item.pos+'</span>'
     +'<span class="tr-name">'+esc(name)+'</span><span class="tr-arrow">'+arrow+'</span></div>';
 }
-function renderTrending(){
-  const box=$('trendingStrip');if(!box)return;
-  const items=[];
-  // F1 — most recent grand prix
-  const mr=mostRecentResult();
-  if(mr&&mr.res&&mr.res.pos){
-    const res=mr.res;
-    const fin=Object.keys(res.pos).map(id=>({id,pos:res.pos[id]})).sort((a,b)=>a.pos-b.pos);
-    const dnf=(res.dnf||[]).map(id=>({id,pos:null}));
-    const chips=fin.concat(dnf).map(_f1Chip).filter(Boolean);
-    if(chips.length)items.push({flag:mr.race.flag,label:res.raceLabel+' result',note:'cards heat up after a win',chips});
-  }
-  // F2 / F3 — feeder-series feature races (from race_results, series-tagged rows)
-  const rr=RR();
+// F2/F3 feature-race results — shown above the prospects cards (not the top strip)
+function feederResultsHTML(){
+  const rr=RR();let out='';
   ['f2','f3'].forEach(sk=>{
-    const key=Object.keys(rr).find(k=>k.indexOf(sk+'-')===0);
-    if(!key)return;
+    const key=Object.keys(rr).find(k=>k.indexOf(sk+'-')===0);if(!key)return;
     const r=rr[key];if(!r||!Array.isArray(r.top)||!r.top.length)return;
-    const code=(key.split('-')[1]||'');
-    const rc=RACES.find(x=>x.id===code);const flag=rc?rc.flag:'🏁';
-    let note='feeder-series feature result';
+    const code=(key.split('-')[1]||'');const rc=RACES.find(x=>x.id===code);const flag=rc?rc.flag:'🏁';
+    const win=(r.winner&&r.winner.name)?String(r.winner.name).replace(/^[A-Z]\.\s*/,'').trim():'';
+    let note='';
     if(r.prospect){const pd=getDriver(r.prospect.id);
       const pn=pd?lastName(pd.name):String(r.prospect.name||'').replace(/^[A-Z]\.\s*/,'').trim();
-      note=pn+' P'+r.prospect.pos+' — cards heating up';}
-    items.push({flag,label:r.raceLabel,note,chips:r.top.map(_feederChip)});
+      note=' · '+pn+' P'+r.prospect.pos+' — cards heating up';}
+    out+='<div class="feeder-res"><div class="tr-head">'+esc((flag?flag+' ':'')+r.raceLabel)
+      +'<span class="tr-sub">'+(win?' · '+esc(win)+' wins':'')+esc(note)+'</span></div>'
+      +'<div class="tr-row">'+r.top.map(_feederChip).join('')+'</div></div>';
   });
-  if(!items.length){box.innerHTML='';return;}
-  let i=0;
-  const paint=()=>{const it=items[i];
-    box.innerHTML='<div class="tr-head">🔥 Trending <span class="tr-sub">· '
-      +esc((it.flag?it.flag+' ':'')+it.label)+' · '+esc(it.note)+'</span></div>'
-      +'<div class="tr-row">'+it.chips.join('')+'</div>';};
-  paint();
-  if(_trTimer)clearInterval(_trTimer);
-  if(items.length>1)_trTimer=setInterval(()=>{i=(i+1)%items.length;paint();},5500);
+  return out;
+}
+function renderTrending(){
+  const box=$('trendingStrip');if(!box)return;
+  const mr=mostRecentResult();
+  if(!mr||!mr.res||!mr.res.pos){box.innerHTML='';return;}
+  const res=mr.res;
+  const finishers=Object.keys(res.pos).map(id=>({id,pos:res.pos[id]})).sort((a,b)=>a.pos-b.pos);
+  const dnf=(res.dnf||[]).map(id=>({id,pos:null}));
+  box.innerHTML='<div class="tr-head">🔥 Trending <span class="tr-sub">· '+esc(mr.race.flag+' '+res.raceLabel)+' result · cards heat up after a win</span></div>'
+    +'<div class="tr-row">'+finishers.concat(dnf).map(_f1Chip).join('')+'</div>';
 }
 function renderRaceCountdown(d){
   const box=$('raceCountdown');if(!box)return;
@@ -2559,6 +2553,7 @@ function renderDriverGrid(){
   html+=f1.map(render).join('');
   if(prospects.length){
     html+=`<div class="grid-label">🌟 F2 / F3 Prospects</div>`;
+    html+=feederResultsHTML();
     html+=prospects.map(render).join('');
   }
   if(legends.length){
