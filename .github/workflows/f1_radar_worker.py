@@ -512,93 +512,88 @@ def normalize_goldin_lot(base, lot):
             "bids": _first(d, _BID_KEYS), "image_url": img}
 
 
-class EbayAdapter(Adapter):
-    """Sold-listing comps from eBay search (LH_Sold). Regex-parsed like the rest
-    of the worker (no bs4 — the f1-radar workflow doesn't install it).
-    NOTE: eBay bot-protects aggressively; if runs show 'blocked' diagnostics,
-    the durable path is eBay's official Browse/Insights APIs (OAuth)."""
+class EbayBrowseAdapter(Adapter):
+    """eBay ACTIVE listings via the official Browse API (OAuth, JSON) — free and
+    ToS-clean, unlike scraping search HTML. Browse returns *active* listings
+    (asking / current-bid prices, NOT settled sold comps), so results are flagged
+    `live_auction` and surface in the Live tab alongside Goldin's live lots for
+    every driver. Sold comps would need eBay's Marketplace Insights API.
+
+    Setup: create a free app at developer.ebay.com and set two env/secrets:
+        EBAY_CLIENT_ID, EBAY_CLIENT_SECRET   (production keys)
+    """
     source = "ebay"
     base = "https://www.ebay.com"
+    OAUTH = "https://api.ebay.com/identity/v1/oauth2/token"
+    SEARCH = "https://api.ebay.com/buy/browse/v1/item_summary/search"
+    _token = None
 
-    SEARCH = ("https://www.ebay.com/sch/i.html?_nkw={q}&LH_Sold=1&LH_Complete=1"
-              "&_sop=16&_ipg=60")   # price+shipping: highest first
-
-    CUR_SYMBOL = {"$": "USD", "AU $": "AUD", "C $": "CAD", "\u00a3": "GBP", "EUR": "EUR"}
-
-    def _price(self, txt):
-        txt = html.unescape(txt or "").strip()
-        cur = "USD"
-        for sym, code in self.CUR_SYMBOL.items():
-            if txt.startswith(sym):
-                cur = code; break
-        m = re.search(r"([\d,]+(?:\.\d{1,2})?)", txt)
-        if not m: return None, cur
-        return float(m.group(1).replace(",", "")), cur
-
-    def _sold_date(self, txt):
-        m = re.search(r"Sold\s+([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{4})", txt or "")
-        if not m: return None
-        months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,
-                  "Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
-        mm = months.get(m.group(1)[:3].title())
-        if not mm: return None
-        return f"{int(m.group(3)):04d}-{mm:02d}-{int(m.group(2)):02d}"
-
-    def _dump(self, driver_id, page):
-        low = page.lower()
-        blocked = any(x in low for x in ("pardon our interruption", "captcha",
-                                         "verify yourself", "challenge-form", "denied"))
-        print(f"  [ebay] DIAGNOSTIC {driver_id}: len={len(page)} blocked={blocked} "
-              f"s-item={page.count('s-item__title')} s-card={page.count('s-card')} "
-              f"itm_links={len(re.findall(r'/itm/', page))} sold_tags={page.count('Sold ')}")
-        i = page.find("/itm/")
-        if i > 0:
-            print("  [ebay] ~itm snippet: ..." + re.sub(r"\s+", " ", page[max(0,i-160):i+260]) + "...")
+    def token(self):
+        if self._token:
+            return self._token
+        cid = os.environ.get("EBAY_CLIENT_ID"); sec = os.environ.get("EBAY_CLIENT_SECRET")
+        if not (cid and sec):
+            print("  [ebay] EBAY_CLIENT_ID / EBAY_CLIENT_SECRET not set — skipping eBay.")
+            return None
+        import base64
+        basic = base64.b64encode(f"{cid}:{sec}".encode()).decode()
+        try:
+            r = requests.post(self.OAUTH, timeout=25,
+                headers={"Authorization": "Basic " + basic,
+                         "Content-Type": "application/x-www-form-urlencoded"},
+                data={"grant_type": "client_credentials",
+                      "scope": "https://api.ebay.com/oauth/api_scope"})
+            j = r.json()
+        except Exception as e:
+            print(f"  [ebay] oauth error: {str(e)[:120]}"); return None
+        self._token = j.get("access_token")
+        if not self._token:
+            print(f"  [ebay] oauth FAILED HTTP{r.status_code}: {str(j)[:200]}")
+        return self._token
 
     def search(self, driver: dict) -> list[Sale]:
-        q = (driver["aliases"][0] + " f1").replace(" ", "+")
-        try:
-            r = requests.get(self.SEARCH.format(q=q), timeout=25, headers={
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml",
-                "Accept-Language": "en-US,en;q=0.9"})
-            page = r.text
-        except Exception as e:
-            print(f"  [ebay] fetch error {driver['id']}: {str(e)[:80]}")
+        tok = self.token()
+        if not tok:
             return []
-
-        # split into item chunks on /itm/ links; parse each chunk independently.
-        sales, seen = [], set()
-        chunks = re.split(r'(?=<a[^>]+href="https://www\.ebay\.com/itm/)', page)
-        for ch in chunks[1:]:
-            mu = re.search(r'href="(https://www\.ebay\.com/itm/(\d+)[^"]*)"', ch)
-            if not mu: continue
-            url, item_id = mu.group(1).split("?")[0], mu.group(2)
-            if item_id in seen: continue
-            # title: prefer the classic span, fall back to the link text / image alt
-            mt = (re.search(r'class="s-item__title[^"]*"[^>]*>(?:<[^>]+>)*([^<]{15,})', ch)
-                  or re.search(r'<img[^>]+alt="([^"]{15,})"', ch)
-                  or re.search(r'/itm/[^"]+"[^>]*>(?:<[^>]+>)*([^<]{15,})<', ch))
-            mp = re.search(r'class="[^"]*s-item__price[^"]*"[^>]*>(?:<[^>]+>)*([^<]+)', ch)                  or re.search(r'>\s*(\$[\d,]+(?:\.\d{2})?)\s*<', ch)
-            if not (mt and mp): continue
-            title = html.unescape(mt.group(1)).strip()
-            if title.lower().startswith("shop on ebay"): continue   # template ghost row
-            price, cur = self._price(mp.group(1))
-            if not price: continue
-            mi = re.search(r'<img[^>]+src="(https://i\.ebayimg\.com/[^"]+)"', ch)
-            sd = self._sold_date(ch)
-            s = build_sale(self.source, item_id, url, title, price, cur,
-                           sale_date=sd, sale_type="auction",
-                           image_url=(mi.group(1) if mi else None))
+        params = {"q": driver["aliases"][0] + " formula 1 card", "limit": 50}
+        try:
+            r = requests.get(self.SEARCH, timeout=25, params=params,
+                headers={"Authorization": "Bearer " + tok,
+                         "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
+                         "Accept": "application/json"})
+            j = r.json()
+        except Exception as e:
+            print(f"  [ebay] search error {driver['id']}: {str(e)[:120]}"); return []
+        items = (j or {}).get("itemSummaries") or []
+        if not items:
+            warn = j.get("warnings") or j.get("errors")
+            if warn:
+                print(f"  [ebay] {driver['id']}: 0 items — {str(warn)[:160]}")
+        sales = []
+        for it in items:
+            opts = it.get("buyingOptions") or []
+            is_auction = "AUCTION" in opts
+            pobj = (it.get("currentBidPrice") if (is_auction and it.get("currentBidPrice"))
+                    else it.get("price"))
+            price, cur = None, "USD"
+            if pobj:
+                try: price, cur = float(pobj.get("value")), (pobj.get("currency") or "USD")
+                except Exception: price = None
+            s = build_sale(self.source,
+                           it.get("itemId") or it.get("legacyItemId") or "",
+                           it.get("itemWebUrl") or "", it.get("title"), price, cur,
+                           sale_date=(it.get("itemEndDate") or "")[:10] or None,
+                           sale_type=("auction" if is_auction else "buy_now"),
+                           bids=(it.get("bidCount") if is_auction else None),
+                           image_url=((it.get("image") or {}).get("imageUrl")))
             if s:
-                seen.add(item_id); sales.append(s)
-        if not sales:
-            self._dump(driver["id"], page)
+                if s.status != "rejected":
+                    s.flags.append("live_auction")   # active listing, not a settled comp
+                sales.append(s)
         return sales
 
 
-ADAPTERS = [GoldinAdapter(), EbayAdapter()]   # FanaticsAdapter() next, same shape
+ADAPTERS = [GoldinAdapter(), EbayBrowseAdapter()]   # FanaticsAdapter() next, same shape
 
 
 # ----------------------------------------------------------------------------
