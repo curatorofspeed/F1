@@ -179,7 +179,7 @@ def build_result(series_key, city, rows):
     code = CITY_TO_RACE.get((city or "").strip().lower())
     top = []
     prospect_hit = None
-    for r in rows[:6]:
+    for r in rows:                       # full classification, not just the top 6
         pid = prospect_id(r["abbr"], r["surname"])
         if pid and prospect_hit is None:
             prospect_hit = {"pos": r["pos"], "id": pid, "name": r["name"]}
