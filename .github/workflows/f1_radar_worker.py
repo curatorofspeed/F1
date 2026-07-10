@@ -64,6 +64,20 @@ DRIVERS = [
     {"id": "bortoleto",   "name": "Gabriel Bortoleto",     "aliases": ["bortoleto"]},
     {"id": "perez",       "name": "Sergio Perez",          "aliases": ["perez", "pérez", "sergio perez"]},
     {"id": "bottas",      "name": "Valtteri Bottas",       "aliases": ["bottas"]},
+    # ---- F2/F3 prospects (tracked on the site's prospect boards) ----
+    {"id": "ugochukwu",   "name": "Ugo Ugochukwu",         "aliases": ["ugochukwu"]},
+    {"id": "camara",      "name": "Rafael Camara",         "aliases": ["camara", "câmara", "rafael camara"]},
+    {"id": "montoya",     "name": "Sebastian Montoya",     "aliases": ["sebastian montoya", "sebastián montoya"]},
+    {"id": "mini",        "name": "Gabriele Mini",         "aliases": ["gabriele mini", "gabriele minì"]},
+    {"id": "fornaroli",   "name": "Leonardo Fornaroli",    "aliases": ["fornaroli"]},
+    {"id": "dunne",       "name": "Alex Dunne",            "aliases": ["dunne", "alex dunne"]},
+    {"id": "beganovic",   "name": "Dino Beganovic",        "aliases": ["beganovic", "beganović"]},
+    {"id": "verschoor",   "name": "Richard Verschoor",     "aliases": ["verschoor"]},
+    {"id": "crawford",    "name": "Jak Crawford",          "aliases": ["crawford", "jak crawford"]},
+    {"id": "martins",     "name": "Victor Martins",        "aliases": ["martins", "victor martins"]},
+    {"id": "maini",       "name": "Kush Maini",            "aliases": ["maini"]},
+    {"id": "browning",    "name": "Luke Browning",         "aliases": ["browning", "luke browning"]},
+    {"id": "durksen",     "name": "Joshua Durksen",        "aliases": ["durksen", "dürksen"]},
 ]
 ALIAS_TO_DRIVER = {a.lower(): d for d in DRIVERS for a in d["aliases"]}
 
@@ -498,7 +512,93 @@ def normalize_goldin_lot(base, lot):
             "bids": _first(d, _BID_KEYS), "image_url": img}
 
 
-ADAPTERS = [GoldinAdapter()]   # FanaticsAdapter() next, same shape
+class EbayAdapter(Adapter):
+    """Sold-listing comps from eBay search (LH_Sold). Regex-parsed like the rest
+    of the worker (no bs4 — the f1-radar workflow doesn't install it).
+    NOTE: eBay bot-protects aggressively; if runs show 'blocked' diagnostics,
+    the durable path is eBay's official Browse/Insights APIs (OAuth)."""
+    source = "ebay"
+    base = "https://www.ebay.com"
+
+    SEARCH = ("https://www.ebay.com/sch/i.html?_nkw={q}&LH_Sold=1&LH_Complete=1"
+              "&_sop=16&_ipg=60")   # price+shipping: highest first
+
+    CUR_SYMBOL = {"$": "USD", "AU $": "AUD", "C $": "CAD", "\u00a3": "GBP", "EUR": "EUR"}
+
+    def _price(self, txt):
+        txt = html.unescape(txt or "").strip()
+        cur = "USD"
+        for sym, code in self.CUR_SYMBOL.items():
+            if txt.startswith(sym):
+                cur = code; break
+        m = re.search(r"([\d,]+(?:\.\d{1,2})?)", txt)
+        if not m: return None, cur
+        return float(m.group(1).replace(",", "")), cur
+
+    def _sold_date(self, txt):
+        m = re.search(r"Sold\s+([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{4})", txt or "")
+        if not m: return None
+        months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,
+                  "Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
+        mm = months.get(m.group(1)[:3].title())
+        if not mm: return None
+        return f"{int(m.group(3)):04d}-{mm:02d}-{int(m.group(2)):02d}"
+
+    def _dump(self, driver_id, page):
+        low = page.lower()
+        blocked = any(x in low for x in ("pardon our interruption", "captcha",
+                                         "verify yourself", "challenge-form", "denied"))
+        print(f"  [ebay] DIAGNOSTIC {driver_id}: len={len(page)} blocked={blocked} "
+              f"s-item={page.count('s-item__title')} s-card={page.count('s-card')} "
+              f"itm_links={len(re.findall(r'/itm/', page))} sold_tags={page.count('Sold ')}")
+        i = page.find("/itm/")
+        if i > 0:
+            print("  [ebay] ~itm snippet: ..." + re.sub(r"\s+", " ", page[max(0,i-160):i+260]) + "...")
+
+    def search(self, driver: dict) -> list[Sale]:
+        q = (driver["aliases"][0] + " f1").replace(" ", "+")
+        try:
+            r = requests.get(self.SEARCH.format(q=q), timeout=25, headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "en-US,en;q=0.9"})
+            page = r.text
+        except Exception as e:
+            print(f"  [ebay] fetch error {driver['id']}: {str(e)[:80]}")
+            return []
+
+        # split into item chunks on /itm/ links; parse each chunk independently.
+        sales, seen = [], set()
+        chunks = re.split(r'(?=<a[^>]+href="https://www\.ebay\.com/itm/)', page)
+        for ch in chunks[1:]:
+            mu = re.search(r'href="(https://www\.ebay\.com/itm/(\d+)[^"]*)"', ch)
+            if not mu: continue
+            url, item_id = mu.group(1).split("?")[0], mu.group(2)
+            if item_id in seen: continue
+            # title: prefer the classic span, fall back to the link text / image alt
+            mt = (re.search(r'class="s-item__title[^"]*"[^>]*>(?:<[^>]+>)*([^<]{15,})', ch)
+                  or re.search(r'<img[^>]+alt="([^"]{15,})"', ch)
+                  or re.search(r'/itm/[^"]+"[^>]*>(?:<[^>]+>)*([^<]{15,})<', ch))
+            mp = re.search(r'class="[^"]*s-item__price[^"]*"[^>]*>(?:<[^>]+>)*([^<]+)', ch)                  or re.search(r'>\s*(\$[\d,]+(?:\.\d{2})?)\s*<', ch)
+            if not (mt and mp): continue
+            title = html.unescape(mt.group(1)).strip()
+            if title.lower().startswith("shop on ebay"): continue   # template ghost row
+            price, cur = self._price(mp.group(1))
+            if not price: continue
+            mi = re.search(r'<img[^>]+src="(https://i\.ebayimg\.com/[^"]+)"', ch)
+            sd = self._sold_date(ch)
+            s = build_sale(self.source, item_id, url, title, price, cur,
+                           sale_date=sd, sale_type="auction",
+                           image_url=(mi.group(1) if mi else None))
+            if s:
+                seen.add(item_id); sales.append(s)
+        if not sales:
+            self._dump(driver["id"], page)
+        return sales
+
+
+ADAPTERS = [GoldinAdapter(), EbayAdapter()]   # FanaticsAdapter() next, same shape
 
 
 # ----------------------------------------------------------------------------
