@@ -126,6 +126,14 @@ footer.site .links a:hover{color:var(--teal);text-decoration:none}
 footer.site .fine{font-size:12.5px;color:var(--muted);line-height:1.62}
 @media(max-width:560px){h1{font-size:33px}main{padding:30px 0 6px}.record{flex-direction:row}.record img{width:72px}td.dt{display:none}th.dt{display:none}}`;
 
+const CHECKLIST_CSS = `
+h3.cl-set{font-size:15px;margin:26px 0 8px;font-weight:700}
+h3.cl-set a{color:var(--gold)}
+table.cl td,table.cl th{padding:7px 12px;font-size:13.5px}
+table.cl .rc{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;color:#062;background:#39e08a;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+table.cl td a{color:var(--gold);font-weight:600;font-size:12.5px}
+`;
+
 const FOOT_LINKS = `<a href="/">Market Home</a>
 <a href="/f1-card-price-guide">Price Guide</a>
 <a href="/topps-chrome-f1-guide">Topps Chrome Guide</a>
@@ -148,8 +156,69 @@ function sourcesSentence(top10) {
   return parts.join(', ');
 }
 
+/* ---------- card checklist section ---------- */
+// map a card's {set, year} to its /sets/ page slug (only sets that have pages)
+function setSlug(set, year) {
+  const s = String(set || '').toLowerCase();
+  if (/sapphire/.test(s))            return `${year}-topps-chrome-sapphire-f1`;
+  if (/dynasty/.test(s))             return `${year}-topps-dynasty-f1`;
+  if (/logofractor/.test(s))         return `${year}-topps-chrome-logofractor-f1`;
+  if (/chrome/.test(s))              return `${year}-topps-chrome-f1`;
+  return null;
+}
+function ebaySearch(q) {
+  let u = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(q);
+  if (EPN_CAMPID) u += '&mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid='
+    + encodeURIComponent(EPN_CAMPID) + '&toolid=10001';
+  return u;
+}
+function checklistSection(d) {
+  const cards = (d.cards || []).filter(c => c && c.set && c.parallel);
+  if (!cards.length) return { html: '', count: 0 };
+  // group by "year set", newest first; dedupe grade variants of the same parallel
+  const groups = {};
+  cards.forEach(c => {
+    const key = `${c.year} ${c.set}`;
+    (groups[key] = groups[key] || { year: c.year, set: c.set, seen: new Set(), rows: [] });
+    const g = groups[key];
+    if (g.seen.has(c.parallel)) return;
+    g.seen.add(c.parallel);
+    g.rows.push(c);
+  });
+  const keys = Object.keys(groups).sort((x, y) => groups[y].year - groups[x].year || x.localeCompare(y));
+  let count = 0;
+  const blocks = keys.map(k => {
+    const g = groups[k];
+    const slug = setSlug(g.set, g.year);
+    const head = slug
+      ? `<a href="/sets/${slug}">${esc(k)}</a>`
+      : esc(k);
+    const rows = g.rows.map(c => {
+      count++;
+      const clean = String(c.parallel).replace(/^#\d+\s*/, '');       // "#8 Gold Refractor" -> "Gold Refractor"
+      const q = `${lastName(d.name)} ${g.year} ${g.set} ${clean}`.replace(/\s+/g, ' ');
+      return `<tr><td>${esc(c.parallel)}${c.rc ? ' <span class="rc">RC</span>' : ''}</td>` +
+        `<td class="pr">${c.print != null ? '/' + c.print : '—'}</td>` +
+        `<td class="dt"><a href="${ebaySearch(q)}" target="_blank" rel="noopener sponsored">Shop &nearr;</a></td></tr>`;
+    }).join('\n');
+    return `<h3 class="cl-set">${head}</h3>
+<table class="cl">
+<thead><tr><th>Card</th><th># / Run</th><th></th></tr></thead>
+<tbody>
+${rows}
+</tbody>
+</table>`;
+  }).join('\n');
+  const html = `
+<h2>${esc(d.name)} Card Checklist</h2>
+<p class="tbl-note">Base cards and the parallel rainbow by set · print runs where numbered · shop links are eBay affiliate links</p>
+${blocks}`;
+  return { html, count };
+}
+
 function pageHtml(d, allDrivers) {
   const top10 = (d.top10 || []).slice().sort((a, b) => (b.price || 0) - (a.price || 0)).slice(0, 10);
+  const checklist = checklistSection(d);
   const top = top10[0];
   const low = top10[top10.length - 1];
   const years = top10.map(t => (t.date || '').slice(0, 4)).filter(Boolean).sort();
@@ -229,7 +298,7 @@ ${ADSENSE_SNIPPET}
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
 <script type="application/ld+json">${JSON.stringify(itemList)}</script>
-<style>${STYLE}</style>
+<style>${STYLE}${CHECKLIST_CSS}</style>
 </head>
 <body>
 <header class="site"><div class="wrap">
@@ -255,6 +324,8 @@ ${rows}
 ${contextP}
 
 <p><a class="btn" href="/#${d.id}">Open the live ${esc(ln)} board &rarr;</a></p>
+
+${checklist.html}
 
 <h2>More Driver Price Guides</h2>
 <div class="xlinks">
@@ -303,7 +374,8 @@ function sitemapXml(driverIds) {
     console.log(`  drivers/${d.id}.html  (${(out.length / 1024).toFixed(0)} KB, top10: ${d.top10.length})`);
   });
 
-  fs.writeFileSync(SITEMAP, sitemapXml(drivers.map(d => d.id)));
+  // sitemap.xml is owned by generate_sitemap.js (full site: drivers + sets + pages).
+  // Run `node generate_sitemap.js` after this tool instead of writing a partial one here.
   console.log(`  sitemap.xml  (${BASE_URLS.length + drivers.length} URLs)`);
 
   // refresh footer nav in index.html between markers
