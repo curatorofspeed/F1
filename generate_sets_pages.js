@@ -7,6 +7,14 @@
 const fs = require('fs');
 const path = require('path');
 
+/* ---------------- MONETIZATION CONFIG (edit these two, then re-run) --------
+   EPN_CAMPID     — your 10-digit eBay Partner Network campaign id ('' = plain
+                    eBay links, no tracking, until you paste it).
+   ADSENSE_CLIENT — your AdSense publisher id 'ca-pub-XXXXXXXXXXXXXXXX'
+                    ('' = no ad code emitted until AdSense approves you).      */
+const EPN_CAMPID     = '5339157397';
+const ADSENSE_CLIENT = '';
+
 const ROOT = __dirname;
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 const OUT = path.join(ROOT, 'sets');
@@ -34,6 +42,21 @@ console.log('Found', slugs.length, 'sets:', slugs.join(', '));
 // ---- helpers ----------------------------------------------------------------
 const esc = s => String(s == null ? '' : s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function ebayShop(q){
+  let u = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(q);
+  if (EPN_CAMPID) u += '&mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid='
+    + encodeURIComponent(EPN_CAMPID) + '&toolid=10001';
+  return u;
+}
+const AD_HEAD = ADSENSE_CLIENT
+  ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></scr`+`ipt>`
+  : '';
+function adSlot(){
+  if (!ADSENSE_CLIENT) return '';
+  return `<ins class="adsbygoogle" style="display:block;margin:26px 0" data-ad-client="${ADSENSE_CLIENT}" data-ad-format="auto" data-full-width-responsive="true"></ins>`
+    + `<scr`+`ipt>(adsbygoogle=window.adsbygoogle||[]).push({});</scr`+`ipt>`;
+}
 
 const CSS = `
 :root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--teal:#c4cdd2;--rc:#39e08a}
@@ -67,6 +90,10 @@ ul.plain li .d{color:var(--muted);font-size:13px}
 .chip{font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:4px 11px;color:#cfd6db}
 .key{background:linear-gradient(120deg,var(--panel),var(--panel2));border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:14px 16px;margin:0}
 .key li{margin:0 0 4px}
+.shop{font-size:12px;white-space:nowrap;color:var(--gold);font-weight:600}
+.shop:hover{text-decoration:underline}
+.cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(120deg,var(--panel),var(--panel2));border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:10px 16px;margin:0 0 8px;font-size:14px;font-weight:700;color:var(--txt)}
+.cta:hover{border-color:var(--gold);text-decoration:none}
 .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:8px}
 .setcard{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;transition:border-color .14s}
@@ -83,6 +110,7 @@ function shell(title, desc, canonical, body){
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(canonical)}">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
+${AD_HEAD}
 <style>${CSS}</style></head><body><div class="wrap">${body}</div></body></html>`;
 }
 
@@ -97,7 +125,7 @@ function setPage(slug, s){
   ).join('');
 
   const par = (s.parallels || []).map(p =>
-    `<tr><td>${esc(p[0])}</td><td class="pr">${p[1] != null ? '/' + p[1] : '—'}</td><td class="odds">${esc(p[2] || '')}</td></tr>`
+    `<tr><td>${esc(p[0])}</td><td class="pr">${p[1] != null ? '/' + p[1] : '—'}</td><td class="odds">${esc(p[2] || '')}</td><td><a class="shop" href="${ebayShop(s.name + ' ' + p[0])}" target="_blank" rel="noopener sponsored">Shop ↗</a></td></tr>`
   ).join('');
 
   const autos = (s.autos || []).map(a => `<li><b>${esc(a[0])}</b><div class="d">${esc(a[1] || '')}</div></li>`).join('');
@@ -110,12 +138,13 @@ function setPage(slug, s){
 <div class="eyebrow">◆ ${esc(s.brand)} · ${esc(s.line)}</div>
 <h1>${esc(s.name)}</h1>
 <p class="meta"><b>${esc(s.year)}</b> · ${esc(s.tier)}${s.released ? ' · Released ' + esc(s.released) : ''}${s.baseSize ? ' · ' + esc(s.baseSize) + '-card base' : ''}</p>
+<a class="cta" href="${ebayShop(s.name)}" target="_blank" rel="noopener sponsored">\uD83D\uDED2 Shop ${esc(s.name)} on eBay \u2197</a>
 ${s.blurb ? `<p class="blurb">${esc(s.blurb)}</p>` : ''}
 ${s.config ? `<p class="config">${esc(s.config)}</p>` : ''}
 
 ${keys ? `<h2>⭐ Key Cards</h2><ul class="key plain">${keys}</ul>` : ''}
 
-${par ? `<h2>🌈 Parallel Ladder</h2><div class="panel"><table><thead><tr><th>Parallel</th><th># / Run</th><th>Odds / Note</th></tr></thead><tbody>${par}</tbody></table></div>` : ''}
+${par ? `<h2>🌈 Parallel Ladder</h2><div class="panel"><table><thead><tr><th>Parallel</th><th># / Run</th><th>Odds / Note</th><th></th></tr></thead><tbody>${par}</tbody></table></div>${adSlot()}` : ''}
 
 ${base ? `<h2>📋 Base Set — Drivers</h2>${s.baseNote ? `<p class="config">${esc(s.baseNote)}</p>` : ''}<div class="panel"><table><thead><tr><th>#</th><th>Driver</th><th>Team</th></tr></thead><tbody>${base}</tbody></table></div>` : ''}
 ${subs ? `<div class="chips" style="margin-top:12px">${subs}</div>` : ''}
@@ -123,7 +152,7 @@ ${subs ? `<div class="chips" style="margin-top:12px">${subs}</div>` : ''}
 ${autos ? `<h2>✍️ Autographs</h2><div class="panel"><ul class="plain">${autos}</ul></div>` : ''}
 ${inserts ? `<h2>🎴 Inserts</h2><div class="panel"><ul class="plain">${inserts}</ul></div>` : ''}
 
-<div class="foot">Checklist data compiled by <a href="/">The F1 Card Index</a>. Print runs and odds per Topps release info; verify before purchase.</div>`;
+<div class="foot">Checklist data compiled by <a href="/">The F1 Card Index</a>. Print runs and odds per Topps release info; verify before purchase. Some links are eBay affiliate links — we may earn a commission at no extra cost to you.</div>`;
   return shell(title, desc, canonical, body);
 }
 
