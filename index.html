@@ -342,6 +342,8 @@
   .dsig-a:hover{background:rgba(230,182,92,.18)}
   .dsig-s{color:var(--up);border-color:#1a3a27;background:rgba(57,224,138,.06)}
   .dsig-s:hover{background:rgba(57,224,138,.18)}
+  .dsig-c{color:#00D2BE;border-color:#0e3a36;background:rgba(0,210,190,.06)}
+  .dsig-c:hover{background:rgba(0,210,190,.18)}
 
   /* board rows */
   .controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:13px}
@@ -2520,7 +2522,6 @@ function renderGradeCalc(d){
       '<a class="gc-btn gc-psa" href="'+esc(affWrap('https://www.psacard.com/startsubmission','psa'))+'" target="_blank" rel="noopener sponsored">💎 Submit to PSA ↗</a>'+'<a class="gc-btn gc-beckett" href="'+esc(affWrap('https://www.beckett.com/grading','beckett'))+'" target="_blank" rel="noopener sponsored">🔹 Submit to Beckett ↗</a>'+'<a class="gc-btn gc-tag" href="'+esc(affWrap('https://taggrading.com/pages/pricing','tag'))+'" target="_blank" rel="noopener sponsored">🏷️ Submit to TAG ↗</a>'+
       '<a class="gc-btn gc-ghost" href="'+esc(gridEbay(d.name,false))+'" target="_blank" rel="noopener">Find raw copies ↗</a>'+
       '<a class="gc-btn gc-ghost" href="'+esc(psa10Link(d.name))+'" target="_blank" rel="noopener">PSA 10 comps ↗</a>'+
-      '<a class="gc-btn gc-ghost" id="gc130" href="'+POINT130+'" target="_blank" rel="noopener" title="True sold prices incl. accepted Best Offers">💯 130point ↗</a>'+
     '</div>'+
     '<a class="wn-seller-card" href="https://whatnot.com/invite/seller/f1index" target="_blank" rel="noopener sponsored">'+
       '<span class="wn-amt-g">$150</span>'+
@@ -2528,8 +2529,6 @@ function renderGradeCalc(d){
       '<span class="wn-go-g">↗</span>'+
     '</a>';
   gcRecalc();
-  const gp=document.getElementById('gc130');
-  if(gp)gp.onclick=()=>copy130('Topps Chrome Formula 1 '+d.name+' PSA 10');
 }
 function resultBadge(id,res){
   if(!res)return null;
@@ -2563,7 +2562,7 @@ function renderDriverGrid(){
       <div class="dsig-row">
         <a class="dsig dsig-a" href="${gridEbay(d.name,false)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">⏱ Ending</a>
         <a class="dsig dsig-s" href="${gridEbay(d.name,true)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">✅ Sold</a>
-        ${d.id==='antonelli'?`<a class="dsig" href="/kimi-antonelli-card-checklist" onclick="event.stopPropagation()">📋 Checklist</a>`:''}
+        ${d.id==='antonelli'?`<a class="dsig dsig-c" href="/kimi-antonelli-card-checklist" onclick="event.stopPropagation()">📋 Checklist</a>`:''}
       </div>
     </div>`;
   };
