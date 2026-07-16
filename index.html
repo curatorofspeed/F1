@@ -913,6 +913,10 @@
       <a href="/topps-chrome-f1-guide">Topps Chrome Guide</a>
       <a href="/kimi-antonelli-rookie-card-guide">Antonelli RC Guide</a>
       <a href="/kimi-antonelli-card-checklist">Antonelli Checklist</a>
+      <a href="/max-verstappen-card-checklist">Verstappen Checklist</a>
+      <a href="/lando-norris-card-checklist">Norris Checklist</a>
+      <a href="/lewis-hamilton-card-checklist">Hamilton Checklist</a>
+      <a href="/charles-leclerc-card-checklist">Leclerc Checklist</a>
       <a href="/f1-card-market-report">Market Report</a>
       <a href="/about">About</a>
       <a href="/methodology">Methodology</a>
@@ -2542,6 +2546,7 @@ function resultBadge(id,res){
   if(res.dnf&&res.dnf.indexOf(id)>-1)return{txt:'▼ DNF',cls:'rb-dnf'};
   return null;
 }
+const CHECKLIST_PAGES={antonelli:'kimi-antonelli-card-checklist',verstappen:'max-verstappen-card-checklist',norris:'lando-norris-card-checklist',hamilton:'lewis-hamilton-card-checklist',leclerc:'charles-leclerc-card-checklist'};
 function renderDriverGrid(){
   const box=$('driversBox');
   const mr=mostRecentResult();const res=mr?mr.res:null;
@@ -2562,7 +2567,7 @@ function renderDriverGrid(){
       <div class="dsig-row">
         <a class="dsig dsig-a" href="${gridEbay(d.name,false)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">⏱ Ending</a>
         <a class="dsig dsig-s" href="${gridEbay(d.name,true)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">✅ Sold</a>
-        ${d.id==='antonelli'?`<a class="dsig dsig-c" href="/kimi-antonelli-card-checklist" onclick="event.stopPropagation()">📋 Checklist</a>`:''}
+        ${CHECKLIST_PAGES[d.id]?`<a class="dsig dsig-c" href="/${CHECKLIST_PAGES[d.id]}" onclick="event.stopPropagation()">📋 Checklist</a>`:''}
       </div>
     </div>`;
   };
@@ -2765,9 +2770,10 @@ function renderDriver(){
   $('dTeam').textContent=d.team+(d.rookieYear?(' · Rookie '+d.rookieYear):'')+(d.number!=null?(' · #'+d.number):'');
   (function(){var el=document.getElementById('gvDriverCallout');if(!el)return;
     var kimi=(d.id==='antonelli');
-    var ck=kimi?'<a class="gv-driver" href="/kimi-antonelli-card-checklist">'+
+    var ckpg=CHECKLIST_PAGES[d.id];
+    var ck=ckpg?'<a class="gv-driver" href="/'+ckpg+'">'+
       '<div class="gv-d-body"><div class="gv-d-eye">◆ Collection Tool</div>'+
-      '<div class="gv-d-h">Antonelli checklist \u2014 every Topps parallel, trackable</div></div>'+
+      '<div class="gv-d-h">'+d.name.split(' ').pop()+' checklist \u2014 every Topps parallel, trackable</div></div>'+
       '<div class="gv-d-go">Open \u2192</div></a>':'';
     if(Date.parse(GV_END_DATE)<Date.now()){el.innerHTML=ck;return;}   // giveaway closed: keep checklist link
     el.innerHTML='<a class="gv-driver" href="'+GV_GIVEAWAY_URL+'">'+
