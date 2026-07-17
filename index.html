@@ -917,6 +917,10 @@
       <a href="/lando-norris-card-checklist">Norris Checklist</a>
       <a href="/lewis-hamilton-card-checklist">Hamilton Checklist</a>
       <a href="/charles-leclerc-card-checklist">Leclerc Checklist</a>
+      <a href="/oscar-piastri-card-checklist">Piastri Checklist</a>
+      <a href="/george-russell-card-checklist">Russell Checklist</a>
+      <a href="/fernando-alonso-card-checklist">Alonso Checklist</a>
+      <a href="/ayrton-senna-card-checklist">Senna Checklist</a>
       <a href="/f1-card-market-report">Market Report</a>
       <a href="/about">About</a>
       <a href="/methodology">Methodology</a>
@@ -2546,7 +2550,7 @@ function resultBadge(id,res){
   if(res.dnf&&res.dnf.indexOf(id)>-1)return{txt:'▼ DNF',cls:'rb-dnf'};
   return null;
 }
-const CHECKLIST_PAGES={antonelli:'kimi-antonelli-card-checklist',verstappen:'max-verstappen-card-checklist',norris:'lando-norris-card-checklist',hamilton:'lewis-hamilton-card-checklist',leclerc:'charles-leclerc-card-checklist'};
+const CHECKLIST_PAGES={antonelli:'kimi-antonelli-card-checklist',verstappen:'max-verstappen-card-checklist',norris:'lando-norris-card-checklist',hamilton:'lewis-hamilton-card-checklist',leclerc:'charles-leclerc-card-checklist',piastri:'oscar-piastri-card-checklist',russell:'george-russell-card-checklist',alonso:'fernando-alonso-card-checklist',senna:'ayrton-senna-card-checklist'};
 function renderDriverGrid(){
   const box=$('driversBox');
   const mr=mostRecentResult();const res=mr?mr.res:null;

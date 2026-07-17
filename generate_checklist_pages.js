@@ -92,8 +92,9 @@ const DRIVERS=[
 {set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Antonelli",meta:"Jan 2026 · THE flagship F1 rookie card · #8 Mercedes",cards:[
   C("8","F1 Drivers · Mercedes-AMG Petronas","Base",CHROME25,1),
   C("8 IV","Image Variation SSP (1:2,881 — no parallels)","Base",[P("Image Variation SSP")],1),
-  C("80","Base subset card","Base",CHROME25),
-  C("185","Standout Performances","Base",CHROME25),
+  C("80","F1 Cars · Mercedes","Base",CHROME25),
+  C("167","F1 Duo · with Russell","Base",CHROME25),
+  C("185","F1 On The Move","Base",CHROME25),
   C("SD-1","Speed Demons","Insert",INSERT25),
   C("HC-1","Helmet Collection","Insert",INSERT25),
   C("FUT-ANT","Futuro","Insert",SP25),
@@ -182,8 +183,10 @@ const DRIVERS=[
   C("1","F1 Drivers · Sapphire","Base",SAPP)]},
 {set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Verstappen",meta:"Jan 2026 · card #1 of the 75th-anniversary flagship",cards:[
   C("1","F1 Drivers · Oracle Red Bull Racing","Base",CHROME25),
-  C("113","Standout Performances","Base",CHROME25),
-  C("115","Standout Performances","Base",CHROME25),
+  C("73","F1 Cars · Red Bull","Base",CHROME25),
+  C("164","F1 Duo · with Tsunoda","Base",CHROME25),
+  C("113","Grand Prix Winners","Base",CHROME25),
+  C("115","Grand Prix Winners","Base",CHROME25),
   C("117","Pole Position","Base",CHROME25),
   C("142","Grand Prix Driver of the Day","Base",CHROME25),
   C("148","F1 Award Winners","Base",CHROME25),
@@ -255,17 +258,19 @@ const DRIVERS=[
 {set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Norris",meta:"Jan 2026 · twelve subset cards — most on the grid",cards:[
   C("5","F1 Drivers · McLaren","Base",CHROME25),
   C("5 IV","Image Variation SSP (1:2,881 — no parallels)","Base",[P("Image Variation SSP")]),
-  C("107","Standout Performances","Base",CHROME25),
-  C("110","Standout Performances","Base",CHROME25),
+  C("77","F1 Cars · McLaren","Base",CHROME25),
+  C("166","F1 Duo · with Piastri","Base",CHROME25),
+  C("107","Grand Prix Winners","Base",CHROME25),
+  C("110","Grand Prix Winners","Base",CHROME25),
   C("116","Pole Position","Base",CHROME25),
   C("120","Pole Position","Base",CHROME25),
-  C("126","Grand Prix subset","Base",CHROME25),
-  C("127","Grand Prix subset","Base",CHROME25),
-  C("128","Grand Prix subset","Base",CHROME25),
-  C("130","Grand Prix subset","Base",CHROME25),
-  C("131","Grand Prix subset","Base",CHROME25),
-  C("132","Grand Prix subset","Base",CHROME25),
-  C("136","Grand Prix subset","Base",CHROME25),
+  C("126","Grand Prix Driver of the Day","Base",CHROME25),
+  C("127","Grand Prix Driver of the Day","Base",CHROME25),
+  C("128","Grand Prix Driver of the Day","Base",CHROME25),
+  C("130","Grand Prix Driver of the Day","Base",CHROME25),
+  C("131","Grand Prix Driver of the Day","Base",CHROME25),
+  C("132","Grand Prix Driver of the Day","Base",CHROME25),
+  C("136","Grand Prix Driver of the Day","Base",CHROME25),
   C("147","F1 Award Winners","Base",CHROME25),
   C("SCA-4","Ace of Trades","Insert",INSERT25),
   C("VGS-5","Vegas at Night SP","Insert",SP25),
@@ -335,11 +340,13 @@ const DRIVERS=[
 {set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Hamilton",meta:"Jan 2026 · first Ferrari-era Chrome cards",cards:[
   C("4","F1 Drivers · Scuderia Ferrari","Base",CHROME25),
   C("4 IV","Image Variation SSP (1:2,881 — no parallels)","Base",[P("Image Variation SSP")]),
-  C("104","Standout Performances","Base",CHROME25),
-  C("106","Standout Performances","Base",CHROME25),
-  C("133","Grand Prix subset","Base",CHROME25),
-  C("135","Grand Prix subset","Base",CHROME25),
-  C("143","Grand Prix subset","Base",CHROME25),
+  C("76","F1 Cars · Ferrari","Base",CHROME25),
+  C("165","F1 Duo · with Leclerc","Base",CHROME25),
+  C("104","Grand Prix Winners","Base",CHROME25),
+  C("106","Grand Prix Winners","Base",CHROME25),
+  C("133","Grand Prix Driver of the Day","Base",CHROME25),
+  C("135","Grand Prix Driver of the Day","Base",CHROME25),
+  C("143","Grand Prix Driver of the Day","Base",CHROME25),
   C("TS-2","Top Speed","Insert",[P("Base",0,"Value"),P("SuperFractor",1)]),
   C("VGS-2","Vegas at Night SP","Insert",SP25),
   C("SD-2","Speed Demons","Insert",INSERT25),
@@ -409,13 +416,15 @@ const DRIVERS=[
   C("3","F1 Drivers · Sapphire","Base",SAPP)]},
 {set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Leclerc",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
   C("3","F1 Drivers · Scuderia Ferrari","Base",CHROME25),
-  C("108","Standout Performances","Base",CHROME25),
-  C("111","Standout Performances","Base",CHROME25),
+  C("75","F1 Cars · Ferrari","Base",CHROME25),
+  C("165","F1 Duo · with Hamilton","Base",CHROME25),
+  C("108","Grand Prix Winners","Base",CHROME25),
+  C("111","Grand Prix Winners","Base",CHROME25),
   C("118","Pole Position","Base",CHROME25),
-  C("125","Grand Prix subset","Base",CHROME25),
-  C("129","Grand Prix subset","Base",CHROME25),
-  C("137","Grand Prix subset","Base",CHROME25),
-  C("140","Grand Prix subset","Base",CHROME25),
+  C("125","Grand Prix Driver of the Day","Base",CHROME25),
+  C("129","Grand Prix Driver of the Day","Base",CHROME25),
+  C("137","Grand Prix Driver of the Day","Base",CHROME25),
+  C("140","Grand Prix Driver of the Day","Base",CHROME25),
   C("145","F1 Award Winners","Base",CHROME25),
   C("SCA-2","Ace of Trades","Insert",INSERT25),
   C("LOGO-4","F175 Anniversary Logo","Insert",LOGOF175),
@@ -434,6 +443,216 @@ const DRIVERS=[
   C("—","Turbo Attax base + LE variants (2020–2025)","Base",[P("Base")]),
   C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
   C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"oscar-piastri-card-checklist", first:"Oscar", last:"Piastri", full:"Oscar Piastri",
+  number:81, team:"McLaren", accent:"#FF8000", accentD:"#b35a00",
+  key:"piastri-index-v1",
+  pulse:"RECORD · $41,480 — 2023 Dynasty Suit Zipper Jumbo Relic Auto 1/1 (Goldin, Jan 2026)",
+  prov:"seeded from Topps official checklists and odds sheets (2025 verified Jul 2026) plus recorded auction sales. 2023 is the rookie year — Dynasty grails seeded from sales; 2024 card numbers are inferred from team-pair checklist order — verify. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2023 Dynasty F1 Auto Suit Zipper Jumbo Relic 1/1',grade:'Raw',price:41480,date:'2026-01-03',source:'Goldin',url:'https://goldin.co/item/2023-topps-dynasty-f1-dynasty-autographed-suit-zipper-jumbo-relic-dafjxxgrw'},
+{card:'2025 Dynasty F1 SD Triple Relic Auto Gold 1/1',grade:'Raw',price:33403.6,date:'2026-04-11',source:'Goldin',url:'https://goldin.co/item/2025-topps-dynasty-f1-single-driver-triple-relic-autographs-gold-sdtraiux54'},
+{card:'2024 Dynasty F1 Triple Relic Auto Gold #SDTRA-OPI 1/1',grade:'Raw',price:29402,date:'2026-05-09',source:'Goldin',url:'https://goldin.co/item/2024-topps-dynasty-f1-triple-relics-autograph-sdtra-opi-oscar-piastrivrtqu'},
+{card:'2023 Dynasty F1 RC Patch Auto Gold 1/1',grade:'Raw',price:25000,date:'2026-06-09',source:'eBay',url:'https://ebay.com/itm/236631872579?nordt=true'},
+{card:'2025 Dynasty F1 Auto Patch Gold #DAP-OPIVII 1/1',grade:'Raw',price:19779.86,date:'2026-03-19',source:'Goldin',url:'https://goldin.co/item/2025-topps-dynasty-f1-autographed-patch-gold-dap-opivii-oscar-piastri12g17'},
+{card:'2025 Dynasty F1 Flag Suit Nameplate Patch Auto',grade:'Raw',price:15000,date:'2026-02-21',source:'Fanatics',url:'https://www.fanaticscollect.com/weekly/8a428328-06b6-11f1-a941-0264eeceb90f'},
+{card:'2025 Chrome F1 Diamond 75th Anniversary Auto 1/1',grade:'Raw',price:14793,date:'2026-06-14',source:'eBay',url:'https://ebay.com/itm/377246744650?nordt=true'},
+{card:'2025 Chrome F1 SuperFractor Auto #CAC-PIA 1/1',grade:'PSA 9',price:14500,date:'2026-04-29',source:'eBay',url:'https://ebay.com/itm/298267774179?nordt=true'}
+  ],
+  db:[
+{set:"2023–2024 career sets — expand via + Add",q:"Topps F1 Piastri",meta:"Rookie-year Dynasty grails seeded from sales",cards:[
+  C("DAP-OPI","2023 Dynasty Rookie Patch Autograph","Auto",[P("Base",10),P("Gold",1)],1),
+  C("ZIPPER","2023 Dynasty Suit Zipper Jumbo Relic Auto","Auto",[P("Base",1)],1),
+  C("SDTRA-OPI","2024 Dynasty Triple Relic Autograph","Auto",[P("Gold",1)]),
+  C("—","2023 Chrome / Sapphire RC — add via + Add","Base",[P("Base")],1)]},
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Piastri",meta:"Nov 2024 season",
+ note:"Card # inferred from team-pair checklist order — verify.",cards:[
+  C("8","F1 Drivers · McLaren","Base",CHROME24)]},
+{set:"2024 Topps Chrome Sapphire F1",q:"2024 Topps Chrome Sapphire Piastri",meta:"Sapphire treatment",
+ note:"Card # inferred from team-pair checklist order — verify.",cards:[
+  C("8","F1 Drivers · Sapphire","Base",SAPP)]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Piastri",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
+  C("6","F1 Drivers · McLaren","Base",CHROME25),
+  C("78","F1 Cars · McLaren","Base",CHROME25),
+  C("105","Grand Prix Winners","Base",CHROME25),
+  C("109","Grand Prix Winners","Base",CHROME25),
+  C("134","Grand Prix Driver of the Day","Base",CHROME25),
+  C("138","Grand Prix Driver of the Day","Base",CHROME25),
+  C("166","F1 Duo · with Norris","Base",CHROME25),
+  C("TS-3","Top Speed","Insert",[P("Base",0,"Value"),P("SuperFractor",1)]),
+  C("SD-4","Speed Demons","Insert",INSERT25),
+  C("D75-6","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-26","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-PIA","Diamond Anniversary Relic","Relic",[P("Diamond Relic",1),P("Diamond Relic Autograph",1)]),
+  C("CAC-PIA","Chrome Autograph","Auto",AUTO25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Piastri",meta:"Mega box exclusive",cards:[
+  C("6","F1 Drivers · LogoFractor","Base",LOGO25),
+  C("SD-4","Speed Demons · LogoFractor","Insert",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Piastri",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("6","F1 Drivers · Sapphire","Base",SAPP25),
+  C("SS-3","Sapphire Selections","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Piastri",meta:"Ultra high end",
+ note:"Codes from recorded sales — at least seven DAP-OPI variations exist.",cards:[
+  C("DAP-OPI I–VII","Autograph Patch · seven variations","Auto",[P("Base",10),P("Gold",1)]),
+  C("NAMEPLATE","Flag / Suit Nameplate Patch Autograph","Auto",[P("Base",2)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Piastri",meta:"Turbo Attax · flagship · Topps Now",cards:[
+  C("—","Turbo Attax base + LE variants","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"george-russell-card-checklist", first:"George", last:"Russell", full:"George Russell",
+  number:63, team:"Mercedes-AMG Petronas", accent:"#00D2BE", accentD:"#0a8a7c",
+  key:"russell-index-v1",
+  pulse:"RECORD · $31,720 — 2020 Chrome Auto SuperFractor #F1A-GR 1/1, PSA 7 (Goldin, Nov 2024)",
+  prov:"seeded from Topps official checklists and odds sheets (2020, 2025 verified Jul 2026) plus recorded auction sales. 2020 base card number pending — add on confirm; 2024 number inferred from team-pair order. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Chrome F1 Auto SuperFractor #F1A-GR 1/1',grade:'PSA 7',price:31720,date:'2024-11-02',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1-autograph-superfractor-1-1-gr-george-russell-signb2fn3'},
+{card:'2025 Dynasty F1 Auto Patch Gold #DAP-GRUVI 1/1',grade:'Raw',price:29280,date:'2026-03-19',source:'Goldin',url:'https://goldin.co/item/2025-topps-dynasty-f1-autographed-patches-gold-dap-gruvi-george-russeltip7e'},
+{card:'2025 Dynasty F1 Constructor Team Dual Relic Auto #CDRA-MER 09/10',grade:'Raw',price:24000,date:'2026-06-07',source:'Fanatics',url:'https://www.fanaticscollect.com/premier/0b54efbc-4a6b-11f1-838d-027004a3c7d9'},
+{card:'2020 Dynasty F1 Auto Flag Patch #AFP-GR 2/4',grade:'BGS 9.5',price:21960,date:'2023-12-29',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-autograph-flag-patch-afpgr-george-russell-signedg6uux'},
+{card:'2025 Dynasty F1 Team Dual Relic Auto Red /5',grade:'Raw',price:18900,date:'2026-05-21',source:'Fanatics',url:'https://www.fanaticscollect.com/buy-now/22b312eb-7b99-49d7-b1f5-bf9e73d32033'},
+{card:'2020 Dynasty F1 RC Patch Auto /10',grade:'PSA 10',price:18499,date:'2026-03-07',source:'eBay',url:'https://ebay.com/itm/116027225085?nordt=true'},
+{card:'2025 Dynasty F1 Auto Patch Gold #DAP-GRU 1/1',grade:'Raw',price:17934,date:'2026-04-11',source:'Goldin',url:'https://goldin.co/item/2025-topps-dynasty-f1-autograph-patch-gold-dap-gru-george-russell-signm4bxp'},
+{card:'2020 Chrome F1 Sapphire Edition Purple RC',grade:'PSA 10',price:16800,date:'2022-07-17',source:'PWCC',url:'https://www.pwccmarketplace.com/'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Russell",meta:"Apr 2021 · inaugural Chrome F1 · Williams era",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("RC","F1 Drivers · first Topps Chrome","Base",CHROME20),
+  C("F1A-GR","Chrome Autograph","Auto",AUTO20)]},
+{set:"2020 Topps Chrome Sapphire F1",q:"2020 Topps Chrome Sapphire Russell",meta:"May 2021 · Topps.com exclusive",cards:[
+  C("RC","F1 Drivers · Sapphire","Base",SAPP20)]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Russell",meta:"The first Dynasty F1",
+ note:"Codes and runs from recorded sales (AFP-GR runs /4).",cards:[
+  C("DAP-GR","Dynasty Rookie Patch Autograph","Auto",[P("Base",10),P("Gold",1)]),
+  C("AFP-GR","Autographed Flag Patch","Auto",[P("Base",4)])]},
+{set:"2021–2023 career sets — expand via + Add",q:"Topps F1 Russell",meta:"Full ladders via + Add",cards:[
+  C("—","2021–2023 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Russell",meta:"Nov 2024 season",
+ note:"Card # inferred from team-pair checklist order — verify.",cards:[
+  C("5","F1 Drivers · Mercedes","Base",CHROME24)]},
+{set:"2024 Topps Chrome Sapphire F1",q:"2024 Topps Chrome Sapphire Russell",meta:"Sapphire treatment",
+ note:"Card # inferred from team-pair checklist order — verify.",cards:[
+  C("5","F1 Drivers · Sapphire","Base",SAPP)]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Russell",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
+  C("7","F1 Drivers · Mercedes-AMG Petronas","Base",CHROME25),
+  C("79","F1 Cars · Mercedes","Base",CHROME25),
+  C("103","Grand Prix Winners","Base",CHROME25),
+  C("114","Grand Prix Winners","Base",CHROME25),
+  C("119","Pole Position","Base",CHROME25),
+  C("167","F1 Duo · with Antonelli","Base",CHROME25),
+  C("SCA-1","Ace of Trades","Insert",INSERT25),
+  C("75-MAMG","1975 Speed Wheels · Mercedes","Insert",[P("Base")]),
+  C("D75-7","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-27","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-RUS","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Russell",meta:"Mega box exclusive",cards:[
+  C("7","F1 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Russell",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("7","F1 Drivers · Sapphire","Base",SAPP25),
+  C("IS-4","Sapphire insert","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Russell",meta:"Ultra high end",
+ note:"Codes from recorded sales — at least six DAP-GRU variations exist.",cards:[
+  C("DAP-GRU I–VI","Autograph Patch · six variations","Auto",[P("Base",10),P("Gold",1)]),
+  C("CDRA-MER","Constructor Team Dual Relic Auto · Mercedes","Auto",[P("Base",10),P("Red",5)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Russell",meta:"Turbo Attax · flagship · Topps Now",cards:[
+  C("—","Turbo Attax base + LE variants (2019–2025)","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"fernando-alonso-card-checklist", first:"Fernando", last:"Alonso", full:"Fernando Alonso",
+  number:14, team:"Aston Martin Aramco", accent:"#229971", accentD:"#166a4f",
+  key:"alonso-index-v1",
+  pulse:"RECORD · $12,240 — 2021 Dynasty Auto Patch Gold #DAP-FAII 1/1 (Goldin, Aug 2022)",
+  prov:"seeded from Topps official checklists and odds sheets (2025 verified Jul 2026) plus recorded auction sales. Includes the pre-Topps 2006 Futera Grand Prix era. 2024 card number inferred from team-pair order — verify. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2021 Dynasty F1 Auto Patch Gold #DAP-FAII 1/1',grade:'Raw',price:12240,date:'2022-08-06',source:'Goldin',url:'https://goldin.co/item/2021-topps-dynasty-f1-dap-faii-fernando-alonso-signed-patch-card-1-1-t82xje'},
+{card:'2022 Chrome F1 Auto SuperFractor #CAC-FA 1/1',grade:'PSA 10',price:12000,date:'2023-06-21',source:'Goldin',url:'https://goldin.co/item/2022-topps-chrome-f1-autograph-superfractor-cac-fa-fernando-alonso-sigo0ia1'},
+{card:'2025 Topps F1 Liquid Gold Silver 1/1',grade:'Raw',price:5655,date:'2025-11-28',source:'eBay',url:'https://ebay.com/itm/297792437215?nordt=true'},
+{card:'2006 Futera Grand Prix Racing Gloves Auto 1/1',grade:'PSA 6',price:3660,date:'2025-09-27',source:'Goldin',url:'https://goldin.co/item/2006-futera-grand-prix-f1-fernando-alonso-signed-card-1-1c0770'},
+{card:'2022 Dynasty F1 Flags Patch Auto #DAF-FA 1/2',grade:'Raw',price:3240,date:'2024-03-24',source:'Fanatics'},
+{card:'2025 Dynasty F1 Triple Auto Firesuit Relic 1/1',grade:'Raw',price:3175.21,date:'2026-01-01',source:'eBay',url:'https://www.pwccmarketplace.com/items/4317905'},
+{card:'2025 Dynasty F1 Patch Auto Gold 1/1',grade:'Raw',price:3050,date:'2025-12-09',source:'eBay',url:'https://ebay.com/itm/127588215133?nordt=true'},
+{card:'2025 Chrome F1 Helmet Collection Red #HC-6 · 5/5',grade:'PSA 10',price:3000,date:'2026-04-08',source:'eBay',url:'https://ebay.com/itm/127542995757?nordt=true'}
+  ],
+  db:[
+{set:"2006 Futera Grand Prix — pre-Topps era",q:"2006 Futera Grand Prix Alonso",meta:"Championship-era Futera cards",
+ note:"Not a Topps product — included because it anchors the early Alonso market.",cards:[
+  C("GLOVE","Racing Gloves Autograph","Auto",[P("Base",1)]),
+  C("—","Base cards","Base",[P("Base")])]},
+{set:"2021–2023 career sets — expand via + Add",q:"Topps F1 Alonso",meta:"Sale-confirmed grails seeded",cards:[
+  C("DAP-FA I/II","2021 Dynasty Autograph Patch · two variations","Auto",[P("Base",10),P("Gold",1)]),
+  C("SD-FA","2021 Dynasty Single Driver Dual Relic Auto","Auto",[P("Base",10)]),
+  C("CAC-FA","2022 Chrome Autograph","Auto",[P("Base Auto"),P("SuperFractor",1)]),
+  C("DAF-FA","2022 Dynasty Flags Patch Autograph","Auto",[P("Base",2)]),
+  C("—","2021–2023 Chrome / Sapphire base","Base",[P("Base")])]},
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Alonso",meta:"Nov 2024 season",
+ note:"Card # inferred from team-pair checklist order — verify.",cards:[
+  C("9","F1 Drivers · Aston Martin","Base",CHROME24)]},
+{set:"2024 Topps Chrome Sapphire F1",q:"2024 Topps Chrome Sapphire Alonso",meta:"Sapphire treatment",
+ note:"Card # inferred from team-pair checklist order — verify.",cards:[
+  C("9","F1 Drivers · Sapphire","Base",SAPP)]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Alonso",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
+  C("9","F1 Drivers · Aston Martin Aramco","Base",CHROME25),
+  C("9 IV","Image Variation SSP (1:2,881 — no parallels)","Base",[P("Image Variation SSP")]),
+  C("81","F1 Cars · Aston Martin","Base",CHROME25),
+  C("168","F1 Duo · with Stroll","Base",CHROME25),
+  C("TS-5","Top Speed","Insert",[P("Base",0,"Value"),P("SuperFractor",1)]),
+  C("HC-6","Helmet Collection","Insert",INSERT25),
+  C("D75-9","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-29","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-ALO","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Alonso",meta:"Mega box exclusive",cards:[
+  C("9","F1 Drivers · LogoFractor","Base",LOGO25),
+  C("HC-6","Helmet Collection · LogoFractor","Insert",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Alonso",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("9","F1 Drivers · Sapphire","Base",SAPP25),
+  C("IS-5","Sapphire insert","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Alonso",meta:"Ultra high end",
+ note:"Codes pending — seeded from recorded sales.",cards:[
+  C("TRIPLE","Triple Relic Autograph · firesuit","Auto",[P("Base",1)]),
+  C("DAP","Autograph Patch","Auto",[P("Base",10),P("Gold",1)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Alonso",meta:"Flagship · Turbo Attax · Topps Now · non-Topps",cards:[
+  C("LG","2025 Topps F1 flagship · Liquid Gold","Insert",[P("Silver",1)]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Turbo Attax base + LE variants (2001–2025)","Base",[P("Base")]),
+  C("—","2024 PiggyBanx Grand Prix (non-Topps)","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"ayrton-senna-card-checklist", first:"Ayrton", last:"Senna", full:"Ayrton Senna",
+  number:1, team:"Legend", accent:"#e6b65c", accentD:"#a8823d",
+  key:"senna-index-v1",
+  pulse:"RECORD · $46,800 — 1984 Panini Scratch \u2019N Play RC, PSA 7 (Goldin, Oct 2022)",
+  prov:"Senna\u2019s market predates Topps F1 — this page tracks his key vintage Panini issues, seeded from recorded auction sales. Vintage value runs on grade rarity rather than serial numbers. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'PSA 7',price:46800,date:'2022-10-09',source:'Goldin',url:'https://goldin.co/item/1984-panini-f1-grand-prix-scratch-n-play-ayrton-senna-rookie-card-psa4mdzh'},
+{card:"1984 Panini F1 Scratch N' Play Panel · Senna / De Angelis",grade:'PSA 7',price:43214.4,date:'2022-06-25',source:'Goldin',url:'https://goldin.co/item/1984-panini-f1-grand-prix-ayrton-senna-and-elio-de-angelis-scratch-n-p2sci6'},
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'PSA 7',price:39600,date:'2023-04-25',source:'Goldin',url:'https://goldin.co/item/1984-panini-f1-grand-prix-scratch-n-play-ayrton-senna-rookie-card-psaql364'},
+{card:'1986 Panini Supersport Italian #31',grade:'PSA 10',price:34801.2,date:'2022-06-25',source:'Goldin',url:'https://goldin.co/item/1986-panini-supersport-italian-31-ayrton-senna-psa-gem-mt-10di8cx'},
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'PSA 9',price:31720,date:'2025-02-22',source:'Goldin',url:'https://goldin.co/item/1984-panini-f1-grand-prix-scratch-n-play-ayrton-senna-rookie-card-psas9gh3'},
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'CSG 9',price:31200,date:'2023-07-06',source:'Fanatics'},
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'BGS 8',price:28200,date:'2023-08-31',source:'Fanatics'},
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'CSG 8.5',price:24600,date:'2023-03-12',source:'Fanatics'},
+{card:"1984 Panini F1 Scratch N' Play RC",grade:'BGS 9.5',price:21600,date:'2025-06-26',source:'Fanatics'}
+  ],
+  db:[
+{set:"1984 Panini F1 Grand Prix",q:"1984 Panini F1 Grand Prix Senna",meta:"The Senna rookie · Toleman era",cards:[
+  C("RC","Scratch \u2019N Play rookie · Toleman","Base",[P("Base")],1),
+  C("PANEL","Scratch \u2019N Play panel · Senna / De Angelis","Base",[P("Base")])]},
+{set:"1986 Panini Supersport",q:"1986 Panini Supersport Senna",meta:"Second-year key",cards:[
+  C("31","Italian edition","Base",[P("Base")])]},
+{set:"1985–1994 issues — expand via + Add",q:"Senna F1 card",meta:"Lotus · McLaren · Williams era issues",cards:[
+  C("—","Panini / Quartz / Grid era cards","Base",[P("Base")])]}
   ]
 }
 ];
@@ -459,7 +678,8 @@ for(const d of DRIVERS){
     '{{PROV}}':d.prov,
     '{{KEY}}':d.key,
     '{{TOPSALES}}':JSON.stringify(d.topsales),
-    '{{DB}}':JSON.stringify(d.db)
+    '{{DB}}':JSON.stringify(d.db),
+    '{{PAGES}}':JSON.stringify(DRIVERS.map(x=>({key:x.key,slug:x.slug,name:x.last})))
   };
   for(const[k,v]of Object.entries(rep))out=out.split(k).join(esc(v));
   const dest=path.join(__dirname,'..',d.slug+'.html');
