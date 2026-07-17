@@ -928,6 +928,621 @@ const DRIVERS=[
   C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
   C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
   ]
+},
+{
+  slug:"arvid-lindblad-card-checklist", first:"Arvid", last:"Lindblad", full:"Arvid Lindblad",
+  number:41, team:"Racing Bulls", accent:"#6692FF", accentD:"#4767b3",
+  key:"lindblad-index-v1",
+  pulse:"RECORD · $1,380 — 2025 Sapphire Auto Black #CAC-LIN /10, PSA 10 (Fanatics, Jun 2026) · 2026 F1 rookie — the RC chase lands in 2026 Chrome",
+  prov:"seeded from Topps official checklists and odds sheets (2024, 2025 verified Jul 2026) plus recorded auction sales — 2024 F3 base #45 and 2025 F2 #23 with the CAC-LIN autograph are all sale-confirmed. He debuts in F1 in 2026: his true RC arrives with 2026 Chrome. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2025 Chrome Sapphire F1 Auto Black #CAC-LIN · 01/10',grade:'PSA 10',price:1380,date:'2026-06-14',source:'Fanatics',url:'https://www.fanaticscollect.com/weekly/0d202bb8-6118-11f1-b66b-0a58a9feac02'},
+{card:'2024 Chrome Sapphire F1 #45 Red · /5',grade:'PSA 10',price:1025,date:'2025-12-15',source:'eBay',url:'https://ebay.com/itm/187802248223'},
+{card:'2025 Chrome F1 Auto Red Refractor · 5/5',grade:'Raw',price:831,date:'2026-03-02',source:'eBay',url:'https://ebay.com/itm/157773873317'},
+{card:'2025 Chrome F1 Auto Black Refractor · 03/10',grade:'Raw',price:725,date:'2026-06-01',source:'eBay',url:'https://ebay.com/itm/406954188926'},
+{card:'2024 Topps Now F3 Gold #32 · 1/1',grade:'PSA 9',price:719.8,date:'2024-11-29',source:'Goldin',url:'https://goldin.co/item/2024-topps-now-f3-gold-032-arvid-lindblad-1-10uash'},
+{card:'2025 Chrome F2 Auto RayWave Black Refractor · /10',grade:'Raw',price:708,date:'2026-03-25',source:'eBay',url:'https://ebay.com/itm/366296579145'},
+{card:'2024 Chrome Sapphire F1 #45 Gold · 24/50',grade:'PSA 10',price:700,date:'2026-01-17',source:'eBay',url:'https://ebay.com/itm/267536357617'},
+{card:'2024 Chrome LogoFractor F1 #45 Black · 07/10',grade:'Raw',price:700,date:'2026-01-24',source:'eBay',url:'https://ebay.com/itm/397006676231'}
+  ],
+  db:[
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Lindblad",meta:"Nov 2024 · F3 title fight · first Topps Chrome",cards:[
+  C("45","F3 Drivers · Prema","Base",CHROME24,1)]},
+{set:"2024 Topps Chrome LogoFractor F1",q:"2024 Topps Chrome LogoFractor Lindblad",meta:"Black /10 sale confirmed",cards:[
+  C("45","F3 Drivers · LogoFractor","Base",LOGO)]},
+{set:"2024 Topps Chrome Sapphire F1",q:"2024 Topps Chrome Sapphire Lindblad",meta:"Red /5 + Gold /50 sales confirmed",cards:[
+  C("45","F3 Drivers · Sapphire","Base",SAPP)]},
+{set:"2024 Topps Now F3",q:"2024 Topps Now F3 Lindblad",meta:"Moment card · Gold 1/1 sold at Goldin",cards:[
+  C("32","F3 moment card","Base",[P("Base"),P("Gold",1)])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Lindblad",meta:"Jan 2026 · F2 Campos · CAC-LIN auto confirmed",cards:[
+  C("23","F2 Drivers · Campos","Base",CHROME25),
+  C("CAC-LIN","Chrome Autograph","Auto",AUTO25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Lindblad",meta:"Mega box exclusive",cards:[
+  C("23","F2 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Lindblad",meta:"Feb 2026 · premium Sapphire",
+ note:"Auto Black /10 and Orange /25 confirmed by sales.",cards:[
+  C("23","F2 Drivers · Sapphire","Base",SAPP25),
+  C("CAC-LIN","Chrome Autograph · Sapphire","Auto",[P("Base Sapphire"),P("Orange",25),P("Black",10)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Lindblad",meta:"2026 Chrome RC incoming · Turbo Attax · Topps Now",cards:[
+  C("—","2026 Topps Chrome F1 rookie cards — add on release","Base",[P("Base")],1),
+  C("—","Turbo Attax base + LE variants","Base",[P("Base")]),
+  C("—","Topps Now F2/F3 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"alex-albon-card-checklist", first:"Alex", last:"Albon", full:"Alex Albon",
+  number:23, team:"Williams", accent:"#00A3E0", accentD:"#00719c",
+  key:"albon-index-v1",
+  pulse:"RECORD · $12,750 — 2020 Dynasty Verstappen/Albon Dual Auto Relic /10 (eBay, Jun 2026)",
+  prov:"seeded from Topps official checklists and odds sheets (2020, 2025 verified Jul 2026) plus recorded auction sales — the Ultrasonic SuperFractor sale confirms that 2025 Chrome insert. 2020 base card number pending. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Dynasty F1 Verstappen/Albon Dual Auto Relic · /10',grade:'Raw',price:12750,date:'2026-06-06',source:'eBay',url:'https://ebay.com/itm/318349871825?nordt=true'},
+{card:'2020 Dynasty F1 Suit Flag Patch Auto #AA · 1/4',grade:'PSA 8',price:5551,date:'2024-09-28',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-autograph-suit-flag-patch-aa-alex-albon-signed-rsyt0f'},
+{card:'2024 Dynasty F1 Jumbo Flag Patch Auto · 1/1',grade:'Raw',price:4200,date:'2026-01-18',source:'eBay',url:'https://ebay.com/itm/358129943375?nordt=true'},
+{card:'2025 Chrome F1 Ultrasonic SuperFractor · 1/1',grade:'Raw',price:2500,date:'2026-03-13',source:'eBay',url:'https://ebay.com/itm/168229744320?nordt=true'},
+{card:'2024 Dynasty F1 Flag Jumbo Zipper Patch Auto · 1/1',grade:'Raw',price:2037,date:'2025-12-15',source:'eBay',url:'https://ebay.com/itm/187809884532?nordt=true'},
+{card:'2025 Chrome F1 SuperFractor · 1/1',grade:'Raw',price:1650,date:'2026-02-07',source:'eBay',url:'https://ebay.com/itm/137018717066?nordt=true'},
+{card:'2025 F1 Fanatics Fest Foilfractor · 1/1',grade:'PSA 9',price:1026,date:'2026-04-12',source:'eBay',url:'https://ebay.com/itm/117127895976?nordt=true'},
+{card:'2024 Dynasty F1 Relic Book Patch Auto · /5',grade:'Raw',price:1020,date:'2025-10-12',source:'Fanatics',url:'https://www.fanaticscollect.com/weekly/0f1234b0-b91c-11f0-8da5-0a58a9feac02'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Albon",meta:"Apr 2021 · inaugural Chrome F1 · Red Bull era",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("—","F1 Drivers · first Topps Chrome","Base",CHROME20),
+  C("— IV","Image Variation SP (seated portrait)","Base",[P("Image Variation SP")])]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Albon",meta:"The first Dynasty F1 (AFP runs /4)",cards:[
+  C("AFP-AA","Suit Flag Patch Autograph","Auto",[P("Base",4)]),
+  C("DUAL-VER","Verstappen / Albon Dual Auto Relic","Auto",[P("Base",10)])]},
+{set:"2021–2023 career sets — expand via + Add",q:"Topps F1 Albon",meta:"Williams return era",cards:[
+  C("—","2021–2023 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2024 Topps Dynasty F1",q:"2024 Topps Dynasty F1 Albon",meta:"Jumbo patch autos confirmed by sales",cards:[
+  C("JUMBO","Jumbo Flag / Zipper Patch Autographs","Auto",[P("Flag Patch",1),P("Zipper Patch",1)]),
+  C("BOOK","Relic Book Patch Autograph","Auto",[P("Base",5)])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Albon",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
+  C("17","F1 Drivers · Williams","Base",CHROME25),
+  C("89","F1 Cars · Williams","Base",CHROME25),
+  C("172","F1 Duo · with Sainz","Base",CHROME25),
+  C("TS-9","Top Speed","Insert",[P("Base",0,"Value"),P("SuperFractor",1)]),
+  C("ULTRA","Ultrasonic","Insert",[P("Base"),P("SuperFractor",1)]),
+  C("D75-17","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-37","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-ALB","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Albon",meta:"Mega box exclusive",cards:[
+  C("17","F1 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Albon",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("17","F1 Drivers · Sapphire","Base",SAPP25),
+  C("SS-9","Sapphire Selections","Insert",[P("Base Sapphire")])]},
+{set:"Other Topps — expand via + Add",q:"Topps Albon",meta:"Fanatics Fest · Turbo Attax · flagship · Topps Now",cards:[
+  C("FF","2025 Fanatics Fest Chrome Foilfractor","Base",[P("Foilfractor",1)]),
+  C("—","Turbo Attax base + LE variants","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"valtteri-bottas-card-checklist", first:"Valtteri", last:"Bottas", full:"Valtteri Bottas",
+  number:77, team:"Cadillac", accent:"#C0A062", accentD:"#8a7245",
+  key:"bottas-index-v1",
+  pulse:"RECORD · $20,400 — 2020 Dynasty Constructor Dual Patch Auto Gold #CDAR-HB 1/1, w/ Hamilton (PWCC, Nov 2023)",
+  prov:"seeded from Topps official checklists and odds sheets (2020 verified Jul 2026) plus recorded auction sales. 2020 base #2 is inferred from the Mercedes team pair (Hamilton #1 verified) — confirm before relying on it. Cadillac-era cards arrive with the 2026 products. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Dynasty F1 Constructor Dual Patch Auto Gold #CDAR-HB · 1/1',grade:'MBA Auth',price:20400,date:'2023-11-16',source:'PWCC',url:'https://www.pwccmarketplace.com/premier-auction/10852'},
+{card:'2020 Dynasty F1 Constructor Dual Patch Auto #CDAR-HB',grade:'BGS 9',price:18000,date:'2022-05-01',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-formula-1-cdarhb-lewis-hamilton-and-valtteri-bottasvdrb6'},
+{card:'2021 Dynasty F1 Dual Red Patch Auto · 3/5',grade:'Raw',price:4920,date:'2022-07-03',source:'PWCC',url:'https://www.pwccmarketplace.com/items/3278497'},
+{card:'2021 Dynasty F1 Dual Patch Auto #CDAR-LH · 2/10',grade:'Raw',price:3331,date:'2025-08-31',source:'eBay',url:'https://ebay.com/itm/336078215717?nordt=true'},
+{card:'2020 Dynasty F1 Patch Auto Gold #DAP-VB · 1/1',grade:'PSA Auth',price:2684,date:'2024-06-29',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-autograph-patch-gold-1-1-vb-valtteri-bottas-sign3kewa'},
+{card:'2024 Chrome F1 Circuit Masters Signatures SuperFractor · 1/1',grade:'Raw',price:2000,date:'2025-09-29',source:'eBay',url:'https://ebay.com/itm/297577402396?nordt=true'},
+{card:'2020 Dynasty F1 Racing Glove Auto #AFP-VB · 8/10',grade:'Raw',price:1950,date:'2022-06-05',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-formula-1-afp-vb-valtteri-bottas-autograph-glove-rewsr0z'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Bottas",meta:"Apr 2021 · inaugural Chrome F1 · Mercedes era",
+ note:"Card #2 inferred from the Mercedes team pair — verify.",cards:[
+  C("2","F1 Drivers · Mercedes","Base",CHROME20),
+  C("2 IV","Image Variation SP (seated portrait)","Base",[P("Image Variation SP")])]},
+{set:"2020 Topps Chrome Sapphire F1",q:"2020 Topps Chrome Sapphire Bottas",meta:"May 2021 · Topps.com exclusive",
+ note:"Card # inferred — verify.",cards:[
+  C("2","F1 Drivers · Sapphire","Base",SAPP20)]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Bottas",meta:"The first Dynasty F1",cards:[
+  C("DAP-VB","Dynasty Autograph Patch","Auto",[P("Base",10),P("Gold",1)]),
+  C("AFP-VB","Autographed Racing Glove Relic","Auto",[P("Base",10)]),
+  C("CDAR-HB","Constructor Dual Patch Auto · with Hamilton","Auto",[P("Base",10),P("Gold",1)])]},
+{set:"2021–2023 career sets — expand via + Add",q:"Topps F1 Bottas",meta:"Mercedes / Sauber era",cards:[
+  C("CDAR-LH","2021 Dynasty Dual Patch Auto · with Hamilton","Auto",[P("Base",10),P("Red",5)]),
+  C("—","2021–2023 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Bottas Circuit Masters",meta:"Circuit Masters auto confirmed by SuperFractor sale",cards:[
+  C("CMS-VB","Circuit Masters Signatures","Auto",[P("Base Auto"),P("SuperFractor",1)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Bottas",meta:"2026 Cadillac cards incoming · Turbo Attax · Topps Now",cards:[
+  C("—","2026 Cadillac-era cards — add on release","Base",[P("Base")]),
+  C("—","Turbo Attax base + LE variants (2017–2025)","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"daniel-ricciardo-card-checklist", first:"Daniel", last:"Ricciardo", full:"Daniel Ricciardo",
+  number:3, team:"Legend", accent:"#e6b65c", accentD:"#a8823d",
+  key:"ricciardo-index-v1",
+  pulse:"RECORD · $5,100 — 2020 Dynasty Glove Jumbo Patch Auto #AFP-DR 1/1 (Goldin, Jul 2022)",
+  prov:"seeded from Topps official checklists and odds sheets (2020 verified Jul 2026) plus recorded auction sales — the Track Tags Gold /50 sale confirms that 2020 insert. Retired 2024; his 2025 Chrome appearance is the Driver of the Day card #139. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Dynasty F1 Auto Racing Glove Jumbo Patch #AFP-DR · 1/1',grade:'Raw',price:5100,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-afp-dr-daniel-ricciardo-rookie-jumbo-glove-patch2sheg'},
+{card:'2020 Dynasty F1 Constructor Team Auto · Ricciardo/Ocon · 4/10',grade:'Raw',price:3720,date:'2022-05-01',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-formula-1-dynasty-constructor-team-autograph-memorabxv3l'},
+{card:'2020 Chrome F1 Auto Red Refractor #F1A-DR',grade:'PSA 7',price:3300,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1a-dr-daniel-ricciardo-f1-autograph-red-refractor-cle9vf'},
+{card:'2020 Chrome F1 Track Tags Gold #7 · 31/50',grade:'PSA 10',price:2500,date:'2025-09-30',source:'eBay',url:'https://ebay.com/itm/397107527579'},
+{card:'2020 Dynasty F1 Constructor Team Dual Relic Auto Red · 1/5',grade:'PSA 10',price:2400,date:'2022-09-10',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-constructor-team-dual-relic-autograph-cdar-ro-da1cc2e'},
+{card:'2020 Dynasty F1 Single Driver Triple Relic Auto Red #TRA-IDR · 1/5',grade:'PSA 10',price:2220,date:'2022-06-05',source:'Goldin',url:'https://goldin.co/item/2020-topps-f1-dynasty-tra-idr-daniel-ricciardo-triple-relic-autograph45qy9'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Ricciardo",meta:"Apr 2021 · inaugural Chrome F1 · Renault era",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("—","F1 Drivers · first Topps Chrome","Base",CHROME20),
+  C("F1A-DR","Chrome Autograph","Auto",AUTO20),
+  C("TT-7","Track Tags","Insert",[P("Base"),P("Gold",50)])]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Ricciardo",meta:"The first Dynasty F1",cards:[
+  C("DAP-DR I/II","Dynasty Autograph Patch · two variations","Auto",[P("Base",10),P("Gold",1)]),
+  C("AFP-DR","Racing Glove Jumbo Patch Autograph","Auto",[P("Base",1)]),
+  C("TRA-DR I","Single Driver Triple Relic Auto","Auto",[P("Red",5)]),
+  C("CDAR-RO","Constructor Team Auto · with Ocon","Auto",[P("Base",10),P("Red",5)])]},
+{set:"2021–2024 career sets — expand via + Add",q:"Topps F1 Ricciardo",meta:"McLaren Monza win · RB farewell",cards:[
+  C("—","2021–2024 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Ricciardo",meta:"Jan 2026 · farewell appearance",cards:[
+  C("139","Grand Prix Driver of the Day","Base",CHROME25)]},
+{set:"Other Topps — expand via + Add",q:"Topps Ricciardo",meta:"Turbo Attax · flagship · Topps Now",cards:[
+  C("—","Turbo Attax base + LE variants (2012–2024)","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"esteban-ocon-card-checklist", first:"Esteban", last:"Ocon", full:"Esteban Ocon",
+  number:31, team:"Haas", accent:"#B6BABD", accentD:"#7d8285",
+  key:"ocon-index-v1",
+  pulse:"RECORD · $2,800 — 2020 Dynasty Patch Auto Red #DAP-IEC /5 (eBay, May 2026)",
+  prov:"seeded from Topps official checklists and odds sheets (2020, 2025 verified Jul 2026) plus recorded auction sales — including the 2025 Eccellenza dual booklet with Bearman. 2020 base card number pending. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Dynasty F1 Patch Auto Red #DAP-IEC · 5/5',grade:'Raw',price:2800,date:'2026-05-05',source:'eBay',url:'https://ebay.com/itm/377151688652?nordt=true'},
+{card:'2020 Dynasty F1 Patch Auto #DAP-IEC · /10',grade:'PSA 10',price:2500,date:'2024-07-14',source:'PWCC',url:'https://www.pwccmarketplace.com/vault-marketplace/630702'},
+{card:'2025 Dynasty F1 Patch Auto Gold · 1/1',grade:'Raw',price:1895,date:'2025-12-19',source:'eBay',url:'https://ebay.com/itm/397392482868?nordt=true'},
+{card:'2021 Chrome F1 SuperFractor Auto #CA-EO · 1/1',grade:'PSA 9',price:1800,date:'2022-11-19',source:'Goldin',url:'https://goldin.co/item/2021-topps-chrome-f1-autograph-superfractor-ca-eo-esteban-ocon-signed1tpzf'},
+{card:'2020 Dynasty F1 Auto Memorabilia #DAP-IEC · /10',grade:'Raw',price:1440,date:'2022-05-01',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-formula-1-dynasty-autograph-memorabilia-dap-iec-estr0ops'},
+{card:'2025 Eccellenza F1 Dual Auto Booklet · Bearman/Ocon · /5',grade:'Raw',price:1400,date:'2026-03-23',source:'eBay',url:'https://ebay.com/itm/157771967693?nordt=true'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Ocon",meta:"Apr 2021 · inaugural Chrome F1 · Renault era",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("—","F1 Drivers · first Topps Chrome","Base",CHROME20),
+  C("— IV","Image Variation SP (seated portrait)","Base",[P("Image Variation SP")])]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Ocon",meta:"The first Dynasty F1",cards:[
+  C("DAP-EC I/II","Dynasty Autograph Patch · variations","Auto",[P("Base",10),P("Red",5)]),
+  C("CDAR-RO","Constructor Team Auto · with Ricciardo","Auto",[P("Base",10),P("Red",5)])]},
+{set:"2021–2024 career sets — expand via + Add",q:"Topps F1 Ocon",meta:"Alpine era · Hungary win",cards:[
+  C("CA-EO","2021 Chrome Autograph","Auto",[P("Base Auto"),P("SuperFractor",1)]),
+  C("—","2021–2024 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Ocon",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
+  C("13","F1 Drivers · Haas","Base",CHROME25),
+  C("85","F1 Cars · Haas","Base",CHROME25),
+  C("170","F1 Duo · with Bearman","Base",CHROME25),
+  C("D75-13","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-33","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-OCO","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Ocon",meta:"Mega box exclusive",cards:[
+  C("13","F1 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Ocon",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("13","F1 Drivers · Sapphire","Base",SAPP25),
+  C("IS-7","Sapphire insert","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Ocon",meta:"Ultra high end",cards:[
+  C("DAP","Autograph Patch","Auto",[P("Base",10),P("Gold",1)]),
+  C("ZIPPER","Suit Zipper Jumbo Patch Autograph","Auto",[P("Base",1)])]},
+{set:"2025 Topps Eccellenza F1",q:"2025 Topps Eccellenza Ocon",meta:"Dual booklet confirmed by sale",cards:[
+  C("DUAL-BEA","Dual Auto Booklet · with Bearman","Auto",[P("Base",5)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Ocon",meta:"Turbo Attax · flagship · Topps Now",cards:[
+  C("—","Turbo Attax base + LE variants","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"franco-colapinto-card-checklist", first:"Franco", last:"Colapinto", full:"Franco Colapinto",
+  number:43, team:"Alpine", accent:"#0093CC", accentD:"#00648c",
+  key:"colapinto-index-v1",
+  pulse:"RECORD · $2,257 — 2024 Chrome SuperFractor Auto #CAC-COL 1/1, PSA 9 (Goldin, Jan 2026)",
+  prov:"seeded from Topps official checklists and odds sheets (2024, 2025 verified Jul 2026) plus recorded auction sales — the Lights Out Gold Framed Auto sale confirms that product. 2024 base card number pending. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2024 Chrome F1 SuperFractor Auto #CAC-COL · 1/1',grade:'PSA 9',price:2257,date:'2026-01-03',source:'Goldin',url:'https://goldin.co/item/2024-topps-chrome-f1-chrome-autographs-superfractor-cac-col-franco-coliqbhn'},
+{card:'2025 Dynasty F1 Race-Used Relic Auto · 1/2',grade:'Raw',price:1825,date:'2025-12-06',source:'eBay',url:'https://ebay.com/itm/205877332970?nordt=true'},
+{card:'2025 Dynasty F1 Single Driver Triple Relic Auto Gold · 1/1',grade:'Raw',price:1825,date:'2025-12-07',source:'eBay',url:'https://ebay.com/itm/389313046054?nordt=true'},
+{card:'2025 Lights Out F1 Gold Framed Auto · 1/1',grade:'PSA 8',price:1670,date:'2026-03-30',source:'eBay',url:'https://ebay.com/itm/157784776772?nordt=true'},
+{card:'2025 Dynasty F1 Race-Worn Rookie Patch Auto · 1/1',grade:'Raw',price:1575,date:'2025-12-21',source:'eBay',url:'https://ebay.com/itm/157547680872?nordt=true'},
+{card:'2025 Dynasty F1 Single Driver Triple Relic Auto Gold · BWT · 1/1',grade:'Raw',price:1524,date:'2026-02-20',source:'eBay',url:'https://ebay.com/itm/157801559694?nordt=true'}
+  ],
+  db:[
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Colapinto",meta:"Nov 2024 · Williams debut year · CAC-COL confirmed",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("—","F2 Drivers — add card #","Base",CHROME24,1),
+  C("CAC-COL","Chrome Autograph","Auto",AUTO24)]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Colapinto",meta:"Jan 2026 · #15 Alpine",cards:[
+  C("15","F1 Drivers · Alpine","Base",CHROME25),
+  C("15 IV","Image Variation SSP (1:2,881 — no parallels)","Base",[P("Image Variation SSP")]),
+  C("87","F1 Cars · Alpine","Base",CHROME25),
+  C("171","F1 Duo · with Gasly","Base",CHROME25),
+  C("SD-9","Speed Demons","Insert",INSERT25),
+  C("HC-9","Helmet Collection","Insert",INSERT25),
+  C("D75-15","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-35","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-COL","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Colapinto",meta:"Mega box exclusive",cards:[
+  C("15","F1 Drivers · LogoFractor","Base",LOGO25),
+  C("SD-9","Speed Demons · LogoFractor","Insert",LOGO25),
+  C("HC-9","Helmet Collection · LogoFractor","Insert",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Colapinto",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("15","F1 Drivers · Sapphire","Base",SAPP25),
+  C("SS-8","Sapphire Selections","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Colapinto",meta:"Ultra high end",cards:[
+  C("RPA","Race-Worn Rookie Patch Autograph","Auto",[P("Base",1)]),
+  C("RELIC","Race-Used Relic Autograph","Auto",[P("Base",2)]),
+  C("SDTRA","Single Driver Triple Relic Auto · variations","Auto",[P("Gold",1),P("Gold · BWT",1)])]},
+{set:"2025 Topps Lights Out F1",q:"2025 Topps Lights Out Colapinto",meta:"Framed autos confirmed by sale",cards:[
+  C("AUTO","Gold Framed Autograph","Auto",[P("Gold",1)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Colapinto",meta:"Turbo Attax · flagship · Topps Now",cards:[
+  C("—","Turbo Attax base + LE variants","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"lance-stroll-card-checklist", first:"Lance", last:"Stroll", full:"Lance Stroll",
+  number:18, team:"Aston Martin Aramco", accent:"#229971", accentD:"#166a4f",
+  key:"stroll-index-v1",
+  pulse:"RECORD · $3,600 — 2020 Chrome Auto SuperFractor #F1A-LS 1/1, PSA 8 (Goldin, Sep 2022)",
+  prov:"seeded from Topps official checklists and odds sheets (2020, 2025 verified Jul 2026) plus recorded auction sales — the World on Wheels SuperFractor sale confirms that 2020 insert. 2020 base card number pending. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Chrome F1 Autographs SuperFractor #F1A-LS · 1/1',grade:'PSA 8',price:3600,date:'2022-09-24',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1-superfractor-f1a-ls-lance-stroll-signed-card-1-10wer9'},
+{card:'2020 Dynasty F1 Suit Zipper Relic Patch Auto #AFP-LS · 4/4',grade:'Raw',price:2550,date:'2026-05-05',source:'eBay',url:'https://ebay.com/itm/377149304976?nordt=true'},
+{card:'2020 Chrome F1 World On Wheels SuperFractor · 1/1',grade:'PSA 10',price:2520,date:'2023-10-22',source:'PWCC',url:'https://www.pwccmarketplace.com/items/4076083'},
+{card:'2025 Dynasty F1 Flag Patch Suit Nameplate Auto · 2/2',grade:'Raw',price:1325,date:'2026-03-18',source:'eBay',url:'https://ebay.com/itm/377032247019?nordt=true'},
+{card:'2020 Dynasty F1 Red Patch Auto #DAP-IILS · 3/5',grade:'PSA 10',price:1320,date:'2026-05-26',source:'Fanatics',url:'https://www.fanaticscollect.com/weekly/2d9c5af8-4f0f-11f1-b677-0a58a9feac02'},
+{card:'2020 Dynasty F1 Red Patch Auto · 3/5',grade:'Raw',price:1247,date:'2026-05-19',source:'eBay',url:'https://ebay.com/itm/127864955011?nordt=true'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Stroll",meta:"Apr 2021 · inaugural Chrome F1 · Racing Point era",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("—","F1 Drivers · first Topps Chrome","Base",CHROME20),
+  C("F1A-LS","Chrome Autograph","Auto",AUTO20),
+  C("WOW","1954 World on Wheels","Insert",[P("Base"),P("SuperFractor",1)])]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Stroll",meta:"The first Dynasty F1 (AFP runs /4)",cards:[
+  C("DAP-LS I/II","Dynasty Autograph Patch · variations","Auto",[P("Base",10),P("Red",5)]),
+  C("AFP-LS","Suit Zipper Relic Patch Autograph","Auto",[P("Base",4)])]},
+{set:"2021–2024 career sets — expand via + Add",q:"Topps F1 Stroll",meta:"Aston Martin era",cards:[
+  C("—","2021–2024 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Stroll",meta:"Jan 2026 · 75th-anniversary flagship",cards:[
+  C("10","F1 Drivers · Aston Martin Aramco","Base",CHROME25),
+  C("82","F1 Cars · Aston Martin","Base",CHROME25),
+  C("168","F1 Duo · with Alonso","Base",CHROME25),
+  C("SD-6","Speed Demons","Insert",INSERT25),
+  C("D75-10","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-30","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-STR","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Stroll",meta:"Mega box exclusive",cards:[
+  C("10","F1 Drivers · LogoFractor","Base",LOGO25),
+  C("SD-6","Speed Demons · LogoFractor","Insert",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Stroll",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("10","F1 Drivers · Sapphire","Base",SAPP25),
+  C("SS-5","Sapphire Selections","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Stroll",meta:"Ultra high end",cards:[
+  C("NAMEPLATE","Flag Patch Suit Nameplate Autograph","Auto",[P("Base",2)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Stroll",meta:"Turbo Attax · flagship · Topps Now",cards:[
+  C("—","Turbo Attax base + LE variants (2017–2025)","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"sergio-perez-card-checklist", first:"Sergio", last:"Perez", full:"Sergio P\u00e9rez",
+  number:11, team:"Cadillac", accent:"#C0A062", accentD:"#8a7245",
+  key:"perez-index-v1",
+  pulse:"RECORD · $17,080 — 2022 Dynasty Constructor Dual Relic Auto Gold #CTDRA-MV 1/1, w/ Verstappen (Goldin, Feb 2026)",
+  prov:"seeded from Topps official checklists and odds sheets (2024 verified Jul 2026) plus recorded auction sales — including the 2024 Eccellenza Reliquia La Squadra booklet. Cadillac-era cards arrive with the 2026 products. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2022 Dynasty F1 Constructor Dual Relic Auto Gold #CTDRA-MV · 1/1',grade:'PSA 8',price:17080,date:'2026-02-07',source:'Goldin',url:'https://goldin.co/item/2022-topps-dynasty-f1-constructor-s-dual-relic-autograph-gold-ctdra-mvwnvu3'},
+{card:'2023 Dynasty F1 Constructor Dual Relic Auto Gold #CTDRA-RB · /4',grade:'Raw',price:13908,date:'2026-06-06',source:'Goldin',url:'https://goldin.co/item/2023-topps-dynasty-f1-constructor-team-dual-relic-autograph-ctdra-rbrfoeuc'},
+{card:'2024 Eccellenza F1 Reliquia La Squadra Booklet · 1/1',grade:'Raw',price:9455,date:'2026-01-01',source:'Goldin',url:'https://goldin.co/item/2024-topps-eccellenza-formula-1-reliquia-la-squadra-booklet-sergio-perzp7oz'},
+{card:'2022 Dynasty F1 Suit Flag Patch Auto #DAF-SP · 2/2',grade:'Raw',price:8400,date:'2026-05-31',source:'Fanatics',url:'https://www.fanaticscollect.com/weekly/a60b9c4a-52f9-11f1-ac7b-0a58a9feac02'},
+{card:'2023 Dynasty F1 Racing Glove Jumbo Patch Auto #DAFJP-SP · 1/1',grade:'PSA 9',price:6893,date:'2025-03-29',source:'Goldin',url:'https://goldin.co/item/2023-topps-dynasty-f1-autograph-relic-jumbo-patch-dafjpsp-sergio-perez7l5ey'}
+  ],
+  db:[
+{set:"2020–2023 career sets — expand via + Add",q:"Topps F1 Perez",meta:"Racing Point win · Red Bull era grails from sales",cards:[
+  C("CTDRA-MV","2022 Dynasty Constructor Dual Relic Auto · with Verstappen","Auto",[P("Base",10),P("Gold",1)]),
+  C("CTDRA-RB","2023 Dynasty Constructor Dual Relic Auto · Red Bull","Auto",[P("Base",4)]),
+  C("DAF-SP","2022 Dynasty Suit Flag Patch Autograph","Auto",[P("Base",2)]),
+  C("DAFJP-SP","2023 Dynasty Racing Glove Jumbo Patch Auto","Auto",[P("Base",1)]),
+  C("—","2020–2023 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Perez",meta:"Nov 2024 · final Red Bull season · card #2",cards:[
+  C("2","F1 Drivers · Red Bull","Base",CHROME24)]},
+{set:"2024 Topps Chrome LogoFractor F1",q:"2024 Topps Chrome LogoFractor Perez",meta:"Same checklist, LogoFractor stock",cards:[
+  C("2","F1 Drivers · LogoFractor","Base",LOGO)]},
+{set:"2024 Topps Chrome Sapphire F1",q:"2024 Topps Chrome Sapphire Perez",meta:"Sapphire treatment",cards:[
+  C("2","F1 Drivers · Sapphire","Base",SAPP)]},
+{set:"2024 Topps Eccellenza F1",q:"2024 Topps Eccellenza Perez",meta:"Booklet confirmed by sale",cards:[
+  C("SQUADRA","Reliquia La Squadra Booklet","Relic",[P("Base",1)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Perez",meta:"2026 Cadillac cards incoming · Turbo Attax · Topps Now",cards:[
+  C("—","2026 Cadillac-era cards — add on release","Base",[P("Base")]),
+  C("—","Turbo Attax base + LE variants (2011–2024)","Base",[P("Base")]),
+  C("—","Topps Now F1 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"nikola-tsolov-card-checklist", first:"Nikola", last:"Tsolov", full:"Nikola Tsolov",
+  number:"NT", team:"F3 Prospect", accent:"#8A99A8", accentD:"#5c6773",
+  key:"tsolov-index-v1",
+  pulse:"Market forming — no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome F3 base #52 is checklist-verified; earlier junior-series cards via <b>+ Add</b>. Sales board fills in as the market forms.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Tsolov",meta:"Jan 2026 · F3 Drivers",cards:[
+  C("52","F3 Drivers","Base",CHROME25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Tsolov",meta:"Mega box exclusive",cards:[
+  C("52","F3 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Tsolov",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("52","F3 Drivers · Sapphire","Base",SAPP25)]},
+{set:"Other Topps — expand via + Add",q:"Topps Tsolov",meta:"Junior-series cards · Topps Now F3",cards:[
+  C("—","2023–2024 F3 Chrome cards — add card #","Base",[P("Base")]),
+  C("—","Topps Now F3 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"nico-hulkenberg-card-checklist", first:"Nico", last:"H\u00fclkenberg", full:"Nico H\u00fclkenberg",
+  number:27, team:"Kick Sauber / Audi", accent:"#009A3E", accentD:"#006b2b",
+  key:"hulkenberg-index-v1",
+  pulse:"RECORD · $2,000 — 2025 Dynasty H\u00fclkenberg/Bortoleto Dual Relic Auto 1/1 (eBay, Mar 2026)",
+  prov:"seeded from Topps official checklists and odds sheets (2025 verified Jul 2026) plus recorded auction sales — the Auto Red /5 sale confirms his 2025 Chrome CAC autograph. First podium (Silverstone 2025) belongs in Topps Now. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2025 Dynasty F1 H\u00fclkenberg/Bortoleto Dual Relic Auto · 1/1',grade:'Raw',price:2000,date:'2026-03-13',source:'eBay',url:'https://ebay.com/itm/157517938428?nordt=true'},
+{card:'2024 Dynasty F1 Vertical Jumbo Zipper Patch Auto · 1/1',grade:'Raw',price:1525,date:'2026-03-08',source:'eBay',url:'https://ebay.com/itm/389674241963?nordt=true'},
+{card:'2025 Dynasty F1 Patch Auto Gold #DAP-NH · 1/1',grade:'Raw',price:1035,date:'2026-03-01',source:'eBay',url:'https://ebay.com/itm/317875041934?nordt=true'},
+{card:'2024 Dynasty F1 Suit Zipper Auto Gold · 1/1',grade:'Raw',price:1001,date:'2026-04-12',source:'eBay',url:'https://ebay.com/itm/318096771706?nordt=true'},
+{card:'2024 Dynasty F1 Triple Relic Auto · 1/1',grade:'Raw',price:1000,date:'2025-08-18',source:'eBay',url:'https://ebay.com/itm/336055615250?nordt=true'},
+{card:'2025 Chrome F1 Auto Red · 5/5',grade:'Raw',price:900,date:'2026-04-01',source:'eBay',url:'https://ebay.com/itm/168182696623?nordt=true'}
+  ],
+  db:[
+{set:"2020–2024 career sets — expand via + Add",q:"Topps F1 Hulkenberg",meta:"Super-sub · Haas era grails from sales",cards:[
+  C("ZIPPER","2024 Dynasty Vertical Jumbo Zipper / Suit Zipper Gold Autos","Auto",[P("Vertical Jumbo",1),P("Suit Zipper Gold",1)]),
+  C("TRIPLE","2024 Dynasty Triple Relic Auto","Auto",[P("Base",1)]),
+  C("—","2020–2024 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Hulkenberg",meta:"Jan 2026 · first-podium season · #19 Kick Sauber",cards:[
+  C("19","F1 Drivers · Kick Sauber","Base",CHROME25),
+  C("91","F1 Cars · Kick Sauber","Base",CHROME25),
+  C("173","F1 Duo · with Bortoleto","Base",CHROME25),
+  C("TS-10","Top Speed","Insert",[P("Base",0,"Value"),P("SuperFractor",1)]),
+  C("CAC-NH","Chrome Autograph","Auto",AUTO25),
+  C("D75-19","Mini Diamond · 75th Anniversary pack","Insert",MINID),
+  C("D75-39","Mini Diamond II · 75th Anniversary pack","Insert",MINID),
+  C("D75A-HUL","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Hulkenberg",meta:"Mega box exclusive",cards:[
+  C("19","F1 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Hulkenberg",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("19","F1 Drivers · Sapphire","Base",SAPP25),
+  C("IS-10","Sapphire insert","Insert",[P("Base Sapphire")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Hulkenberg",meta:"Ultra high end",cards:[
+  C("DAP-NH","Autograph Patch","Auto",[P("Base",10),P("Gold",1)]),
+  C("DUAL-BOR","Dual Relic Auto · with Bortoleto","Auto",[P("Base",1)]),
+  C("TRIPLE","Triple Patch Autograph","Auto",[P("Base",1)])]},
+{set:"2025 Topps Now F1",q:"Topps Now F1 Hulkenberg",meta:"Moment cards — add #s as issued",cards:[
+  C("TN","FIRST PODIUM · P3 Silverstone · 239-race wait ends","Base",[P("Base")])]},
+{set:"Other Topps — expand via + Add",q:"Topps Hulkenberg",meta:"Turbo Attax · flagship",cards:[
+  C("—","Turbo Attax base + LE variants (2010–2025)","Base",[P("Base")]),
+  C("—","2025 Topps Formula 1 flagship base + parallels","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"ugo-ugochukwu-card-checklist", first:"Ugo", last:"Ugochukwu", full:"Ugo Ugochukwu",
+  number:45, team:"Prema F3 · McLaren junior", accent:"#FF8000", accentD:"#b35a00",
+  key:"ugochukwu-index-v1",
+  pulse:"RECORD · $550 — 2025 Chrome first Auto Black /10 (eBay, Jun 2026) · market forming",
+  prov:"prospect page. 2025 Chrome F3 base #45 is checklist-verified and his first Topps autograph is sale-confirmed. Earlier junior-series cards via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage board.",
+  topsales:[
+{card:'2025 Chrome F1 F3 First Auto Black Refractor · /10',grade:'Raw',price:550,date:'2026-06-13',source:'eBay'}
+  ],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Ugochukwu",meta:"Jan 2026 · F3 Prema · first Topps auto confirmed",cards:[
+  C("45","F3 Drivers · Prema","Base",CHROME25),
+  C("AUTO","Chrome Autograph · first Topps auto","Auto",AUTO25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Ugochukwu",meta:"Mega box exclusive",cards:[
+  C("45","F3 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Ugochukwu",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("45","F3 Drivers · Sapphire","Base",SAPP25)]},
+{set:"Other Topps — expand via + Add",q:"Topps Ugochukwu",meta:"Junior-series cards · Topps Now F3",cards:[
+  C("—","Earlier junior-series cards — add via + Add","Base",[P("Base")]),
+  C("—","Topps Now F3 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"rafael-camara-card-checklist", first:"Rafael", last:"C\u00e2mara", full:"Rafael C\u00e2mara",
+  number:47, team:"Invicta F2", accent:"#0066CC", accentD:"#004a94",
+  key:"camara-index-v1",
+  pulse:"RECORD · $870 — 2025 Sapphire first Auto Orange /25 (eBay, Apr 2026) · 2025 F3 champion",
+  prov:"prospect page. 2025 Chrome F3 base #47 is checklist-verified — his championship season — and the Sapphire Orange /25 autograph is sale-confirmed. F2 cards arrive with the 2026 products. Top Values mirrors the F1 Card Index homepage board.",
+  topsales:[
+{card:'2025 Chrome F1 First Auto Orange Sapphire · /25',grade:'Raw',price:870,date:'2026-04-01',source:'eBay'}
+  ],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Camara",meta:"Jan 2026 · F3 champion season",cards:[
+  C("47","F3 Drivers · champion season","Base",CHROME25),
+  C("AUTO","Chrome Autograph","Auto",AUTO25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Camara",meta:"Mega box exclusive",cards:[
+  C("47","F3 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Camara",meta:"Feb 2026 · premium Sapphire · Orange /25 auto sold",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("47","F3 Drivers · Sapphire","Base",SAPP25),
+  C("AUTO","Chrome Autograph · Sapphire","Auto",[P("Base Sapphire"),P("Orange",25)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Camara",meta:"2026 F2 cards incoming · Topps Now F3",cards:[
+  C("—","2026 F2 Chrome cards — add on release","Base",[P("Base")]),
+  C("—","Topps Now F3 title moments","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"michael-schumacher-card-checklist", first:"Michael", last:"Schumacher", full:"Michael Schumacher",
+  number:1, team:"Legend", accent:"#e6b65c", accentD:"#a8823d",
+  key:"schumacher-index-v1",
+  pulse:"RECORD · $6,000 — 1992 Amada Fighting Spirit #17 RC, PSA 9 (Goldin, Apr 2023)",
+  prov:"legend page spanning both eras: the 1992 rookie market (Amada, Grid), the Futera memorabilia years, and modern Topps — his 2024 Chrome F1 Legends card #192 is sale-verified through the SuperFractor and Rose Gold 1/1s. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'1992 Amada F1 Fighting Spirit #17 RC',grade:'PSA 9',price:6000,date:'2023-04-05',source:'Goldin',url:'https://goldin.co/item/1992-amada-formula-fighting-spirit-17-michael-schumacher-rookie-card-pcgqj2'},
+{card:'2006 Futera GP Material Proof Patch #DM08 · /275',grade:'SGC 9',price:5040,date:'2022-07-24',source:'Fanatics'},
+{card:'1992 Grid Formula One RC #51',grade:'PSA 10',price:5000,date:'2025-10-21',source:'Fanatics'},
+{card:'2005 Futera GP Special Memorabilia #SDM11',grade:'PSA 9',price:4880,date:'2026-03-12',source:'Goldin',url:'https://goldin.co/item/2005-futera-grand-prix-special-memorabilia-sdm11-michael-schumacher-pavlbp'},
+{card:'2024 Chrome F1 SuperFractor #192 · 1/1',grade:'PSA 10',price:4270,date:'2025-03-29',source:'Goldin',url:'https://goldin.co/item/2024-topps-chrome-f1-superfractor-192-michael-schumacher-1-1lxisf'},
+{card:'2024 Chrome LogoFractor F1 Rose Gold #192 · 1/1',grade:'PSA 9',price:4000,date:'2026-03-29',source:'eBay'},
+{card:'2005 Futera GP Special Memorabilia #SDM11',grade:'PSA 8',price:3900,date:'2022-11-26',source:'Goldin',url:'https://goldin.co/item/2005-futera-grand-prix-special-memorabilia-sdm11-michael-schumacher-room0g0'},
+{card:'2024 Eccellenza Reliquia Race-Worn Relic · 1/5',grade:'Raw',price:3000,date:'2025-08-15',source:'eBay'}
+  ],
+  db:[
+{set:"1992 rookie era",q:"1992 Michael Schumacher rookie card",meta:"Benetton-era rookies · the vintage keys",cards:[
+  C("17","1992 Amada F1 Fighting Spirit RC","Base",[P("Base")],1),
+  C("51","1992 Grid Formula One RC","Base",[P("Base")],1)]},
+{set:"2005–2006 Futera Grand Prix",q:"Futera Grand Prix Schumacher",meta:"Ferrari-era memorabilia cards",cards:[
+  C("SDM11","2005 Special Memorabilia relic","Relic",[P("Base")]),
+  C("DM08","2006 Material Proof Patch","Relic",[P("Base",275)])]},
+{set:"2024 Topps Chrome F1",q:"2024 Topps Chrome F1 Schumacher 192",meta:"F1 Legends · card #192 · SuperFractor 1/1 sold",cards:[
+  C("192","F1 Legends","Base",CHROME24)]},
+{set:"2024 Topps Chrome LogoFractor F1",q:"2024 Topps Chrome LogoFractor Schumacher",meta:"Rose Gold 1/1 sold",cards:[
+  C("192","F1 Legends · LogoFractor","Base",LOGO)]},
+{set:"2024 Topps Chrome Sapphire F1",q:"2024 Topps Chrome Sapphire Schumacher",meta:"Sapphire treatment of the legends checklist",cards:[
+  C("192","F1 Legends · Sapphire","Base",SAPP)]},
+{set:"2024 premium relics",q:"2024 Topps Schumacher relic",meta:"Eccellenza + Finest, sale-confirmed",cards:[
+  C("RELIQUIA","2024 Eccellenza Reliquia Race-Worn Relic","Relic",[P("Base",5)]),
+  C("RACEDAY","2024 Finest F1 Raceday Relics","Relic",[P("Base"),P("SuperFractor",1)])]},
+{set:"2025 Topps Chrome F1 — expand via + Add",q:"2025 Topps Chrome F1 Schumacher Legends",meta:"F1 Legends section (149+)",cards:[
+  C("—","F1 Legends — add card # on confirm","Base",[P("Base")])]},
+{set:"Other — expand via + Add",q:"Schumacher F1 card",meta:"1991–2012 issues · Panini · Turbo Attax",cards:[
+  C("—","1991–2012 era cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"kimi-raikkonen-card-checklist", first:"Kimi", last:"R\u00e4ikk\u00f6nen", full:"Kimi R\u00e4ikk\u00f6nen",
+  number:7, team:"Legend", accent:"#e6b65c", accentD:"#a8823d",
+  key:"raikkonen-index-v1",
+  pulse:"RECORD · $10,800 — 2020 Chrome Auto SuperFractor #F1A-KR 1/1 (Goldin, Aug 2022)",
+  prov:"legend page seeded from Topps official checklists and odds sheets (2020, 2025 verified Jul 2026) plus recorded auction sales — including the 2025 Dynasty Legendary Patch Auto line (LPA-KRAI Gold 1/1 sold). 2020 base card number pending. Expand via <b>+ Add</b>. Top Values mirrors the F1 Card Index homepage Top 10.",
+  topsales:[
+{card:'2020 Chrome F1 Auto SuperFractor #F1A-KR · 1/1',grade:'PSA Auth',price:10800,date:'2022-08-06',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1a-kr-kimi-raikkonen-f1-autograph-gold-refractor-ca8yf9y'},
+{card:'2021 Chrome F1 Auto SuperFractor #CA-KR · 1/1',grade:'PSA 9',price:6240,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2021-topps-chrome-formula-1-ca-kr-kimi-raikkonen-signed-card-1-1r5gub'},
+{card:'2020 Dynasty F1 Auto Suit Nameplate #AFP-KR · 4/4',grade:'Raw',price:5700,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-afp-kr-kimi-raikkonen-rookie-patch-autograph-4-4rrjld'},
+{card:'2020 Dynasty F1 Auto Patch Gold #DAP-KR · 1/1',grade:'Raw',price:5490,date:'2024-09-02',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-autographed-patch-gold-dap-kr-kimi-raikkonen-sigqdn0s'},
+{card:'2025 Dynasty F1 Legendary Patch Auto Gold #LPA-KRAI · 1/1',grade:'Raw',price:3794.2,date:'2026-04-02',source:'Goldin',url:'https://goldin.co/item/2025-topps-dynasty-f1-legendary-patch-autographs-gold-lpa-krai-kimi-rauif5s'},
+{card:'2020 Dynasty F1 Suit Zipper Relic Auto · 4/4',grade:'Raw',price:3400,date:'2026-05-03',source:'eBay'}
+  ],
+  db:[
+{set:"2020 Topps Chrome F1",q:"2020 Topps Chrome F1 Raikkonen",meta:"Apr 2021 · inaugural Chrome F1 · Alfa Romeo era",
+ note:"Base card number pending — edit on confirm.",cards:[
+  C("—","F1 Drivers · first Topps Chrome","Base",CHROME20),
+  C("F1A-KR","Chrome Autograph","Auto",AUTO20)]},
+{set:"2020 Topps Dynasty F1",q:"2020 Topps Dynasty F1 Raikkonen",meta:"The first Dynasty F1 (AFP runs /4)",cards:[
+  C("DAP-KR","Dynasty Autograph Patch","Auto",[P("Base",10),P("Gold",1)]),
+  C("AFP-KR","Suit Nameplate Patch Autograph","Auto",[P("Base",4)]),
+  C("ZIPPER","Suit Zipper Relic Autograph","Auto",[P("Base",4)])]},
+{set:"2021–2024 career sets — expand via + Add",q:"Topps F1 Raikkonen",meta:"Farewell-era grails from sales",cards:[
+  C("CA-KR","2021 Chrome Autograph","Auto",[P("Base Auto"),P("SuperFractor",1)]),
+  C("—","2021–2024 Chrome / Sapphire / Dynasty","Base",[P("Base")])]},
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Raikkonen",meta:"Jan 2026 · legends inserts",cards:[
+  C("SD-11","Speed Demons","Insert",INSERT25),
+  C("D75A-RAI","Diamond Anniversary Relic · genuine embedded diamond","Relic",[P("Diamond Relic",1)]),
+  C("—","F1 Legends base — add card # on confirm","Base",[P("Base")])]},
+{set:"2025 Topps Dynasty F1",q:"2025 Topps Dynasty F1 Raikkonen",meta:"Legendary Patch Autographs confirmed by sale",cards:[
+  C("LPA-KRAI","Legendary Patch Autograph","Auto",[P("Base",10),P("Gold",1)])]},
+{set:"Other — expand via + Add",q:"Raikkonen F1 card",meta:"2001–2021 era issues",cards:[
+  C("—","Pre-Topps and Turbo Attax era cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"leonardo-fornaroli-card-checklist", first:"Leonardo", last:"Fornaroli", full:"Leonardo Fornaroli",
+  number:"LF", team:"F2 Champion", accent:"#C0A062", accentD:"#8a7245",
+  key:"fornaroli-index-v1",
+  pulse:"RECORD · $541 — 2025 Chrome SuperFractor 1/1 (eBay, May 2026) · 2025 F2 champion",
+  prov:"prospect page. 2025 Chrome F2 base #21 is checklist-verified — his championship season — with the SuperFractor 1/1 already sold. F1-era cards arrive with the 2026 products. Top Values mirrors the F1 Card Index homepage board.",
+  topsales:[
+{card:'2025 Chrome F1 SuperFractor · 1/1',grade:'Raw',price:541,date:'2026-05-01',source:'eBay'}
+  ],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Fornaroli",meta:"Jan 2026 · F2 champion season · #21",cards:[
+  C("21","F2 Drivers · champion season","Base",CHROME25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Fornaroli",meta:"Mega box exclusive",cards:[
+  C("21","F2 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Fornaroli",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("21","F2 Drivers · Sapphire","Base",SAPP25)]},
+{set:"Other Topps — expand via + Add",q:"Topps Fornaroli",meta:"2026 F1 rookie cards incoming · Topps Now F2",cards:[
+  C("—","2026 rookie-era cards — add on release","Base",[P("Base")],1),
+  C("—","Topps Now F2 title moments","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"jak-crawford-card-checklist", first:"Jak", last:"Crawford", full:"Jak Crawford",
+  number:"JC", team:"F2", accent:"#229971", accentD:"#166a4f",
+  key:"crawford-index-v1",
+  pulse:"RECORD · $1,100 — 2025 Sapphire Padparadscha Auto 1/1 (eBay, May 2026)",
+  prov:"prospect page. 2025 Chrome F2 base #31 is checklist-verified and the Sapphire Padparadscha autograph sale confirms his Chrome auto. Top Values mirrors the F1 Card Index homepage board.",
+  topsales:[
+{card:'2025 Chrome Sapphire Padparadscha Auto · 1/1',grade:'Raw',price:1100,date:'2026-05-01',source:'eBay'}
+  ],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Crawford",meta:"Jan 2026 · F2 Drivers · auto confirmed",cards:[
+  C("31","F2 Drivers","Base",CHROME25),
+  C("AUTO","Chrome Autograph","Auto",AUTO25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Crawford",meta:"Mega box exclusive",cards:[
+  C("31","F2 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Crawford",meta:"Feb 2026 · Padparadscha auto sold",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("31","F2 Drivers · Sapphire","Base",SAPP25),
+  C("AUTO","Chrome Autograph · Sapphire","Auto",[P("Base Sapphire"),P("Padparadscha",1)])]},
+{set:"Other Topps — expand via + Add",q:"Topps Crawford",meta:"Junior-series cards · Topps Now F2",cards:[
+  C("—","Earlier junior-series cards","Base",[P("Base")]),
+  C("—","Topps Now F2 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"luke-browning-card-checklist", first:"Luke", last:"Browning", full:"Luke Browning",
+  number:"LB", team:"F2", accent:"#64C4FF", accentD:"#3e85b3",
+  key:"browning-index-v1",
+  pulse:"Market forming — no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome F2 base #28 is checklist-verified; earlier junior-series cards via <b>+ Add</b>. Sales board fills in as the market forms.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Browning",meta:"Jan 2026 · F2 Drivers",cards:[
+  C("28","F2 Drivers","Base",CHROME25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Browning",meta:"Mega box exclusive",cards:[
+  C("28","F2 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Browning",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("28","F2 Drivers · Sapphire","Base",SAPP25)]},
+{set:"Other Topps — expand via + Add",q:"Topps Browning",meta:"Junior-series cards · Topps Now F2",cards:[
+  C("—","Earlier junior-series cards","Base",[P("Base")]),
+  C("—","Topps Now F2 moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"joshua-durksen-card-checklist", first:"Joshua", last:"D\u00fcrksen", full:"Joshua D\u00fcrksen",
+  number:"JD", team:"Invicta F2", accent:"#b06cf0", accentD:"#7a49a8",
+  key:"durksen-index-v1",
+  pulse:"Market forming — no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome F2 base #37 is checklist-verified; earlier junior-series cards via <b>+ Add</b>. Sales board fills in as the market forms.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Durksen",meta:"Jan 2026 · F2 Drivers",cards:[
+  C("37","F2 Drivers · Invicta","Base",CHROME25)]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Durksen",meta:"Mega box exclusive",cards:[
+  C("37","F2 Drivers · LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Durksen",meta:"Feb 2026 · premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.",cards:[
+  C("37","F2 Drivers · Sapphire","Base",SAPP25)]},
+{set:"Other Topps — expand via + Add",q:"Topps Durksen",meta:"Junior-series cards · Topps Now F2",cards:[
+  C("—","Earlier junior-series cards","Base",[P("Base")]),
+  C("—","Topps Now F2 moment cards","Base",[P("Base")])]}
+  ]
 }
 ];
 

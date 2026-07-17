@@ -479,6 +479,7 @@ $("#aSave").onclick=()=>{
 };
 
 function renderTV(){
+  if(!TOPSALES.length){document.querySelector("#tvlist").innerHTML='<div class="gsub">No recorded sales tracked yet — this market is still forming.</div>';return}
   document.querySelector("#tvlist").innerHTML=TOPSALES.map((t,i)=>`<div class="tv">
     <span class="rk">${String(i+1).padStart(2,"0")}</span>
     <span class="t"><b>${t.card}</b><span>${t.grade} · ${t.source} · ${t.date}</span></span>

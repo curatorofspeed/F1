@@ -926,6 +926,24 @@
       <a href="/carlos-sainz-card-checklist">Sainz Checklist</a>
       <a href="/gabriel-bortoleto-card-checklist">Bortoleto Checklist</a>
       <a href="/oliver-bearman-card-checklist">Bearman Checklist</a>
+      <a href="/arvid-lindblad-card-checklist">Lindblad Checklist</a>
+      <a href="/alex-albon-card-checklist">Albon Checklist</a>
+      <a href="/valtteri-bottas-card-checklist">Bottas Checklist</a>
+      <a href="/daniel-ricciardo-card-checklist">Ricciardo Checklist</a>
+      <a href="/esteban-ocon-card-checklist">Ocon Checklist</a>
+      <a href="/franco-colapinto-card-checklist">Colapinto Checklist</a>
+      <a href="/lance-stroll-card-checklist">Stroll Checklist</a>
+      <a href="/sergio-perez-card-checklist">Perez Checklist</a>
+      <a href="/nikola-tsolov-card-checklist">Tsolov Checklist</a>
+      <a href="/nico-hulkenberg-card-checklist">Hulkenberg Checklist</a>
+      <a href="/ugo-ugochukwu-card-checklist">Ugochukwu Checklist</a>
+      <a href="/rafael-camara-card-checklist">Camara Checklist</a>
+      <a href="/michael-schumacher-card-checklist">Schumacher Checklist</a>
+      <a href="/kimi-raikkonen-card-checklist">Raikkonen Checklist</a>
+      <a href="/leonardo-fornaroli-card-checklist">Fornaroli Checklist</a>
+      <a href="/jak-crawford-card-checklist">Crawford Checklist</a>
+      <a href="/luke-browning-card-checklist">Browning Checklist</a>
+      <a href="/joshua-durksen-card-checklist">Durksen Checklist</a>
       <a href="/f1-card-market-report">Market Report</a>
       <a href="/about">About</a>
       <a href="/methodology">Methodology</a>
@@ -2555,7 +2573,7 @@ function resultBadge(id,res){
   if(res.dnf&&res.dnf.indexOf(id)>-1)return{txt:'▼ DNF',cls:'rb-dnf'};
   return null;
 }
-const CHECKLIST_PAGES={antonelli:'kimi-antonelli-card-checklist',verstappen:'max-verstappen-card-checklist',norris:'lando-norris-card-checklist',hamilton:'lewis-hamilton-card-checklist',leclerc:'charles-leclerc-card-checklist',piastri:'oscar-piastri-card-checklist',russell:'george-russell-card-checklist',alonso:'fernando-alonso-card-checklist',senna:'ayrton-senna-card-checklist',hadjar:'isack-hadjar-card-checklist',lawson:'liam-lawson-card-checklist',sainz:'carlos-sainz-card-checklist',bortoleto:'gabriel-bortoleto-card-checklist',bearman:'oliver-bearman-card-checklist'};
+const CHECKLIST_PAGES={antonelli:'kimi-antonelli-card-checklist',verstappen:'max-verstappen-card-checklist',norris:'lando-norris-card-checklist',hamilton:'lewis-hamilton-card-checklist',leclerc:'charles-leclerc-card-checklist',piastri:'oscar-piastri-card-checklist',russell:'george-russell-card-checklist',alonso:'fernando-alonso-card-checklist',senna:'ayrton-senna-card-checklist',hadjar:'isack-hadjar-card-checklist',lawson:'liam-lawson-card-checklist',sainz:'carlos-sainz-card-checklist',bortoleto:'gabriel-bortoleto-card-checklist',bearman:'oliver-bearman-card-checklist',lindblad:'arvid-lindblad-card-checklist',albon:'alex-albon-card-checklist',bottas:'valtteri-bottas-card-checklist',ricciardo:'daniel-ricciardo-card-checklist',ocon:'esteban-ocon-card-checklist',colapinto:'franco-colapinto-card-checklist',stroll:'lance-stroll-card-checklist',perez:'sergio-perez-card-checklist',tsolov:'nikola-tsolov-card-checklist',hulkenberg:'nico-hulkenberg-card-checklist',ugochukwu:'ugo-ugochukwu-card-checklist',camara:'rafael-camara-card-checklist',schumacher:'michael-schumacher-card-checklist',raikkonen:'kimi-raikkonen-card-checklist',fornaroli:'leonardo-fornaroli-card-checklist',crawford:'jak-crawford-card-checklist',browning:'luke-browning-card-checklist',durksen:'joshua-durksen-card-checklist'};
 function renderDriverGrid(){
   const box=$('driversBox');
   const mr=mostRecentResult();const res=mr?mr.res:null;
