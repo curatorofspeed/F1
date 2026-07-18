@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Bennett Card Checklist & Collection Tracker — Every Topps Parallel | F1 Card Index</title>
+<meta name="description" content="Every Bennett Topps F1 card in one checklist: all parallels, inserts, autographs and relics — with a collection tracker and record sales.">
+<link rel="canonical" href="https://f1cardindex.com/john-bennett-card-checklist">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="F1 Card Index">
+<meta property="og:title" content="John Bennett Card Checklist & Collection Tracker">
+<meta property="og:description" content="Every Bennett Topps parallel, insert, auto and relic — trackable.">
+<meta property="og:url" content="https://f1cardindex.com/john-bennett-card-checklist">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"John Bennett Card Checklist & Collection Tracker","url":"https://f1cardindex.com/john-bennett-card-checklist","isPartOf":{"@type":"WebSite","name":"F1 Card Index","url":"https://f1cardindex.com/"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c0:#0c0d0e; --c1:#15171a; --c2:#1b1e22; --line:#2a2e33;
+  --ink:#eef1f3; --mut:#828c93; --dim:#5a646b;
+  --teal:#8A99A8; --teal-d:#5c6773; --gold:#d9b878; --red:#ff5d5d;
+  --dia:#cfeef2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--c0);color:var(--ink);font-family:'Sora',system-ui,sans-serif;font-size:15px;line-height:1.45}
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:var(--teal);text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+.wrap{max-width:880px;margin:0 auto;padding:0 14px 90px}
+
+/* ---------- hero ---------- */
+.sitenav{display:flex;gap:15px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.sitenav a{color:var(--mut);font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.sitenav .brand{font-family:'Saira Condensed',sans-serif;color:var(--ink);font-size:16px;font-weight:800;letter-spacing:.08em}
+.sitenav .spacer{flex:1}
+header{padding:20px 0 14px;border-bottom:1px solid var(--line)}
+.brandrow{display:flex;align-items:center;gap:12px}
+.n12{flex:0 0 auto;width:46px;height:46px;border-radius:10px;background:linear-gradient(160deg,var(--teal),var(--teal-d));display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:22px;color:#04211d}
+h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:clamp(28px,7vw,44px);letter-spacing:.015em;line-height:1;text-transform:uppercase}
+h1 .dot{color:var(--teal);font-style:normal}
+.sub{color:var(--mut);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;font-weight:500}
+.readout{display:flex;gap:22px;margin:18px 0 12px;flex-wrap:wrap}
+.readout div{display:flex;flex-direction:column;gap:2px}
+.readout b{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;line-height:1}
+.readout span{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.readout .own b{color:var(--teal)} .readout .grail b{color:var(--gold)}
+/* signature: master spectrum — one segment per variation, lit when owned */
+#spectrum{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--c1)}
+#spectrum i{flex:1 1 0;min-width:0;opacity:.16;transition:opacity .25s}
+#spectrum i.on{opacity:1}
+.speclabel{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+
+/* ---------- controls ---------- */
+.controls{position:sticky;top:0;z-index:30;background:linear-gradient(var(--c0) 82%,transparent);padding:12px 0 14px}
+#q{width:100%;background:var(--c1);border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:10px 13px;font:500 14px 'Sora';margin-bottom:9px}
+#q::placeholder{color:var(--dim)}
+.chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:var(--c1);color:var(--mut);font-size:12.5px;font-weight:700;letter-spacing:.03em}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#04211d}
+
+/* ---------- sets ---------- */
+.set{margin-top:18px;border:1px solid var(--line);border-radius:13px;background:var(--c1);overflow:hidden}
+.sethead{width:100%;text-align:left;padding:14px;display:flex;align-items:center;gap:12px}
+.sethead .t{flex:1;min-width:0}
+.sethead .name{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:.03em;text-transform:uppercase}
+.sethead .meta{font-size:11px;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.sethead .cnt{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);white-space:nowrap}
+.sethead .cnt b{color:var(--teal);font-weight:700}
+.setbar{height:3px;background:var(--c2)}
+.setbar i{display:block;height:100%;background:var(--teal);width:0;transition:width .3s}
+.caret{color:var(--dim);transition:transform .2s;font-size:12px}
+.set.open .caret{transform:rotate(90deg)}
+.setbody{display:none;border-top:1px solid var(--line)}
+.set.open .setbody{display:block}
+.setnote{padding:9px 14px;font-size:12px;color:var(--gold);border-bottom:1px solid var(--line);background:rgba(217,164,65,.05)}
+
+/* ---------- cards ---------- */
+.card{border-bottom:1px solid var(--line)}
+.card:last-child{border-bottom:0}
+.cardhead{display:flex;align-items:baseline;gap:9px;padding:12px 14px 8px}
+.cardno{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--teal);background:rgba(25,197,179,.09);padding:2px 7px;border-radius:6px}
+.cardname{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:15.5px;letter-spacing:.02em;text-transform:uppercase;flex:1;min-width:0}
+.cardtag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line);padding:2px 7px;border-radius:5px;white-space:nowrap}
+.cardtag.rc{color:var(--gold);border-color:rgba(217,164,65,.45)}
+.ebc{color:var(--dim);font-size:14px;padding:2px 4px}
+/* per-card rainbow */
+.rainbow{display:flex;gap:2px;height:6px;margin:0 14px 8px;border-radius:3px;overflow:hidden}
+.rainbow i{flex:1;opacity:.18}
+.rainbow i.on{opacity:1}
+/* parallel rows */
+.rows{padding:0 8px 10px}
+.row{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:8px}
+.row:active{background:var(--c2)}
+.row .sw{flex:0 0 auto;width:17px;height:17px;border-radius:5px;border:1px solid rgba(255,255,255,.14)}
+.row .nm{flex:1;min-width:0;font-size:13.5px;font-weight:500;color:var(--mut)}
+.row .ex{font-size:9.5px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-left:6px}
+.row .pr{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);white-space:nowrap;min-width:44px;text-align:right}
+.row .pr.hot{color:var(--gold);font-weight:700}
+.row .go{color:var(--dim);font-size:13px;padding:4px 6px}
+.row.own .nm{color:var(--ink);font-weight:700}
+.row.own{background:rgba(25,197,179,.07)}
+.row.own .tick{color:var(--teal)}
+.tick{width:14px;text-align:center;color:var(--dim);font-size:13px}
+.noteline{margin:-2px 6px 6px 33px}
+.noteline input{width:100%;background:var(--c2);border:1px solid var(--line);border-radius:7px;color:var(--dia);font:400 12px 'JetBrains Mono';padding:6px 9px}
+.noteline input::placeholder{color:var(--dim)}
+
+/* ---------- grails ---------- */
+#grails{margin-top:26px}
+h2{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:21px;letter-spacing:.03em;text-transform:uppercase;margin-bottom:4px}
+h2 .dot{color:var(--gold)}
+.gsub{color:var(--mut);font-size:12px;margin-bottom:10px}
+.gr{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--c1);margin-bottom:7px}
+.gr .sw{width:15px;height:15px;border-radius:4px;flex:0 0 auto}
+.gr .t{flex:1;min-width:0;font-size:12.5px}
+.gr .t b{display:block;font-size:13px}
+.gr .t span{color:var(--mut);font-size:11px}
+.gr .st{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;color:var(--dim)}
+.gr.own{border-color:rgba(217,164,65,.5)}
+.gr.own .st{color:var(--gold)}
+
+/* ---------- top values ---------- */
+#topvalues{margin-top:26px}
+.pulse{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--teal);background:rgba(25,197,179,.07);border:1px solid rgba(25,197,179,.25);border-radius:8px;padding:8px 11px;margin-bottom:10px}
+.tv{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--c1);margin-bottom:7px}
+.tv .rk{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--dim);min-width:22px}
+.tv:first-of-type .rk,.tv:nth-of-type(2) .rk{color:var(--gold)}
+.tv .t{flex:1;min-width:0;font-size:12.5px}
+.tv .t b{display:block;font-size:13px;line-height:1.3}
+.tv .t span{color:var(--mut);font-size:11px}
+.tv .pz{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:var(--gold);white-space:nowrap}
+.tv .go{color:var(--dim);font-size:13px;padding:2px 4px}
+
+/* ---------- tools/footer ---------- */
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+.tb{padding:9px 14px;border:1px solid var(--line);border-radius:9px;background:var(--c1);font-weight:700;font-size:12.5px;color:var(--mut)}
+.tb.prime{background:var(--teal);border-color:var(--teal);color:#04211d}
+footer{margin-top:26px;color:var(--dim);font-size:11.5px;line-height:1.6}
+footer b{color:var(--mut)}
+dialog{background:var(--c1);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:18px;width:min(92vw,420px)}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:10px 0 4px}
+dialog input,dialog select{width:100%;background:var(--c2);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:9px 11px;font:400 14px 'Sora'}
+.drow{display:flex;gap:9px;justify-content:flex-end;margin-top:16px}
+.empty{padding:30px 14px;text-align:center;color:var(--dim);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="sitenav">
+  <a class="brand" href="/">F1 CARD INDEX</a>
+  <span class="spacer"></span>
+  <a href="/drivers/antonelli">Live prices</a>
+  <a href="/kimi-antonelli-rookie-card-guide">RC guide</a>
+  <a href="/sets">Sets</a>
+</nav>
+
+<header>
+  <div class="brandrow">
+    <div class="n12">JB</div>
+    <div>
+      <h1>BENNETT<span class="dot">·</span>INDEX</h1>
+      <div class="sub">John Bennett · F2 2026 · Trident · the F1 Card Index collection tracker</div>
+    </div>
+  </div>
+  <div class="readout">
+    <div class="own"><b id="rOwn">0</b><span>owned</span></div>
+    <div><b id="rTot">0</b><span>variations tracked</span></div>
+    <div><b id="rNum">0</b><span>numbered owned</span></div>
+    <div class="grail"><b id="rGrail">0</b><span>1-of-1s owned</span></div>
+  </div>
+  <div id="spectrum" aria-hidden="true"></div>
+  <div class="speclabel">The full chase — one segment per variation. Lit = in the collection.</div>
+</header>
+
+<div class="controls">
+  <input id="q" type="search" placeholder="Search set, card, parallel… (e.g. 75th, superfractor, auto)">
+  <div class="chips" id="chips">
+    <button class="chip on" data-f="all">All</button>
+    <button class="chip" data-f="num">Numbered</button>
+    <button class="chip" data-f="25">/25 &amp; under</button>
+    <button class="chip" data-f="one">1-of-1</button>
+    <button class="chip" data-f="hit">Autos &amp; relics</button>
+    <button class="chip" data-f="own">Owned</button>
+    <button class="chip" data-f="need">Needed</button>
+  </div>
+</div>
+
+<main id="sets"></main>
+
+<section id="topvalues">
+  <h2>TOP VALUES<span class="dot">.</span></h2>
+  <div class="gsub">Recorded Antonelli sales — mirrors the Top 10 board on the F1 Card Index homepage. Update both from the same array.</div>
+  <div class="pulse">Market forming — no recorded sales tracked yet</div>
+  <div id="tvlist"></div>
+</section>
+
+<section id="grails">
+  <h2>GRAIL BOARD<span class="dot">.</span></h2>
+  <div class="gsub">Every one-of-one in existence for John. The endgame.</div>
+  <div id="graillist"></div>
+</section>
+
+<div class="tools">
+  <button class="tb prime" id="btnAdd">+ Add card / parallel</button>
+  <button class="tb" id="btnWant">Copy want list</button>
+  <button class="tb" id="btnSync" hidden>Sync</button>
+  <button class="tb" id="btnExport">Export JSON</button>
+  <button class="tb" id="btnImport">Import</button>
+  <button class="tb" id="btnReset">Reset</button>
+  <input type="file" id="fileImport" accept=".json" hidden>
+</div>
+
+<footer>
+  <b>Data provenance:</b> prospect page. 2025 Chrome base #41 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with Trident. Sales board fills in as the market forms. Expand via <b>+ Add</b>.<br><br>
+  Top Values mirrors the F1 Card Index homepage Top 10 (Goldin / eBay / Fanatics records) — update both from one array. Progress is saved on this device. Export JSON to back up or move devices. Outbound eBay links contain an affiliate campaign ID.
+</footer>
+</div>
+
+<dialog id="sdlg">
+  <h2 style="font-size:16px">COLLECTION SYNC<span class="dot" style="color:var(--teal)">.</span></h2>
+  <div id="acctIn">
+    <div class="gsub" style="margin-top:6px">Sign in with your email — a 6-digit code, no password. One account syncs your collection across every driver checklist.</div>
+    <div id="acctStep1">
+      <label>Email</label><input id="acctEmailIn" type="email" placeholder="you@example.com" autocomplete="email">
+      <div class="drow"><button class="tb" id="acctClose">Close</button><button class="tb prime" id="acctSend">Send code</button></div>
+    </div>
+    <div id="acctStep2" hidden>
+      <label>Enter the 6-digit code from your email</label><input id="acctCode" inputmode="numeric" placeholder="123456">
+      <div class="drow"><button class="tb prime" id="acctVerify">Verify &amp; sign in</button></div>
+    </div>
+  </div>
+  <div id="acctDone" hidden>
+    <div class="gsub" style="margin-top:6px">Signed in as <b id="acctEmail"></b>. Changes on this page save to your account automatically.</div>
+    <label>Your synced checklists</label>
+    <div id="acctPages"></div>
+    <div class="drow"><button class="tb" id="acctOut">Sign out</button><button class="tb prime" id="acctClose2">Close</button></div>
+  </div>
+</dialog>
+
+<dialog id="dlg">
+  <h2 style="font-size:16px">ADD TO INDEX<span class="dot" style="color:var(--teal)">.</span></h2>
+  <label>Set</label><input id="aSet" list="setlist" placeholder="2025 Topps Dynasty F1"><datalist id="setlist"></datalist>
+  <label>Card # / code</label><input id="aNo" placeholder="DAP-KA">
+  <label>Card name</label><input id="aName" placeholder="Dynasty Autograph Patch">
+  <label>Type</label><select id="aType"><option>Base</option><option>Insert</option><option>Auto</option><option>Relic</option></select>
+  <label>Parallel</label><input id="aPar" placeholder="Gold" value="Base">
+  <label>Print run (blank if unnumbered, 1 for 1/1)</label><input id="aPr" inputmode="numeric" placeholder="50">
+  <div class="drow"><button class="tb" id="aCancel">Cancel</button><button class="tb prime" id="aSave">Add</button></div>
+</dialog>
+
+<script>
+/* =========================================================
+   ANTONELLI·INDEX — data
+   pr: 0 = unnumbered, 1 = 1/1, -4 = printing plates (4x 1/1)
+   x : pack exclusivity tag
+========================================================= */
+const P=(p,pr,x)=>({p,pr:pr||0,x:x||""});
+
+const C=(no,name,type,pars,rc)=>({no,name,type,pars,rc:!!rc});
+
+const TOPSALES=[];
+
+const DB=[{"set":"2025 Topps Chrome F1","q":"2025 Topps Chrome F1 Bennett","meta":"Jan 2026 · F2 Drivers section","cards":[{"no":"41","name":"F2 Drivers","type":"Base","pars":[{"p":"Base","pr":0,"x":""},{"p":"Refractor","pr":0,"x":""},{"p":"B&W RayWave Refractor","pr":0,"x":"Value"},{"p":"B&W Lazer Refractor","pr":0,"x":"Hobby"},{"p":"Checker Flag Refractor","pr":0,"x":""},{"p":"Teal Refractor","pr":299,"x":""},{"p":"Pink Refractor","pr":250,"x":""},{"p":"Aqua Refractor","pr":199,"x":""},{"p":"Blue Refractor","pr":150,"x":""},{"p":"Green Refractor","pr":99,"x":""},{"p":"F1 75th Anniversary Refractor","pr":75,"x":"Hobby"},{"p":"Gold Refractor","pr":50,"x":""},{"p":"Gold Checker Flag Refractor","pr":50,"x":"Hobby"},{"p":"Orange Refractor","pr":25,"x":""},{"p":"Orange Checker Flag Refractor","pr":25,"x":"Hobby"},{"p":"Black Refractor","pr":10,"x":""},{"p":"Red Refractor","pr":5,"x":""},{"p":"Red Checker Flag Refractor","pr":5,"x":"Hobby"},{"p":"SuperFractor","pr":1,"x":""},{"p":"Printing Plates C/M/Y/K","pr":-4,"x":""}],"rc":false},{"no":"DR-41","name":"Diamond Anniversary Relic · genuine embedded diamond","type":"Relic","pars":[{"p":"Diamond Relic","pr":1,"x":""}],"rc":false}]},{"set":"2025 Topps Chrome LogoFractor F1","q":"2025 Topps Chrome LogoFractor Bennett","meta":"Mega box exclusive","cards":[{"no":"41","name":"F2 Drivers · LogoFractor","type":"Base","pars":[{"p":"LogoFractor","pr":0,"x":""},{"p":"Yellow LogoFractor","pr":75,"x":""},{"p":"Gold LogoFractor","pr":50,"x":""},{"p":"Orange LogoFractor","pr":25,"x":""},{"p":"Black LogoFractor","pr":10,"x":""},{"p":"Red LogoFractor","pr":5,"x":""},{"p":"Rose Gold LogoFractor","pr":1,"x":""}],"rc":false}]},{"set":"2025 Topps Chrome Sapphire F1","q":"2025 Topps Chrome Sapphire Bennett","meta":"Feb 2026 · premium Sapphire","note":"Ladder mirrors the verified 2025 Sapphire structure — verify vs odds sheet.","cards":[{"no":"41","name":"F2 Drivers · Sapphire","type":"Base","pars":[{"p":"Base Sapphire","pr":0,"x":""},{"p":"Aqua","pr":99,"x":""},{"p":"Gold","pr":50,"x":""},{"p":"Orange","pr":25,"x":""},{"p":"B&W","pr":20,"x":""},{"p":"Red","pr":5,"x":""},{"p":"Padparadscha","pr":1,"x":""}],"rc":false}]},{"set":"Other Topps — expand via + Add","q":"Topps Bennett F1","meta":"2026 F2 cards incoming · Topps Now","cards":[{"no":"—","name":"2026 F2 cards — add on release","type":"Base","pars":[{"p":"Base","pr":0,"x":""}],"rc":false},{"no":"—","name":"Topps Now moment cards","type":"Base","pars":[{"p":"Base","pr":0,"x":""}],"rc":false}]}];
+
+/* ---------- swatch colors ---------- */
+const SWATCH=[
+[/printing plates/i,"linear-gradient(90deg,#0bbde0 25%,#e04fd0 25% 50%,#f2d31b 50% 75%,#15181a 75%)"],
+[/night vision/i,"linear-gradient(135deg,#052e16,#4ade80)"],
+[/mini-diamond|diamond/i,"linear-gradient(135deg,#f3feff,#8fd4e6)"],
+[/padparadscha/i,"linear-gradient(135deg,#ffa76b,#ff5e8a)"],
+[/rose gold/i,"linear-gradient(135deg,#eec2ae,#c97f66)"],
+[/superfractor/i,"conic-gradient(#ff5e5e,#ffb54d,#f6f36b,#5eff8f,#5ecfff,#b45eff,#ff5e5e)"],
+[/purple\/green/i,"linear-gradient(135deg,#8b5cf6,#22c55e)"],
+[/gold\/purple/i,"linear-gradient(135deg,#d9a441,#8b5cf6)"],
+[/orange\/red/i,"linear-gradient(135deg,#ff7a1a,#e5484d)"],
+[/red\/green/i,"linear-gradient(135deg,#e5484d,#22c55e)"],
+[/fuchsia/i,"#d946ef"],
+[/checker/i,"repeating-conic-gradient(#e8e8e8 0 25%,#1c1c1c 0 50%) 0 0/8px 8px"],
+[/b&w|lazer|raywave/i,"linear-gradient(135deg,#f0f0f0,#2c2c2c)"],
+[/sepia/i,"#8a6c4e"],
+[/image variation/i,"linear-gradient(135deg,#c9d2d6,#5b6b72)"],
+[/refractor$|^refractor/i,"linear-gradient(135deg,#d7dee2,#8fd8d0,#cbb7e8)"],
+[/teal/i,"#14b8a6"],[/pink/i,"#f472b6"],[/aqua/i,"#22d3ee"],[/blue/i,"#3b82f6"],
+[/green/i,"#22c55e"],[/gold/i,"#d9a441"],[/yellow/i,"#eab308"],[/orange/i,"#ff7a1a"],
+[/black/i,"#101314"],[/red/i,"#e5484d"],[/purple/i,"#8b5cf6"],
+[/auto/i,"linear-gradient(135deg,#cfd6da,#19c5b3)"],
+[/sapphire/i,"linear-gradient(135deg,#7cc4ff,#1b4fd8)"],
+[/.*/,"#b9c2c6"]];
+const swatch=n=>SWATCH.find(s=>s[0].test(n))[1];
+
+/* ---------- account sync (optional) ----------
+   Paste your Supabase project URL + anon key to enable email sign-in
+   and cross-device / cross-driver collection sync on every generated
+   page. Leave blank to keep pages local-only.
+   Table + RLS SQL is in tools/README-sync.sql. */
+const SUPA={url:"",key:""};
+const PAGES=[{"key":"antonelli-index-v1","slug":"kimi-antonelli-card-checklist","name":"Antonelli"},{"key":"verstappen-index-v1","slug":"max-verstappen-card-checklist","name":"Verstappen"},{"key":"norris-index-v1","slug":"lando-norris-card-checklist","name":"Norris"},{"key":"hamilton-index-v1","slug":"lewis-hamilton-card-checklist","name":"Hamilton"},{"key":"leclerc-index-v1","slug":"charles-leclerc-card-checklist","name":"Leclerc"},{"key":"piastri-index-v1","slug":"oscar-piastri-card-checklist","name":"Piastri"},{"key":"russell-index-v1","slug":"george-russell-card-checklist","name":"Russell"},{"key":"alonso-index-v1","slug":"fernando-alonso-card-checklist","name":"Alonso"},{"key":"senna-index-v1","slug":"ayrton-senna-card-checklist","name":"Senna"},{"key":"hadjar-index-v1","slug":"isack-hadjar-card-checklist","name":"Hadjar"},{"key":"lawson-index-v1","slug":"liam-lawson-card-checklist","name":"Lawson"},{"key":"sainz-index-v1","slug":"carlos-sainz-card-checklist","name":"Sainz"},{"key":"bortoleto-index-v1","slug":"gabriel-bortoleto-card-checklist","name":"Bortoleto"},{"key":"bearman-index-v1","slug":"oliver-bearman-card-checklist","name":"Bearman"},{"key":"lindblad-index-v1","slug":"arvid-lindblad-card-checklist","name":"Lindblad"},{"key":"albon-index-v1","slug":"alex-albon-card-checklist","name":"Albon"},{"key":"bottas-index-v1","slug":"valtteri-bottas-card-checklist","name":"Bottas"},{"key":"ricciardo-index-v1","slug":"daniel-ricciardo-card-checklist","name":"Ricciardo"},{"key":"ocon-index-v1","slug":"esteban-ocon-card-checklist","name":"Ocon"},{"key":"colapinto-index-v1","slug":"franco-colapinto-card-checklist","name":"Colapinto"},{"key":"stroll-index-v1","slug":"lance-stroll-card-checklist","name":"Stroll"},{"key":"perez-index-v1","slug":"sergio-perez-card-checklist","name":"Perez"},{"key":"tsolov-index-v1","slug":"nikola-tsolov-card-checklist","name":"Tsolov"},{"key":"hulkenberg-index-v1","slug":"nico-hulkenberg-card-checklist","name":"Hülkenberg"},{"key":"ugochukwu-index-v1","slug":"ugo-ugochukwu-card-checklist","name":"Ugochukwu"},{"key":"camara-index-v1","slug":"rafael-camara-card-checklist","name":"Câmara"},{"key":"schumacher-index-v1","slug":"michael-schumacher-card-checklist","name":"Schumacher"},{"key":"raikkonen-index-v1","slug":"kimi-raikkonen-card-checklist","name":"Räikkönen"},{"key":"fornaroli-index-v1","slug":"leonardo-fornaroli-card-checklist","name":"Fornaroli"},{"key":"crawford-index-v1","slug":"jak-crawford-card-checklist","name":"Crawford"},{"key":"browning-index-v1","slug":"luke-browning-card-checklist","name":"Browning"},{"key":"durksen-index-v1","slug":"joshua-durksen-card-checklist","name":"Dürksen"},{"key":"goethe-index-v1","slug":"oliver-goethe-card-checklist","name":"Goethe"},{"key":"beganovic-index-v1","slug":"dino-beganovic-card-checklist","name":"Beganovic"},{"key":"mini-index-v1","slug":"gabriele-mini-card-checklist","name":"Minì"},{"key":"montoya-index-v1","slug":"sebastian-montoya-card-checklist","name":"Montoya"},{"key":"maini-index-v1","slug":"kush-maini-card-checklist","name":"Maini"},{"key":"miyata-index-v1","slug":"ritomo-miyata-card-checklist","name":"Miyata"},{"key":"dunne-index-v1","slug":"alexander-dunne-card-checklist","name":"Dunne"},{"key":"shields-index-v1","slug":"cian-shields-card-checklist","name":"Shields"},{"key":"bennett-index-v1","slug":"john-bennett-card-checklist","name":"Bennett"},{"key":"villagomez-index-v1","slug":"rafael-villagomez-card-checklist","name":"Villagómez"},{"key":"leon-index-v1","slug":"noel-leon-card-checklist","name":"León"},{"key":"badoer-index-v1","slug":"brando-badoer-card-checklist","name":"Badoer"},{"key":"stromsted-index-v1","slug":"noah-stromsted-card-checklist","name":"Strømsted"},{"key":"delpino-index-v1","slug":"bruno-del-pino-card-checklist","name":"del Pino"},{"key":"giusti-index-v1","slug":"alessandro-giusti-card-checklist","name":"Giusti"},{"key":"inthraphuvasak-index-v1","slug":"tasanapol-inthraphuvasak-card-checklist","name":"Inthraphuvasak"},{"key":"boya-index-v1","slug":"mari-boya-card-checklist","name":"Boya"},{"key":"stenshorne-index-v1","slug":"martinius-stenshorne-card-checklist","name":"Stenshorne"},{"key":"nael-index-v1","slug":"theophile-nael-card-checklist","name":"Naël"},{"key":"wharton-index-v1","slug":"james-wharton-card-checklist","name":"Wharton"},{"key":"taponen-index-v1","slug":"tuukka-taponen-card-checklist","name":"Taponen"},{"key":"vanhoepen-index-v1","slug":"laurens-van-hoepen-card-checklist","name":"van Hoepen"},{"key":"sharp-index-v1","slug":"louis-sharp-card-checklist","name":"Sharp"},{"key":"bilinski-index-v1","slug":"roman-bilinski-card-checklist","name":"Bilinski"},{"key":"ho-index-v1","slug":"christian-ho-card-checklist","name":"Ho"}];
+
+/* ---------- state ---------- */
+const KEY="bennett-index-v1";
+let state={owned:{},custom:[]};
+try{const s=localStorage.getItem(KEY);if(s)state=Object.assign(state,JSON.parse(s))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){};cloudQueue()};
+const id=(s,c,p)=>[s,c.no,c.name,p.p].join("|");
+
+/* merge custom rows into DB view */
+function fullDB(){
+  const db=DB.map(s=>({...s,cards:s.cards.map(c=>({...c,pars:[...c.pars]}))}));
+  for(const x of state.custom){
+    let s=db.find(d=>d.set===x.set);
+    if(!s){s={set:x.set,q:x.set+" Antonelli",meta:"custom",cards:[]};db.push(s)}
+    let c=s.cards.find(k=>k.no===x.no&&k.name===x.name);
+    if(!c){c=C(x.no,x.name,x.type,[]);s.cards.push(c)}
+    c.pars.push(P(x.p,x.pr));
+  }
+  return db;
+}
+
+/* ---------- filters ---------- */
+let filter="all",query="";
+const prTxt=p=>p.pr===-4?"4× 1/1":p.pr===1?"1/1":p.pr>0?"/"+p.pr:"—";
+const isOne=p=>p.pr===1||p.pr===-4;
+const passF=(c,p,own)=>{
+  if(filter==="num")return p.pr>0||p.pr===-4;
+  if(filter==="25")return (p.pr>0&&p.pr<=25)||isOne(p);
+  if(filter==="one")return isOne(p);
+  if(filter==="hit")return c.type==="Auto"||c.type==="Relic";
+  if(filter==="own")return own;
+  if(filter==="need")return !own;
+  return true;
+};
+const passQ=(s,c,p)=>{
+  if(!query)return true;
+  return (s.set+" "+c.no+" "+c.name+" "+p.p+" "+c.type).toLowerCase().includes(query);
+};
+
+/* ---------- eBay ---------- */
+const EPN="mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=5339157397&customid=antonelliindex&toolid=10001&mkevt=1";
+const ebay=q=>`https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(q)}&_sop=10&${EPN}`;
+const parQ=p=>p.p.replace(/ (Refractor|X-Fractor)$/,"").replace(/^Base.*/,"");
+
+/* ---------- render ---------- */
+const $=s=>document.querySelector(s);
+function render(){
+  const db=fullDB();
+  const host=$("#sets");host.innerHTML="";
+  const spec=[];let tot=0,own=0,num=0,grail=0;const grails=[];
+  let shown=0;
+
+  for(const s of db){
+    let sTot=0,sOwn=0;const cardsHTML=[];
+    for(const c of s.cards){
+      const rows=[];const rb=[];
+      for(const p of c.pars){
+        const pid=id(s.set,c,p);
+        const o=!!state.owned[pid];
+        tot++;if(o)own++;
+        if((p.pr>0||p.pr===-4)&&o)num++;
+        if(isOne(p)){if(o)grail++;grails.push({s,c,p,o});}
+        sTot++;if(o)sOwn++;
+        spec.push({o,sw:swatch(p.p)});
+        rb.push(`<i class="${o?'on':''}" style="background:${swatch(p.p)}"></i>`);
+        if(!passF(c,p,o)||!passQ(s,c,p))continue;
+        shown++;
+        const q=`${s.q} ${c.no!=="—"&&c.no!=="TN"&&c.no!=="AUTO"?"#"+c.no:""} ${parQ(p)} ${p.pr>1?"/"+p.pr:""}`.replace(/\s+/g," ").trim();
+        rows.push(`<div class="row ${o?'own':''}" data-id="${encodeURIComponent(pid)}">
+          <span class="tick">${o?"✓":"○"}</span>
+          <span class="sw" style="background:${swatch(p.p)}"></span>
+          <span class="nm">${p.p}${p.x?`<span class="ex">${p.x}</span>`:""}</span>
+          <span class="pr ${p.pr>0&&p.pr<=25||isOne(p)?"hot":""}">${prTxt(p)}</span>
+          <a class="go" href="${ebay(q)}" target="_blank" rel="noopener" aria-label="Search eBay">↗</a>
+        </div>${o?`<div class="noteline"><input data-note="${encodeURIComponent(pid)}" placeholder="serial · grade · paid" value="${(state.owned[pid].n||"").replace(/"/g,"&quot;")}"></div>`:""}`);
+      }
+      if(!rows.length)continue;
+      const cardQ=`${s.q} ${c.no!=="—"&&c.no!=="TN"?c.no:""}`.trim();
+      cardsHTML.push(`<div class="card">
+        <div class="cardhead">
+          <span class="cardno">${c.no}</span>
+          <span class="cardname">${c.name}</span>
+          ${c.rc?'<span class="cardtag rc">RC</span>':""}
+          <span class="cardtag">${c.type}</span>
+          <a class="ebc" href="${ebay(cardQ+" Antonelli")}" target="_blank" rel="noopener" aria-label="Search card on eBay">↗</a>
+        </div>
+        <div class="rainbow">${rb.join("")}</div>
+        <div class="rows">${rows.join("")}</div>
+      </div>`);
+    }
+    if(!cardsHTML.length)continue;
+    const pct=sTot?Math.round(sOwn/sTot*100):0;
+    host.insertAdjacentHTML("beforeend",`<section class="set open">
+      <button class="sethead" data-set>
+        <span class="caret">▶</span>
+        <span class="t"><span class="name">${s.set}</span><span class="meta"> ${s.meta}</span></span>
+        <span class="cnt"><b>${sOwn}</b>/${sTot}</span>
+      </button>
+      <div class="setbar"><i style="width:${pct}%"></i></div>
+      <div class="setbody">${s.note?`<div class="setnote">⚠ ${s.note}</div>`:""}${cardsHTML.join("")}</div>
+    </section>`);
+  }
+  if(!shown)host.innerHTML='<div class="empty">Nothing matches. Clear the search or switch filters.</div>';
+
+  $("#rOwn").textContent=own;$("#rTot").textContent=tot;$("#rNum").textContent=num;$("#rGrail").textContent=grail;
+  $("#spectrum").innerHTML=spec.map(x=>`<i class="${x.o?'on':''}" style="background:${x.sw}"></i>`).join("");
+  $("#graillist").innerHTML=(grails.length?grails:null)===null?'<div class="gsub">No serial-numbered one-of-ones in this market — value here runs on grade rarity instead.</div>':grails.map(g=>`<div class="gr ${g.o?'own':''}">
+    <span class="sw" style="background:${swatch(g.p.p)}"></span>
+    <span class="t"><b>${g.c.no} · ${g.p.p}</b><span>${g.s.set} — ${g.c.name}</span></span>
+    <span class="st">${g.o?"OWNED":"HUNTING"}</span>
+  </div>`).join("");
+  const dl=$("#setlist");dl.innerHTML=fullDB().map(s=>`<option value="${s.set}">`).join("");
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const sh=e.target.closest("[data-set]");
+  if(sh){sh.closest(".set").classList.toggle("open");return}
+  if(e.target.closest("a")||e.target.closest("input"))return;
+  const r=e.target.closest(".row[data-id]");
+  if(r){
+    const pid=decodeURIComponent(r.dataset.id);
+    if(state.owned[pid])delete state.owned[pid];else state.owned[pid]={n:""};
+    save();render();
+  }
+});
+document.addEventListener("change",e=>{
+  const n=e.target.closest("input[data-note]");
+  if(n){const pid=decodeURIComponent(n.dataset.note);if(state.owned[pid]){state.owned[pid].n=n.value;save()}}
+});
+$("#q").addEventListener("input",e=>{query=e.target.value.toLowerCase().trim();render()});
+$("#chips").addEventListener("click",e=>{
+  const c=e.target.closest(".chip");if(!c)return;
+  document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));
+  c.classList.add("on");filter=c.dataset.f;render();
+});
+
+/* tools */
+$("#btnExport").onclick=()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="antonelli-index-backup.json";a.click();URL.revokeObjectURL(a.href);
+};
+$("#btnImport").onclick=()=>$("#fileImport").click();
+$("#fileImport").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);state={owned:d.owned||{},custom:d.custom||[]};save();render()}catch(err){alert("Import failed — not a valid backup file.")}};
+  r.readAsText(f);e.target.value="";
+});
+$("#btnReset").onclick=()=>{if(confirm("Wipe all ownership data and custom rows on this device?")){state={owned:{},custom:[]};save();render()}};
+$("#btnWant").onclick=()=>{
+  const db=fullDB();const lines=[];
+  for(const s of db)for(const c of s.cards)for(const p of c.pars){
+    if((p.pr>0&&p.pr<=99)||isOne(p)){
+      if(!state.owned[id(s.set,c,p)])lines.push(`${s.set} — #${c.no} ${c.name} — ${p.p} ${prTxt(p)}`);
+    }}
+  const txt="ANTONELLI·INDEX want list ("+lines.length+")\n"+lines.join("\n");
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>alert("Want list copied — "+lines.length+" numbered cards."),()=>prompt("Copy your want list:",txt));
+};
+
+/* add dialog */
+const dlg=$("#dlg");
+$("#btnAdd").onclick=()=>dlg.showModal();
+$("#aCancel").onclick=()=>dlg.close();
+$("#aSave").onclick=()=>{
+  const set=$("#aSet").value.trim(),no=$("#aNo").value.trim()||"—",
+        name=$("#aName").value.trim(),type=$("#aType").value,
+        par=$("#aPar").value.trim()||"Base",pr=parseInt($("#aPr").value,10)||0;
+  if(!set||!name){alert("Set and card name are required.");return}
+  state.custom.push({set,no,name,type,p:par,pr});save();dlg.close();
+  $("#aNo").value="";$("#aName").value="";$("#aPar").value="Base";$("#aPr").value="";
+  render();
+};
+
+function renderTV(){
+  if(!TOPSALES.length){document.querySelector("#tvlist").innerHTML='<div class="gsub">No recorded sales tracked yet — this market is still forming.</div>';return}
+  document.querySelector("#tvlist").innerHTML=TOPSALES.map((t,i)=>`<div class="tv">
+    <span class="rk">${String(i+1).padStart(2,"0")}</span>
+    <span class="t"><b>${t.card}</b><span>${t.grade} · ${t.source} · ${t.date}</span></span>
+    <span class="pz">$${Math.round(t.price).toLocaleString()}</span>
+    ${t.url?`<a class="go" href="${t.url}" target="_blank" rel="noopener" aria-label="View sale">↗</a>`:`<span class="go"></span>`}
+  </div>`).join("");
+}
+
+/* ---------- account sync impl ---------- */
+const supaOn=()=>!!(SUPA.url&&SUPA.key);
+let sb=null,sess=null,pushT=null;
+function cloudQueue(){if(!sb||!sess)return;clearTimeout(pushT);pushT=setTimeout(cloudPush,1500)}
+async function cloudPush(){
+  if(!sb||!sess||!navigator.onLine)return;
+  const {error}=await sb.from("user_checklists").upsert({user_id:sess.user.id,page:KEY,data:state,updated_at:new Date().toISOString()});
+  if(error)console.warn("sync push failed",error);
+}
+function mergeState(cloud,local){
+  const owned=Object.assign({},local.owned||{},cloud.owned||{});
+  const seen=new Set(),custom=[];
+  for(const x of[...(cloud.custom||[]),...(local.custom||[])]){const k=JSON.stringify(x);if(!seen.has(k)){seen.add(k);custom.push(x)}}
+  return{owned,custom};
+}
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+async function cloudPullMerge(){
+  try{
+    const {data,error}=await sb.from("user_checklists").select("data").eq("page",KEY).maybeSingle();
+    if(error)throw error;
+    if(data&&data.data){state=mergeState(data.data,state);saveLocal();render()}
+    cloudPush();
+  }catch(e){console.warn("sync pull failed",e)}
+}
+function loadSupaLib(){return new Promise((res,rej)=>{if(window.supabase)return res();const t=document.createElement("script");t.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";t.onload=res;t.onerror=rej;document.head.appendChild(t)})}
+const $id=x=>document.getElementById(x);
+function acctUI(){
+  const b=$id("btnSync");
+  b.textContent=sess?("Synced · "+(sess.user.email||"").split("@")[0]):"Sign in / Sync";
+  $id("acctIn").hidden=!!sess;$id("acctDone").hidden=!sess;
+  if(sess)$id("acctEmail").textContent=sess.user.email||"";
+}
+async function listCollections(){
+  const el=$id("acctPages");el.innerHTML="";
+  try{
+    const {data}=await sb.from("user_checklists").select("page,updated_at");
+    if(!data||!data.length){el.innerHTML='<div class="gsub">No synced collections yet — tap cards and they save automatically.</div>';return}
+    el.innerHTML=data.map(r=>{
+      const p=PAGES.find(x=>x.key===r.page);const nm=p?p.name:r.page;const href=p?"/"+p.slug:"#";
+      return `<a class="tb" style="display:block;margin-bottom:7px" href="${href}">${nm} checklist · updated ${String(r.updated_at).slice(0,10)}</a>`;
+    }).join("");
+  }catch(e){}
+}
+async function initAccount(){
+  if(!supaOn())return;
+  try{await loadSupaLib()}catch(e){return}
+  sb=window.supabase.createClient(SUPA.url,SUPA.key);
+  const g=await sb.auth.getSession();sess=g.data.session;
+  sb.auth.onAuthStateChange((_e,s2)=>{sess=s2;acctUI()});
+  $id("btnSync").hidden=false;acctUI();
+  if(sess)cloudPullMerge();
+}
+(function(){
+  const sdlg=$id("sdlg");let pendingEmail="";
+  $id("btnSync").onclick=()=>{acctUI();if(sess)listCollections();sdlg.showModal()};
+  $id("acctClose").onclick=()=>sdlg.close();
+  $id("acctClose2").onclick=()=>sdlg.close();
+  $id("acctSend").onclick=async()=>{
+    pendingEmail=$id("acctEmailIn").value.trim();
+    if(!pendingEmail||!sb)return;
+    const {error}=await sb.auth.signInWithOtp({email:pendingEmail,options:{shouldCreateUser:true}});
+    if(error){alert("Could not send code — "+error.message);return}
+    $id("acctStep1").hidden=true;$id("acctStep2").hidden=false;
+  };
+  $id("acctVerify").onclick=async()=>{
+    const code=$id("acctCode").value.trim();
+    if(!code||!sb)return;
+    const {error}=await sb.auth.verifyOtp({email:pendingEmail,token:code,type:"email"});
+    if(error){alert("Code didn\u2019t verify — "+error.message);return}
+    $id("acctStep1").hidden=false;$id("acctStep2").hidden=true;
+    acctUI();cloudPullMerge();listCollections();
+  };
+  $id("acctOut").onclick=async()=>{if(sb)await sb.auth.signOut();sess=null;acctUI()};
+})();
+
+renderTV();
+render();
+initAccount();
+</script>
+</body>
+</html>
