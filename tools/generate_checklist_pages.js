@@ -1543,6 +1543,534 @@ const DRIVERS=[
   C("—","Earlier junior-series cards","Base",[P("Base")]),
   C("—","Topps Now F2 moment cards","Base",[P("Base")])]}
   ]
+},
+{
+  slug:"oliver-goethe-card-checklist", first:"Oliver", last:"Goethe", full:"Oliver Goethe",
+  number:"OG", team:"F2 2026 \u00b7 MP Motorsport", accent:"#8A99A8", accentD:"#5c6773",
+  key:"goethe-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #26 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with MP Motorsport. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Goethe",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("26","F2 Drivers","Base",CHROME25),
+  C("DR-26","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Goethe",meta:"Mega box exclusive",cards:[
+  C("26","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Goethe",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("26","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Goethe F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"dino-beganovic-card-checklist", first:"Dino", last:"Beganovic", full:"Dino Beganovic",
+  number:"DB", team:"F2 2026 \u00b7 DAMS", accent:"#8A99A8", accentD:"#5c6773",
+  key:"beganovic-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #27 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with DAMS. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Beganovic",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("27","F2 Drivers","Base",CHROME25),
+  C("DR-27","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Beganovic",meta:"Mega box exclusive",cards:[
+  C("27","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Beganovic",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("27","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Beganovic F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"gabriele-mini-card-checklist", first:"Gabriele", last:"Min\u00ec", full:"Gabriele Min\u00ec",
+  number:"GM", team:"F2 2026 \u00b7 MP Motorsport", accent:"#8A99A8", accentD:"#5c6773",
+  key:"mini-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #29 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with MP Motorsport. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Mini",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("29","F2 Drivers","Base",CHROME25),
+  C("DR-29","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Mini",meta:"Mega box exclusive",cards:[
+  C("29","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Mini",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("29","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Mini F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"sebastian-montoya-card-checklist", first:"Sebasti\u00e1n", last:"Montoya", full:"Sebasti\u00e1n Montoya",
+  number:"SM", team:"F2 2026 \u00b7 Prema", accent:"#8A99A8", accentD:"#5c6773",
+  key:"montoya-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #30 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with Prema. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Montoya",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("30","F2 Drivers","Base",CHROME25),
+  C("DR-30","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Montoya",meta:"Mega box exclusive",cards:[
+  C("30","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Montoya",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("30","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Montoya F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"kush-maini-card-checklist", first:"Kush", last:"Maini", full:"Kush Maini",
+  number:"KM", team:"F2 2026 \u00b7 ART Grand Prix", accent:"#8A99A8", accentD:"#5c6773",
+  key:"maini-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #32 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with ART Grand Prix. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Maini",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("32","F2 Drivers","Base",CHROME25),
+  C("DR-32","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Maini",meta:"Mega box exclusive",cards:[
+  C("32","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Maini",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("32","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Maini F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"ritomo-miyata-card-checklist", first:"Ritomo", last:"Miyata", full:"Ritomo Miyata",
+  number:"RM", team:"F2 2026 \u00b7 Hitech", accent:"#8A99A8", accentD:"#5c6773",
+  key:"miyata-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #33 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with Hitech. His CAC autograph is on the confirmed signer list. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Miyata",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("33","F2 Drivers","Base",CHROME25),
+  C("CAC-MIY","Chrome Autograph","Auto",AUTO25),
+  C("DR-33","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Miyata",meta:"Mega box exclusive",cards:[
+  C("33","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Miyata",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("33","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Miyata F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"alexander-dunne-card-checklist", first:"Alexander", last:"Dunne", full:"Alexander Dunne",
+  number:"AD", team:"F2 2026 \u00b7 Rodin", accent:"#8A99A8", accentD:"#5c6773",
+  key:"dunne-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #35 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with Rodin. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Dunne",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("35","F2 Drivers","Base",CHROME25),
+  C("DR-35","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Dunne",meta:"Mega box exclusive",cards:[
+  C("35","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Dunne",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("35","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Dunne F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"cian-shields-card-checklist", first:"Cian", last:"Shields", full:"Cian Shields",
+  number:"CS", team:"F2 2026 \u00b7 AIX Racing", accent:"#8A99A8", accentD:"#5c6773",
+  key:"shields-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #38 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with AIX Racing. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Shields",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("38","F2 Drivers","Base",CHROME25),
+  C("DR-38","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Shields",meta:"Mega box exclusive",cards:[
+  C("38","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Shields",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("38","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Shields F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"john-bennett-card-checklist", first:"John", last:"Bennett", full:"John Bennett",
+  number:"JB", team:"F2 2026 \u00b7 Trident", accent:"#8A99A8", accentD:"#5c6773",
+  key:"bennett-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #41 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with Trident. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Bennett",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("41","F2 Drivers","Base",CHROME25),
+  C("DR-41","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Bennett",meta:"Mega box exclusive",cards:[
+  C("41","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Bennett",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("41","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Bennett F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"rafael-villagomez-card-checklist", first:"Rafael", last:"Villag\u00f3mez", full:"Rafael Villag\u00f3mez",
+  number:"RV", team:"F2 2026 \u00b7 Van Amersfoort", accent:"#8A99A8", accentD:"#5c6773",
+  key:"villagomez-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #42 (F2 Drivers section) is checklist-verified; currently racing F2 in 2026 with Van Amersfoort. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Villagomez",meta:"Jan 2026 \u00b7 F2 Drivers section",cards:[
+  C("42","F2 Drivers","Base",CHROME25),
+  C("DR-42","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Villagomez",meta:"Mega box exclusive",cards:[
+  C("42","F2 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Villagomez",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("42","F2 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Villagomez F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"noel-leon-card-checklist", first:"Noel", last:"Le\u00f3n", full:"Noel Le\u00f3n",
+  number:"NL", team:"F2 2026 \u00b7 Campos", accent:"#8A99A8", accentD:"#5c6773",
+  key:"leon-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #43 (F3 Drivers section) is checklist-verified; currently racing F2 in 2026 with Campos. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Leon",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("43","F3 Drivers","Base",CHROME25),
+  C("DR-43","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Leon",meta:"Mega box exclusive",cards:[
+  C("43","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Leon",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("43","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Leon F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"brando-badoer-card-checklist", first:"Brando", last:"Badoer", full:"Brando Badoer",
+  number:"BB", team:"F3 2026 \u00b7 Rodin", accent:"#8A99A8", accentD:"#5c6773",
+  key:"badoer-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #44 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Rodin. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Badoer",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("44","F3 Drivers","Base",CHROME25),
+  C("DR-44","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Badoer",meta:"Mega box exclusive",cards:[
+  C("44","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Badoer",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("44","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Badoer F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"noah-stromsted-card-checklist", first:"Noah", last:"Str\u00f8msted", full:"Noah Str\u00f8msted",
+  number:"NS", team:"F3 2026 \u00b7 Trident", accent:"#8A99A8", accentD:"#5c6773",
+  key:"stromsted-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #46 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Trident. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Stromsted",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("46","F3 Drivers","Base",CHROME25),
+  C("DR-46","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Stromsted",meta:"Mega box exclusive",cards:[
+  C("46","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Stromsted",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("46","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Stromsted F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"bruno-del-pino-card-checklist", first:"Bruno", last:"del Pino", full:"Bruno del Pino",
+  number:"BP", team:"F3 2026 \u00b7 Van Amersfoort", accent:"#8A99A8", accentD:"#5c6773",
+  key:"delpino-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #50 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Van Amersfoort. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 del Pino",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("50","F3 Drivers","Base",CHROME25),
+  C("DR-50","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor del Pino",meta:"Mega box exclusive",cards:[
+  C("50","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire del Pino",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("50","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps del Pino F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"alessandro-giusti-card-checklist", first:"Alessandro", last:"Giusti", full:"Alessandro Giusti",
+  number:"AG", team:"F3 2026 \u00b7 MP Motorsport", accent:"#8A99A8", accentD:"#5c6773",
+  key:"giusti-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #51 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with MP Motorsport. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Giusti",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("51","F3 Drivers","Base",CHROME25),
+  C("DR-51","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Giusti",meta:"Mega box exclusive",cards:[
+  C("51","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Giusti",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("51","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Giusti F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"tasanapol-inthraphuvasak-card-checklist", first:"Tasanapol", last:"Inthraphuvasak", full:"Tasanapol Inthraphuvasak",
+  number:"TI", team:"F2 2026 \u00b7 ART Grand Prix", accent:"#8A99A8", accentD:"#5c6773",
+  key:"inthraphuvasak-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #53 (F3 Drivers section) is checklist-verified; currently racing F2 in 2026 with ART Grand Prix. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Inthraphuvasak",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("53","F3 Drivers","Base",CHROME25),
+  C("DR-53","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Inthraphuvasak",meta:"Mega box exclusive",cards:[
+  C("53","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Inthraphuvasak",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("53","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Inthraphuvasak F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"mari-boya-card-checklist", first:"Mari", last:"Boya", full:"Mari Boya",
+  number:"MB", team:"F2 2026 \u00b7 Prema", accent:"#8A99A8", accentD:"#5c6773",
+  key:"boya-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #54 (F3 Drivers section) is checklist-verified; currently racing F2 in 2026 with Prema. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Boya",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("54","F3 Drivers","Base",CHROME25),
+  C("DR-54","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Boya",meta:"Mega box exclusive",cards:[
+  C("54","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Boya",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("54","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Boya F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"martinius-stenshorne-card-checklist", first:"Martinius", last:"Stenshorne", full:"Martinius Stenshorne",
+  number:"MS", team:"F2 2026 \u00b7 Rodin", accent:"#8A99A8", accentD:"#5c6773",
+  key:"stenshorne-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #57 (F3 Drivers section) is checklist-verified; currently racing F2 in 2026 with Rodin. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Stenshorne",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("57","F3 Drivers","Base",CHROME25),
+  C("DR-57","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Stenshorne",meta:"Mega box exclusive",cards:[
+  C("57","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Stenshorne",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("57","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Stenshorne F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"theophile-nael-card-checklist", first:"Th\u00e9ophile", last:"Na\u00ebl", full:"Th\u00e9ophile Na\u00ebl",
+  number:"TN", team:"F3 2026 \u00b7 Campos", accent:"#8A99A8", accentD:"#5c6773",
+  key:"nael-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #58 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Campos. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Nael",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("58","F3 Drivers","Base",CHROME25),
+  C("DR-58","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Nael",meta:"Mega box exclusive",cards:[
+  C("58","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Nael",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("58","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Nael F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"james-wharton-card-checklist", first:"James", last:"Wharton", full:"James Wharton",
+  number:"JW", team:"F3 2026 \u00b7 Prema", accent:"#8A99A8", accentD:"#5c6773",
+  key:"wharton-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #61 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Prema. His CAC autograph is on the confirmed signer list. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Wharton",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("61","F3 Drivers","Base",CHROME25),
+  C("CAC-WHA","Chrome Autograph","Auto",AUTO25),
+  C("DR-61","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Wharton",meta:"Mega box exclusive",cards:[
+  C("61","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Wharton",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("61","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Wharton F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"tuukka-taponen-card-checklist", first:"Tuukka", last:"Taponen", full:"Tuukka Taponen",
+  number:"TT", team:"F3 2026 \u00b7 MP Motorsport", accent:"#8A99A8", accentD:"#5c6773",
+  key:"taponen-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #62 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with MP Motorsport. His CAC autograph is on the confirmed signer list. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Taponen",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("62","F3 Drivers","Base",CHROME25),
+  C("CAC-TAP","Chrome Autograph","Auto",AUTO25),
+  C("DR-62","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Taponen",meta:"Mega box exclusive",cards:[
+  C("62","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Taponen",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("62","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Taponen F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"laurens-van-hoepen-card-checklist", first:"Laurens", last:"van Hoepen", full:"Laurens van Hoepen",
+  number:"LH", team:"F2 2026 \u00b7 Trident", accent:"#8A99A8", accentD:"#5c6773",
+  key:"vanhoepen-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #63 (F3 Drivers section) is checklist-verified; currently racing F2 in 2026 with Trident. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Hoepen",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("63","F3 Drivers","Base",CHROME25),
+  C("DR-63","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Hoepen",meta:"Mega box exclusive",cards:[
+  C("63","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Hoepen",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("63","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Hoepen F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"louis-sharp-card-checklist", first:"Louis", last:"Sharp", full:"Louis Sharp",
+  number:"LS", team:"F3 2026 \u00b7 Prema", accent:"#8A99A8", accentD:"#5c6773",
+  key:"sharp-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #68 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Prema. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Sharp",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("68","F3 Drivers","Base",CHROME25),
+  C("DR-68","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Sharp",meta:"Mega box exclusive",cards:[
+  C("68","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Sharp",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("68","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Sharp F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"roman-bilinski-card-checklist", first:"Roman", last:"Bilinski", full:"Roman Bilinski",
+  number:"RB", team:"F2 2026 \u00b7 DAMS", accent:"#8A99A8", accentD:"#5c6773",
+  key:"bilinski-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #69 (F3 Drivers section) is checklist-verified; currently racing F2 in 2026 with DAMS. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Bilinski",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("69","F3 Drivers","Base",CHROME25),
+  C("DR-69","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Bilinski",meta:"Mega box exclusive",cards:[
+  C("69","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Bilinski",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("69","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Bilinski F1",meta:"2026 F2 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F2 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
+},
+{
+  slug:"christian-ho-card-checklist", first:"Christian", last:"Ho", full:"Christian Ho",
+  number:"CH", team:"F3 2026 \u00b7 Rodin", accent:"#8A99A8", accentD:"#5c6773",
+  key:"ho-index-v1",
+  pulse:"Market forming \u2014 no recorded sales tracked yet",
+  prov:"prospect page. 2025 Chrome base #72 (F3 Drivers section) is checklist-verified; currently racing F3 in 2026 with Rodin. Sales board fills in as the market forms. Expand via <b>+ Add</b>.",
+  topsales:[],
+  db:[
+{set:"2025 Topps Chrome F1",q:"2025 Topps Chrome F1 Ho",meta:"Jan 2026 \u00b7 F3 Drivers section",cards:[
+  C("72","F3 Drivers","Base",CHROME25),
+  C("DR-72","Diamond Anniversary Relic \u00b7 genuine embedded diamond","Relic",[P("Diamond Relic",1)])]},
+{set:"2025 Topps Chrome LogoFractor F1",q:"2025 Topps Chrome LogoFractor Ho",meta:"Mega box exclusive",cards:[
+  C("72","F3 Drivers \u00b7 LogoFractor","Base",LOGO25)]},
+{set:"2025 Topps Chrome Sapphire F1",q:"2025 Topps Chrome Sapphire Ho",meta:"Feb 2026 \u00b7 premium Sapphire",
+ note:"Ladder mirrors the verified 2025 Sapphire structure \u2014 verify vs odds sheet.",cards:[
+  C("72","F3 Drivers \u00b7 Sapphire","Base",SAPP25)]},
+{set:"Other Topps \u2014 expand via + Add",q:"Topps Ho F1",meta:"2026 F3 cards incoming \u00b7 Topps Now",cards:[
+  C("\u2014","2026 F3 cards \u2014 add on release","Base",[P("Base")]),
+  C("\u2014","Topps Now moment cards","Base",[P("Base")])]}
+  ]
 }
 ];
 
