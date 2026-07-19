@@ -660,6 +660,11 @@
 /* ===== end market tabs ===== */
 .feeder-res{grid-column:1/-1;margin:2px 0 16px}
 .amz-kit{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px}
+.amz-kit .mff-card{position:relative;overflow:hidden}
+.kit-rib{position:absolute;top:9px;right:-26px;transform:rotate(38deg);background:linear-gradient(120deg,#e5484d,#c73a3f);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 28px;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.kit-hot{border-color:#e5484d!important;animation:kitPulse 2.6s ease-in-out infinite}
+.kit-hot .mff-go{color:#e5484d}
+@keyframes kitPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}50%{box-shadow:0 0 12px 1px rgba(229,72,77,.35)}}
 </style>
 </head>
 <body>
@@ -2394,7 +2399,7 @@ const AMZ_GENERIC=['https://amzn.to/4emsq3J','https://amzn.to/4enZtnZ','https://
 function amzPick(d,arr){const i=(String(d.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%arr.length;return arr[i];}
 const AMZ_KIT_META={
   'Sleeves':              ['🧤','Mail-day sleeves','First touch for every raw pull — penny sleeves by the hundred'],
-  'Toploaders + Sleeves': ['🛡️','Grade-ready protection','Toploaders + sleeves — keep it mint until it ships to PSA'],
+  'Toploaders + Sleeves': ['🛡️','Grade-ready protection','Toploaders + sleeves — keep it mint until it ships to PSA','🔥 ON SALE'],
   'Binders':              ['📚','The rainbow binder','Side-loading pages for the parallel chase'],
   'Magnet Holders':       ['🖼️','One-touch mags','Display-grade housing for your best hits'],
   'Card Storage':         ['📦','Bulk & base storage','Sort the box breaks, protect the commons']
@@ -2402,7 +2407,8 @@ const AMZ_KIT_META={
 function amzGearRow(d){
   let b=AMZ_GEAR.map(g=>{
     const m=AMZ_KIT_META[g.label]||['🛒',g.label,''];
-    return '<a class="mff-card" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+
+    const rib=m[3]?'<span class="kit-rib">'+esc(m[3])+'</span>':'';
+    return '<a class="mff-card'+(m[3]?' kit-hot':'')+'" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+rib+
       '<div><div class="mff-label">'+m[0]+' '+esc(m[1])+'</div><div class="mff-sub">'+esc(m[2])+'</div></div>'+
       '<span class="mff-go">↗</span></a>';
   }).join('');
