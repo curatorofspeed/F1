@@ -480,7 +480,7 @@
   .gc-inputs input{background:var(--carbon);border:1px solid var(--line);border-radius:9px;padding:10px;color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;width:100%;box-sizing:border-box}
   .gc-inputs input:focus{outline:none;border-color:var(--teal-dim)}
   .gc-hint{font-size:10.5px;color:var(--muted);margin:11px 0 0;line-height:1.5}
-  .gc-out{margin:15px 0 4px;display:grid;gap:2px}
+  .gc-out{margin:12px 0 10px}
   .gc-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:13px}
   .gc-row .k{color:var(--muted)}
   .gc-row .v{font-weight:700;font-size:15px}
@@ -489,6 +489,20 @@
   .gc-cta{display:flex;gap:8px;flex-wrap:wrap}
   .gc-btn{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:9px 15px;border-radius:20px;text-decoration:none;border:1px solid;white-space:nowrap;transition:.13s}
   .gc-btn:hover{filter:brightness(1.25)}
+  .gc-strip{font-family:'JetBrains Mono',monospace;font-size:13px;padding:11px 13px;border-radius:9px;border:1px solid var(--line);background:var(--carbon);line-height:1.5}
+  .gc-strip b{font-weight:700}
+  .gc-strip .big{font-size:16px}
+  .gc-strip.up{border-color:#1e4232;color:var(--txt)}
+  .gc-strip.up .big{color:#39e08a}
+  .gc-strip.down{border-color:#4a2626}
+  .gc-strip.down .big{color:#ef6a6a}
+  .gc-strip.mut{color:var(--muted);font-size:12px}
+  .gc-cta{align-items:center}
+  .gc-links{display:inline-flex;gap:14px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11.5px;margin-left:4px}
+  .gc-links a{color:var(--muted);text-decoration:none;white-space:nowrap}
+  .gc-links a:hover{color:var(--gold)}
+  .wn-slim{padding:9px 14px!important;margin-top:10px}
+  .wn-slim .wn-txt{font-size:12.5px}
   .gc-psa{background:rgba(57,224,138,.1);color:var(--up);border-color:#1a3a27}
   .gc-beckett{background:rgba(91,157,255,.1);color:#5b9dff;border-color:#1e3a5f}
   .gc-tag{background:rgba(167,139,250,.1);color:#b79cff;border-color:#3a2f5f}
@@ -681,6 +695,12 @@
 .mkt-phead:empty{display:none}
 /* ===== end market tabs ===== */
 .feeder-res{grid-column:1/-1;margin:2px 0 16px}
+.amz-kit{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px}
+.amz-kit .mff-card{position:relative;overflow:hidden}
+.kit-rib{position:absolute;top:9px;right:-26px;transform:rotate(38deg);background:linear-gradient(120deg,#e5484d,#c73a3f);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 28px;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.kit-hot{border-color:#e5484d!important;animation:kitPulse 2.6s ease-in-out infinite}
+.kit-hot .mff-go{color:#e5484d}
+@keyframes kitPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}50%{box-shadow:0 0 12px 1px rgba(229,72,77,.35)}}
 </style>
 </head>
 <body>
@@ -2480,11 +2500,26 @@ const AMZ_DRIVER={
 };
 const AMZ_GENERIC=['https://amzn.to/4emsq3J','https://amzn.to/4enZtnZ','https://amzn.to/4uTqHYK','https://amzn.to/4eRQewx','https://amzn.to/4oEkXRb'];
 function amzPick(d,arr){const i=(String(d.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%arr.length;return arr[i];}
+const AMZ_KIT_META={
+  'Sleeves':              ['🧤','Mail-day sleeves','First touch for every raw pull — penny sleeves by the hundred',''],
+  'Toploaders + Sleeves': ['🛡️','Grade-ready protection','Toploaders + sleeves — keep it mint until it ships to PSA','🔥 ON SALE'],
+  'Binders':              ['📚','The rainbow binder','Side-loading pages for the parallel chase',''],
+  'Magnet Holders':       ['🖼️','One-touch mags','Display-grade housing for your best hits',''],
+  'Card Storage':         ['📦','Bulk & base storage','Sort the box breaks, protect the commons','']
+};
 function amzGearRow(d){
-  let b=AMZ_GEAR.map(g=>'<a class="amz-btn" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+g.label+' <span class="az">↗</span></a>').join('');
+  let b=AMZ_GEAR.map(g=>{
+    const m=AMZ_KIT_META[g.label]||['🛒',g.label,'',''];
+    const rib=m[3]?'<span class="kit-rib">'+esc(m[3])+'</span>':'';
+    return '<a class="mff-card'+(m[3]?' kit-hot':'')+'" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+rib+
+      '<div><div class="mff-label">'+m[0]+' '+esc(m[1])+'</div><div class="mff-sub">'+esc(m[2])+'</div></div>'+
+      '<span class="mff-go">↗</span></a>';
+  }).join('');
   const sealed=d?amzPick(d,AMZ_SEALED):AMZ_SEALED[0];
-  b+='<a class="amz-btn" href="'+esc(sealed)+'" target="_blank" rel="noopener sponsored">Sealed Boxes &amp; Packs <span class="az">↗</span></a>';
-  return '<div class="amz-gear">'+b+'</div>';
+  b+='<a class="mff-card" href="'+esc(sealed)+'" target="_blank" rel="noopener sponsored">'+
+    '<div><div class="mff-label">🎁 Rip something</div><div class="mff-sub">Sealed F1 boxes &amp; packs — today\u2019s lottery ticket</div></div>'+
+    '<span class="mff-go">↗</span></a>';
+  return '<div class="amz-kit">'+b+'</div>';
 }
 function amzFanGroups(d){
   const mk=(links,header)=>'<div class="mff-group"><div class="mff-cat">'+header+'</div><div class="amz-gear">'+
@@ -2495,21 +2530,13 @@ function amzFanGroups(d){
   if(!out)out=mk(AMZ_GENERIC,'🏁 F1 Fan Gear · Amazon');
   return out;
 }
-/* ---------- More for fans: audience-matched non-card affiliate partners ---------- */const POINT130='https://130point.com/sales/';
+/* ---------- More for fans: audience-matched non-card affiliate partners ---------- */
 function toast(msg){
   let t=$('toast');
   if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}
   t.textContent=msg;t.classList.add('show');
   clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2800);
 }
-window.copy130=function(term){
-  try{
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(term);}
-    else{const ta=document.createElement('textarea');ta.value=term;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
-    toast('Copied "'+term+'" — paste it on 130point ↗');
-  }catch(e){}
-  return true;
-};
 function affWrap(url,key){
   const a=(state.affiliates||{})[key];
   if(!a)return url;
@@ -2582,15 +2609,13 @@ window.gcRecalc=function(){
   const raw=parseFloat($('gcRaw').value)||0;
   const cost=parseFloat($('gcCost').value)||0;
   const target=parseFloat($('gcTarget').value)||0;
-  const basis=raw+cost;
   const out=$('gcOut');if(!out)return;
-  if(!raw&&!target){out.innerHTML='<div class="gc-row" style="border:none"><span class="k">Enter a raw price and a PSA 10 target above to see the math.</span></div>';return;}
-  const profit=target-basis, roi=basis>0?(profit/basis*100):0, up=profit>=0;
-  out.innerHTML=
-    '<div class="gc-row"><span class="k">Cost basis · raw + grading</span><span class="v">'+money(basis)+'</span></div>'+
-    '<div class="gc-row"><span class="k">If it grades PSA 10</span><span class="v gc-profit '+(up?'up':'down')+'">'+(up?'+':'')+money(profit)+'</span></div>'+
-    '<div class="gc-row"><span class="k">Return on cost</span><span class="v '+(up?'up':'down')+'">'+(up?'+':'')+roi.toFixed(0)+'%</span></div>'+
-    '<div class="gc-row" style="border:none"><span class="k">Break-even PSA 10 price</span><span class="v">'+money(basis)+'</span></div>';
+  if(raw<=0||target<=0){out.innerHTML='<div class="gc-strip mut">Enter a raw price and PSA 10 target — profit, ROI and break-even appear here.</div>';return;}
+  const basis=raw+cost, profit=target-basis, roi=basis>0?(profit/basis*100):0, up=profit>=0;
+  out.innerHTML='<div class="gc-strip '+(up?'up':'down')+'">'
+    +'All-in <b>'+money(basis)+'</b> \u2192 PSA 10 <b>'+money(target)+'</b>'
+    +' \u00b7 <b class="big">'+(up?'+':'')+money(profit)+'</b> ('+(up?'+':'')+roi.toFixed(0)+'%)'
+    +' \u00b7 break-even '+money(basis)+'</div>';
 };
 function renderGradeCalc(d){
   const box=$('gradeCalc');if(!box)return;
@@ -2601,17 +2626,20 @@ function renderGradeCalc(d){
       '<label>Grading + ship<input id="gcCost" type="number" min="0" value="25" oninput="gcRecalc()"></label>'+
       '<label>PSA 10 target<input id="gcTarget" type="number" min="0" placeholder="0" value="'+(pre>0?pre:'')+'" oninput="gcRecalc()"></label>'+
     '</div>'+
-    '<div class="gc-hint">PSA tiers ≈ $25 value · $75 regular · $150 express — verify current rates at psacard.com.'+(pre>0?' Target pre-filled from '+esc(d.name.split(" ")[0])+'\u2019s top PSA 10 comp.':'')+'</div>'+
+    '<div class="gc-hint">PSA \u2248 $25 / $75 / $150 tiers \u00b7 psacard.com'+(pre>0?' \u00b7 target pre-filled from top PSA 10 comp':'')+' \u00b7 \u26A0 assumes a 10 \u2014 a 9 can be worth a fraction</div>'+
     '<div class="gc-out" id="gcOut"></div>'+
-    '<div class="gc-caveat">\u26A0 Grading is a gamble. This assumes a PSA 10 — a 9 or lower can be worth a fraction as much. Card values move; never grade purely on these numbers.</div>'+
     '<div class="gc-cta">'+
-      '<a class="gc-btn gc-psa" href="'+esc(affWrap('https://www.psacard.com/startsubmission','psa'))+'" target="_blank" rel="noopener sponsored">💎 Submit to PSA ↗</a>'+'<a class="gc-btn gc-beckett" href="'+esc(affWrap('https://www.beckett.com/grading','beckett'))+'" target="_blank" rel="noopener sponsored">🔹 Submit to Beckett ↗</a>'+'<a class="gc-btn gc-tag" href="'+esc(affWrap('https://taggrading.com/pages/pricing','tag'))+'" target="_blank" rel="noopener sponsored">🏷️ Submit to TAG ↗</a>'+
-      '<a class="gc-btn gc-ghost" href="'+esc(gridEbay(d.name,false))+'" target="_blank" rel="noopener">Find raw copies ↗</a>'+
-      '<a class="gc-btn gc-ghost" href="'+esc(psa10Link(d.name))+'" target="_blank" rel="noopener">PSA 10 comps ↗</a>'+
+      '<a class="gc-btn gc-psa" href="'+esc(affWrap('https://www.psacard.com/startsubmission','psa'))+'" target="_blank" rel="noopener sponsored">💎 PSA ↗</a>'+
+      '<a class="gc-btn gc-beckett" href="'+esc(affWrap('https://www.beckett.com/grading','beckett'))+'" target="_blank" rel="noopener sponsored">🔹 Beckett ↗</a>'+
+      '<a class="gc-btn gc-tag" href="'+esc(affWrap('https://taggrading.com/pages/pricing','tag'))+'" target="_blank" rel="noopener sponsored">🏷️ TAG ↗</a>'+
+      '<span class="gc-links">'+
+        '<a href="'+esc(gridEbay(d.name,false))+'" target="_blank" rel="noopener">raw comps ↗</a>'+
+        '<a href="'+esc(psa10Link(d.name))+'" target="_blank" rel="noopener">PSA 10 comps ↗</a>'+
+        '<a href="'+esc(AMZ_GEAR[1].url)+'" target="_blank" rel="noopener sponsored">🛡️ supplies ↗</a>'+
+      '</span>'+
     '</div>'+
-    '<a class="wn-seller-card" href="https://whatnot.com/invite/seller/f1index" target="_blank" rel="noopener sponsored">'+
-      '<span class="wn-amt-g">$150</span>'+
-      '<span class="wn-txt"><strong>Ready to sell?</strong> Get $150 free to start your shop on Whatnot</span>'+
+    '<a class="wn-seller-card wn-slim" href="https://whatnot.com/invite/seller/f1index" target="_blank" rel="noopener sponsored">'+
+      '<span class="wn-txt"><strong>Selling the slab?</strong> $150 free to start on Whatnot</span>'+
       '<span class="wn-go-g">↗</span>'+
     '</a>';
   gcRecalc();
