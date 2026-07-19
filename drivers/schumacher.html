@@ -71,6 +71,24 @@ h3.cl-set a{color:var(--gold)}
 table.cl td,table.cl th{padding:7px 12px;font-size:13.5px}
 table.cl .rc{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;color:#062;background:#39e08a;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
 table.cl td a{color:var(--gold);font-weight:600;font-size:12.5px}
+.gear{font-size:13px;color:var(--muted);margin:14px 2px 0}
+.gear a{color:var(--gold);font-weight:600;white-space:nowrap}
+.gear .gm{font-size:11px}
+
+.trend{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:22px 0}
+.trend h2{margin:0 0 2px;font-size:17px}
+.trend .tn{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.trend svg{display:block;width:100%;height:120px}
+.trend .tstats{display:flex;gap:18px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.trend .tstats b{color:var(--gold);font-family:JetBrains Mono,monospace}
+.alertbox{background:linear-gradient(120deg,var(--panel),var(--panel2));border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;padding:16px;margin:22px 0}
+.alertbox h2{margin:0 0 4px;font-size:17px}
+.alertbox p{margin:0 0 10px;color:var(--muted);font-size:13.5px}
+.alertbox .af{display:flex;gap:8px;flex-wrap:wrap}
+.alertbox input,.alertbox select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-size:14px;font-family:inherit}
+.alertbox input[type=email]{flex:1;min-width:200px}
+.alertbox button{background:var(--gold);color:#1a1508;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+.alertbox .amsg{font-size:13px;margin-top:8px;min-height:16px}
 </style>
 </head>
 <body>
@@ -92,6 +110,90 @@ table.cl td a{color:var(--gold);font-weight:600;font-size:12.5px}
 <div class="r-meta">Apr 2023 · Goldin</div>
 </div>
 </div>
+
+
+<div class="trend" id="trendBox" style="display:none">
+<h2>Schumacher Market — last 6 months</h2>
+<p class="tn">Weekly median of verified sales · all sizes of sale, so 1/1s and base cards both move this line</p>
+<svg id="trendSvg" viewBox="0 0 600 120" preserveAspectRatio="none" aria-label="price trend"></svg>
+<div class="tstats" id="trendStats"></div>
+</div>
+
+<div class="alertbox">
+<h2>🔔 Schumacher card alerts</h2>
+<p>Get a daily email when new sales close or fresh auctions go live for Michael Schumacher — only when something actually happens.</p>
+<div class="af">
+<input type="email" id="alEmail" placeholder="you@email.com" autocomplete="email" aria-label="Email for alerts">
+<select id="alMin" aria-label="Minimum price">
+<option value="0">Any price</option><option value="100">$100+</option><option value="500" selected>$500+</option>
+<option value="1000">$1,000+</option><option value="5000">$5,000+</option>
+</select>
+<button id="alBtn" type="button">Set alert</button>
+</div>
+<div class="amsg" id="alMsg"></div>
+</div>
+
+<script>
+(function(){
+  var SB='https://xvpvvzvmozusfvyebvyq.supabase.co', K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k', DRIVER='schumacher';
+  var seed=[{"d":"2023-04-05","p":6000},{"d":"2022-07-24","p":5040},{"d":"2025-10-21","p":5000},{"d":"2026-03-12","p":4880},{"d":"2025-03-29","p":4270},{"d":"2026-03-29","p":4000},{"d":"2022-11-26","p":3900},{"d":"2025-08-15","p":3000},{"d":"2025-08-30","p":3000},{"d":"2021-09-06","p":2500}];
+  /* ---- alerts signup ---- */
+  var btn=document.getElementById('alBtn');
+  btn.addEventListener('click', async function(){
+    var em=document.getElementById('alEmail').value.trim(), msg=document.getElementById('alMsg');
+    if(!/^[^@s]+@[^@s]+.[^@s]+$/.test(em)){ msg.textContent='Enter a valid email.'; msg.style.color='#ef6a6a'; return; }
+    btn.disabled=true; msg.textContent='Saving…'; msg.style.color='';
+    try{
+      var r=await fetch(SB+'/rest/v1/rpc/create_alert',{method:'POST',
+        headers:{apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'},
+        body:JSON.stringify({p_email:em,p_driver:DRIVER,p_min:Number(document.getElementById('alMin').value)||0})});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      msg.textContent='✓ Alert set — you’ll get a daily email when there’s news.'; msg.style.color='#39e08a';
+    }catch(e){ msg.textContent='Could not save — try again shortly.'; msg.style.color='#ef6a6a'; }
+    btn.disabled=false;
+  });
+  /* ---- sparkline ---- */
+  (async function(){
+    var pts=seed.slice();
+    try{
+      var q='driver_id=eq.'+DRIVER+'&select=price_usd,sale_date&order=sale_date.asc&limit=400';
+      var rs=await Promise.all([
+        fetch(SB+'/rest/v1/driver_top10?'+q,{headers:{apikey:K,Authorization:'Bearer '+K}}),
+        fetch(SB+'/rest/v1/driver_recent?'+q,{headers:{apikey:K,Authorization:'Bearer '+K}})]);
+      for (var i=0;i<rs.length;i++){ if(rs[i].ok){ (await rs[i].json()).forEach(function(x){
+        if(x.sale_date&&x.price_usd!=null) pts.push({d:x.sale_date,p:Number(x.price_usd)}); }); } }
+    }catch(e){}
+    var cut=new Date(Date.now()-183*864e5).toISOString().slice(0,10);
+    pts=pts.filter(function(x){return x.d>=cut;});
+    if(pts.length<4) return;                                 // not enough data — keep hidden
+    /* weekly median */
+    var wk={};
+    pts.forEach(function(x){ var t=new Date(x.d); var w=Math.floor(t.getTime()/6048e5);
+      (wk[w]=wk[w]||[]).push(x.p); });
+    var weeks=Object.keys(wk).map(Number).sort(function(a,b){return a-b;});
+    if(weeks.length<3) return;
+    var med=weeks.map(function(w){ var a=wk[w].slice().sort(function(x,y){return x-y;});
+      return a[Math.floor(a.length/2)]; });
+    var mn=Math.min.apply(null,med), mx=Math.max.apply(null,med);
+    var pad=(mx-mn)||mx*0.1||1;
+    var X=function(i){return 4+ i*(592/(weeks.length-1));};
+    var Y=function(v){return 110 - ((v-mn)/pad)*96;};
+    var line=med.map(function(v,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1);}).join(' ');
+    var svg=document.getElementById('trendSvg');
+    svg.innerHTML='<path d="'+line+' L'+X(weeks.length-1).toFixed(1)+' 118 L4 118 Z" fill="rgba(217,184,120,.12)" stroke="none"/>'
+      +'<path d="'+line+'" fill="none" stroke="#d9b878" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'
+      +med.map(function(v,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="2.6" fill="#d9b878"/>';}).join('');
+    var money=function(v){return '$'+Math.round(v).toLocaleString();};
+    var chg=med[0]?Math.round((med[med.length-1]-med[0])/med[0]*100):0;
+    document.getElementById('trendStats').innerHTML=
+      '<span>Weekly median now <b>'+money(med[med.length-1])+'</b></span>'
+      +'<span>6-mo range <b>'+money(mn)+'</b> – <b>'+money(mx)+'</b></span>'
+      +'<span>'+(chg>=0?'▲':'▼')+' <b>'+Math.abs(chg)+'%</b> vs start</span>'
+      +'<span>'+pts.length+' sales tracked</span>';
+    document.getElementById('trendBox').style.display='block';
+  })();
+})();
+</script>
 
 <h2>Top 10 Verified Sales</h2>
 <p class="tbl-note">Ranked by price · auction-house results and marketplace sold data · some links are affiliate links</p>
@@ -117,7 +219,7 @@ table.cl td a{color:var(--gold);font-weight:600;font-size:12.5px}
 
 
 <h2>Michael Schumacher Card Checklist</h2>
-<p class="tbl-note">Base cards and the parallel rainbow by set · print runs where numbered · shop links are eBay affiliate links</p>
+<p class="tbl-note">Base cards and the parallel rainbow by set · print runs where numbered · shop links are eBay or Amazon affiliate links</p>
 <h3 class="cl-set"><a href="/sets/2024-topps-chrome-f1">2024 Topps Chrome F1</a></h3>
 <table class="cl">
 <thead><tr><th>Card</th><th># / Run</th><th></th></tr></thead>
@@ -162,6 +264,7 @@ table.cl td a{color:var(--gold);font-weight:600;font-size:12.5px}
 <tr><td>Tribute Refractor</td><td class="pr">—</td><td class="dt"><a href="https://www.ebay.com/sch/i.html?_nkw=Schumacher%202022%20Topps%20Chrome%20F1%20Tribute%20Refractor&mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=5339157397&toolid=10001" target="_blank" rel="noopener sponsored">Shop &nearr;</a></td></tr>
 </tbody>
 </table>
+<p class="gear">🧤 Chasing this rainbow? <a href="https://amzn.to/4oHSeuK" target="_blank" rel="noopener sponsored">🧤 Sleeves ↗</a> · <a href="https://amzn.to/43OseUU" target="_blank" rel="noopener sponsored">🛡️ Toploaders ↗</a> · <a href="https://amzn.to/4w2IIES" target="_blank" rel="noopener sponsored">🖼️ Mag holders ↗</a> · <a href="https://amzn.to/4xxIJ5c" target="_blank" rel="noopener sponsored">📦 Storage ↗</a> <span class="gm">· Amazon</span></p>
 
 <h2>More Driver Price Guides</h2>
 <div class="xlinks">

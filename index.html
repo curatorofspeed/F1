@@ -342,8 +342,6 @@
   .dsig-a:hover{background:rgba(230,182,92,.18)}
   .dsig-s{color:var(--up);border-color:#1a3a27;background:rgba(57,224,138,.06)}
   .dsig-s:hover{background:rgba(57,224,138,.18)}
-  .dsig-c{color:#00D2BE;border-color:#0e3a36;background:rgba(0,210,190,.06)}
-  .dsig-c:hover{background:rgba(0,210,190,.18)}
 
   /* board rows */
   .controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:13px}
@@ -649,26 +647,6 @@
 .gv-d-h{font-size:14.5px;font-weight:700;color:var(--txt);line-height:1.3;margin-top:2px}
 .gv-d-go{color:var(--gold);font-weight:700;font-size:13px;white-space:nowrap;flex:0 0 auto}
 /* ===== end giveaway ===== */
-/* ===== Hub pulse (ending / sold / checklists) ===== */
-.hub-pulse{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
-@media(max-width:760px){.hub-pulse{grid-template-columns:1fr}}
-.hub-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .12s,transform .12s;min-width:0}
-.hub-card:hover{border-color:var(--gold);transform:translateY(-1px)}
-.hub-eye{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700}
-.hub-main{font-size:14.5px;font-weight:700;color:var(--txt);margin-top:5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.hub-sub{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hub-val{color:var(--gold);font-weight:800}
-/* ===== Checklist hub panel ===== */
-.ck-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-.ck-head .sub{flex:1;min-width:180px}
-#ckFilter{background:var(--panel);border:1px solid var(--line);border-radius:9px;color:var(--txt);font-family:inherit;font-size:13.5px;padding:8px 12px;width:200px;max-width:100%}
-#ckFilter:focus{outline:none;border-color:var(--gold)}
-.ck-group{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
-.ck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:7px}
-.ck-chip{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 11px;color:var(--txt);text-decoration:none;font-size:13px;font-weight:600;transition:border-color .12s}
-.ck-chip:hover{border-color:var(--gold)}
-.ck-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
-.ck-chip small{color:var(--muted);font-weight:500;margin-left:auto;font-size:11px}
 /* ===== Market tabs ===== */
 .mkt{margin-bottom:8px}
 .mkt-tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:14px}
@@ -681,6 +659,7 @@
 .mkt-phead:empty{display:none}
 /* ===== end market tabs ===== */
 .feeder-res{grid-column:1/-1;margin:2px 0 16px}
+.amz-kit{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px}
 </style>
 </head>
 <body>
@@ -739,14 +718,12 @@
     </div>
 
     <!-- ===== MARKET (tabbed) ===== -->
-    <div class="hub-pulse" id="hubPulse"></div>
     <div class="mkt">
       <div class="mkt-tabs" role="tablist">
         <button class="mkt-tab on" type="button" data-tab="live">🔨 Live Auctions</button>
         <button class="mkt-tab" type="button" data-tab="top">🏆 Top Sales</button>
         <button class="mkt-tab" type="button" data-tab="rank">📊 Rankings</button>
         <button class="mkt-tab" type="button" data-tab="recent">💰 Recent</button>
-        <button class="mkt-tab" type="button" data-tab="check">📋 Checklists</button>
       </div>
 
       <div class="mkt-panel on" data-panel="live">
@@ -774,14 +751,6 @@
       <div class="mkt-panel" data-panel="recent">
         <div class="mkt-phead"><span class="sub" id="salesAsOf"></span></div>
         <div class="hsales" id="homeSales"></div>
-      </div>
-
-      <div class="mkt-panel" data-panel="check">
-        <div class="ck-head">
-          <span class="sub">Track every parallel, auto and 1/1 — tap a card to mark it owned. Free, saves automatically.</span>
-          <input id="ckFilter" type="search" placeholder="Filter drivers…" oninput="renderChecklistHub(this.value)">
-        </div>
-        <div id="hubCheck"></div>
       </div>
     </div>
 
@@ -942,63 +911,6 @@
       <a href="/f1-card-price-guide">Price Guide</a>
       <a href="/topps-chrome-f1-guide">Topps Chrome Guide</a>
       <a href="/kimi-antonelli-rookie-card-guide">Antonelli RC Guide</a>
-      <a href="/kimi-antonelli-card-checklist">Antonelli Checklist</a>
-      <a href="/max-verstappen-card-checklist">Verstappen Checklist</a>
-      <a href="/lando-norris-card-checklist">Norris Checklist</a>
-      <a href="/lewis-hamilton-card-checklist">Hamilton Checklist</a>
-      <a href="/charles-leclerc-card-checklist">Leclerc Checklist</a>
-      <a href="/oscar-piastri-card-checklist">Piastri Checklist</a>
-      <a href="/george-russell-card-checklist">Russell Checklist</a>
-      <a href="/fernando-alonso-card-checklist">Alonso Checklist</a>
-      <a href="/ayrton-senna-card-checklist">Senna Checklist</a>
-      <a href="/isack-hadjar-card-checklist">Hadjar Checklist</a>
-      <a href="/liam-lawson-card-checklist">Lawson Checklist</a>
-      <a href="/carlos-sainz-card-checklist">Sainz Checklist</a>
-      <a href="/gabriel-bortoleto-card-checklist">Bortoleto Checklist</a>
-      <a href="/oliver-bearman-card-checklist">Bearman Checklist</a>
-      <a href="/arvid-lindblad-card-checklist">Lindblad Checklist</a>
-      <a href="/alex-albon-card-checklist">Albon Checklist</a>
-      <a href="/valtteri-bottas-card-checklist">Bottas Checklist</a>
-      <a href="/daniel-ricciardo-card-checklist">Ricciardo Checklist</a>
-      <a href="/esteban-ocon-card-checklist">Ocon Checklist</a>
-      <a href="/franco-colapinto-card-checklist">Colapinto Checklist</a>
-      <a href="/lance-stroll-card-checklist">Stroll Checklist</a>
-      <a href="/sergio-perez-card-checklist">Perez Checklist</a>
-      <a href="/nikola-tsolov-card-checklist">Tsolov Checklist</a>
-      <a href="/nico-hulkenberg-card-checklist">Hulkenberg Checklist</a>
-      <a href="/ugo-ugochukwu-card-checklist">Ugochukwu Checklist</a>
-      <a href="/rafael-camara-card-checklist">Camara Checklist</a>
-      <a href="/michael-schumacher-card-checklist">Schumacher Checklist</a>
-      <a href="/kimi-raikkonen-card-checklist">Raikkonen Checklist</a>
-      <a href="/leonardo-fornaroli-card-checklist">Fornaroli Checklist</a>
-      <a href="/jak-crawford-card-checklist">Crawford Checklist</a>
-      <a href="/luke-browning-card-checklist">Browning Checklist</a>
-      <a href="/joshua-durksen-card-checklist">Durksen Checklist</a>
-      <a href="/oliver-goethe-card-checklist">Oliver Goethe Checklist</a>
-      <a href="/dino-beganovic-card-checklist">Dino Beganovic Checklist</a>
-      <a href="/gabriele-mini-card-checklist">Gabriele Mini Checklist</a>
-      <a href="/sebastian-montoya-card-checklist">Sebastian Montoya Checklist</a>
-      <a href="/kush-maini-card-checklist">Kush Maini Checklist</a>
-      <a href="/ritomo-miyata-card-checklist">Ritomo Miyata Checklist</a>
-      <a href="/alexander-dunne-card-checklist">Alexander Dunne Checklist</a>
-      <a href="/cian-shields-card-checklist">Cian Shields Checklist</a>
-      <a href="/john-bennett-card-checklist">John Bennett Checklist</a>
-      <a href="/rafael-villagomez-card-checklist">Rafael Villagomez Checklist</a>
-      <a href="/noel-leon-card-checklist">Noel Leon Checklist</a>
-      <a href="/brando-badoer-card-checklist">Brando Badoer Checklist</a>
-      <a href="/noah-stromsted-card-checklist">Noah Stromsted Checklist</a>
-      <a href="/bruno-del-pino-card-checklist">Bruno Del Pino Checklist</a>
-      <a href="/alessandro-giusti-card-checklist">Alessandro Giusti Checklist</a>
-      <a href="/tasanapol-inthraphuvasak-card-checklist">Tasanapol Inthraphuvasak Checklist</a>
-      <a href="/mari-boya-card-checklist">Mari Boya Checklist</a>
-      <a href="/martinius-stenshorne-card-checklist">Martinius Stenshorne Checklist</a>
-      <a href="/theophile-nael-card-checklist">Theophile Nael Checklist</a>
-      <a href="/james-wharton-card-checklist">James Wharton Checklist</a>
-      <a href="/tuukka-taponen-card-checklist">Tuukka Taponen Checklist</a>
-      <a href="/laurens-van-hoepen-card-checklist">Laurens Van Hoepen Checklist</a>
-      <a href="/louis-sharp-card-checklist">Louis Sharp Checklist</a>
-      <a href="/roman-bilinski-card-checklist">Roman Bilinski Checklist</a>
-      <a href="/christian-ho-card-checklist">Christian Ho Checklist</a>
       <a href="/f1-card-market-report">Market Report</a>
       <a href="/about">About</a>
       <a href="/methodology">Methodology</a>
@@ -1512,7 +1424,7 @@ function renderIndex(){
   renderHomeSales();
   renderGlobalTop();
   renderDriverLeaderboard();
-  renderLiveHero();renderHubPulse();renderChecklistHub();
+  renderLiveHero();
   renderRaceStrip();
   renderDriverGrid();
   {const hg=$('homeGear');if(hg)hg.innerHTML=amzGearRow();}
@@ -2480,11 +2392,25 @@ const AMZ_DRIVER={
 };
 const AMZ_GENERIC=['https://amzn.to/4emsq3J','https://amzn.to/4enZtnZ','https://amzn.to/4uTqHYK','https://amzn.to/4eRQewx','https://amzn.to/4oEkXRb'];
 function amzPick(d,arr){const i=(String(d.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%arr.length;return arr[i];}
+const AMZ_KIT_META={
+  'Sleeves':              ['🧤','Mail-day sleeves','First touch for every raw pull — penny sleeves by the hundred'],
+  'Toploaders + Sleeves': ['🛡️','Grade-ready protection','Toploaders + sleeves — keep it mint until it ships to PSA'],
+  'Binders':              ['📚','The rainbow binder','Side-loading pages for the parallel chase'],
+  'Magnet Holders':       ['🖼️','One-touch mags','Display-grade housing for your best hits'],
+  'Card Storage':         ['📦','Bulk & base storage','Sort the box breaks, protect the commons']
+};
 function amzGearRow(d){
-  let b=AMZ_GEAR.map(g=>'<a class="amz-btn" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+g.label+' <span class="az">↗</span></a>').join('');
+  let b=AMZ_GEAR.map(g=>{
+    const m=AMZ_KIT_META[g.label]||['🛒',g.label,''];
+    return '<a class="mff-card" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+
+      '<div><div class="mff-label">'+m[0]+' '+esc(m[1])+'</div><div class="mff-sub">'+esc(m[2])+'</div></div>'+
+      '<span class="mff-go">↗</span></a>';
+  }).join('');
   const sealed=d?amzPick(d,AMZ_SEALED):AMZ_SEALED[0];
-  b+='<a class="amz-btn" href="'+esc(sealed)+'" target="_blank" rel="noopener sponsored">Sealed Boxes &amp; Packs <span class="az">↗</span></a>';
-  return '<div class="amz-gear">'+b+'</div>';
+  b+='<a class="mff-card" href="'+esc(sealed)+'" target="_blank" rel="noopener sponsored">'+
+    '<div><div class="mff-label">🎁 Rip something</div><div class="mff-sub">Sealed F1 boxes &amp; packs — today\u2019s lottery ticket</div></div>'+
+    '<span class="mff-go">↗</span></a>';
+  return '<div class="amz-kit">'+b+'</div>';
 }
 function amzFanGroups(d){
   const mk=(links,header)=>'<div class="mff-group"><div class="mff-cat">'+header+'</div><div class="amz-gear">'+
@@ -2608,6 +2534,8 @@ function renderGradeCalc(d){
       '<a class="gc-btn gc-psa" href="'+esc(affWrap('https://www.psacard.com/startsubmission','psa'))+'" target="_blank" rel="noopener sponsored">💎 Submit to PSA ↗</a>'+'<a class="gc-btn gc-beckett" href="'+esc(affWrap('https://www.beckett.com/grading','beckett'))+'" target="_blank" rel="noopener sponsored">🔹 Submit to Beckett ↗</a>'+'<a class="gc-btn gc-tag" href="'+esc(affWrap('https://taggrading.com/pages/pricing','tag'))+'" target="_blank" rel="noopener sponsored">🏷️ Submit to TAG ↗</a>'+
       '<a class="gc-btn gc-ghost" href="'+esc(gridEbay(d.name,false))+'" target="_blank" rel="noopener">Find raw copies ↗</a>'+
       '<a class="gc-btn gc-ghost" href="'+esc(psa10Link(d.name))+'" target="_blank" rel="noopener">PSA 10 comps ↗</a>'+
+      '<a class="gc-btn gc-ghost" id="gc130" href="'+POINT130+'" target="_blank" rel="noopener" title="True sold prices incl. accepted Best Offers">💯 130point ↗</a>'+
+      '<a class="gc-btn gc-ghost" href="'+esc(AMZ_GEAR[1].url)+'" target="_blank" rel="noopener sponsored">🛡️ Grading supplies ↗</a>'+
     '</div>'+
     '<a class="wn-seller-card" href="https://whatnot.com/invite/seller/f1index" target="_blank" rel="noopener sponsored">'+
       '<span class="wn-amt-g">$150</span>'+
@@ -2615,6 +2543,8 @@ function renderGradeCalc(d){
       '<span class="wn-go-g">↗</span>'+
     '</a>';
   gcRecalc();
+  const gp=document.getElementById('gc130');
+  if(gp)gp.onclick=()=>copy130('Topps Chrome Formula 1 '+d.name+' PSA 10');
 }
 function resultBadge(id,res){
   if(!res)return null;
@@ -2628,7 +2558,6 @@ function resultBadge(id,res){
   if(res.dnf&&res.dnf.indexOf(id)>-1)return{txt:'▼ DNF',cls:'rb-dnf'};
   return null;
 }
-const CHECKLIST_PAGES={antonelli:'kimi-antonelli-card-checklist',verstappen:'max-verstappen-card-checklist',norris:'lando-norris-card-checklist',hamilton:'lewis-hamilton-card-checklist',leclerc:'charles-leclerc-card-checklist',piastri:'oscar-piastri-card-checklist',russell:'george-russell-card-checklist',alonso:'fernando-alonso-card-checklist',senna:'ayrton-senna-card-checklist',hadjar:'isack-hadjar-card-checklist',lawson:'liam-lawson-card-checklist',sainz:'carlos-sainz-card-checklist',bortoleto:'gabriel-bortoleto-card-checklist',bearman:'oliver-bearman-card-checklist',lindblad:'arvid-lindblad-card-checklist',albon:'alex-albon-card-checklist',bottas:'valtteri-bottas-card-checklist',ricciardo:'daniel-ricciardo-card-checklist',ocon:'esteban-ocon-card-checklist',colapinto:'franco-colapinto-card-checklist',stroll:'lance-stroll-card-checklist',perez:'sergio-perez-card-checklist',tsolov:'nikola-tsolov-card-checklist',hulkenberg:'nico-hulkenberg-card-checklist',ugochukwu:'ugo-ugochukwu-card-checklist',camara:'rafael-camara-card-checklist',schumacher:'michael-schumacher-card-checklist',raikkonen:'kimi-raikkonen-card-checklist',fornaroli:'leonardo-fornaroli-card-checklist',crawford:'jak-crawford-card-checklist',browning:'luke-browning-card-checklist',durksen:'joshua-durksen-card-checklist',goethe:'oliver-goethe-card-checklist',beganovic:'dino-beganovic-card-checklist',mini:'gabriele-mini-card-checklist',montoya:'sebastian-montoya-card-checklist',maini:'kush-maini-card-checklist',miyata:'ritomo-miyata-card-checklist',dunne:'alexander-dunne-card-checklist',shields:'cian-shields-card-checklist',bennett:'john-bennett-card-checklist',villagomez:'rafael-villagomez-card-checklist',leon:'noel-leon-card-checklist',badoer:'brando-badoer-card-checklist',stromsted:'noah-stromsted-card-checklist',delpino:'bruno-del-pino-card-checklist',giusti:'alessandro-giusti-card-checklist',inthraphuvasak:'tasanapol-inthraphuvasak-card-checklist',boya:'mari-boya-card-checklist',stenshorne:'martinius-stenshorne-card-checklist',nael:'theophile-nael-card-checklist',wharton:'james-wharton-card-checklist',taponen:'tuukka-taponen-card-checklist',vanhoepen:'laurens-van-hoepen-card-checklist',sharp:'louis-sharp-card-checklist',bilinski:'roman-bilinski-card-checklist',ho:'christian-ho-card-checklist'};
 function renderDriverGrid(){
   const box=$('driversBox');
   const mr=mostRecentResult();const res=mr?mr.res:null;
@@ -2649,7 +2578,6 @@ function renderDriverGrid(){
       <div class="dsig-row">
         <a class="dsig dsig-a" href="${gridEbay(d.name,false)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">⏱ Ending</a>
         <a class="dsig dsig-s" href="${gridEbay(d.name,true)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">✅ Sold</a>
-        ${CHECKLIST_PAGES[d.id]?`<a class="dsig dsig-c" href="/${CHECKLIST_PAGES[d.id]}" onclick="event.stopPropagation()">📋 Checklist</a>`:''}
       </div>
     </div>`;
   };
@@ -2851,18 +2779,13 @@ function renderDriver(){
   $('dName').textContent=d.name;
   $('dTeam').textContent=d.team+(d.rookieYear?(' · Rookie '+d.rookieYear):'')+(d.number!=null?(' · #'+d.number):'');
   (function(){var el=document.getElementById('gvDriverCallout');if(!el)return;
+    if(Date.parse(GV_END_DATE)<Date.now()){el.innerHTML='';return;}   // hide once closed
     var kimi=(d.id==='antonelli');
-    var ckpg=CHECKLIST_PAGES[d.id];
-    var ck=ckpg?'<a class="gv-driver" href="/'+ckpg+'">'+
-      '<div class="gv-d-body"><div class="gv-d-eye">◆ Collection Tool</div>'+
-      '<div class="gv-d-h">'+d.name.split(' ').pop()+' checklist \u2014 every Topps parallel, trackable</div></div>'+
-      '<div class="gv-d-go">Open \u2192</div></a>':'';
-    if(Date.parse(GV_END_DATE)<Date.now()){el.innerHTML=ck;return;}   // giveaway closed: keep checklist link
     el.innerHTML='<a class="gv-driver" href="'+GV_GIVEAWAY_URL+'">'+
       '<img src="'+GV_CARD_IMG+'" alt="Kimi Antonelli rookie card">'+
       '<div class="gv-d-body"><div class="gv-d-eye">◆ Free Giveaway</div>'+
       '<div class="gv-d-h">'+(kimi?"You\u2019re on Antonelli\u2019s page \u2014 win his rookie card, free":"Win a Kimi Antonelli rookie card \u2014 free to enter")+'</div></div>'+
-      '<div class="gv-d-go">Enter \u2192</div></a>'+ck;
+      '<div class="gv-d-go">Enter \u2192</div></a>';
   })();
   const dsales=state.feed.filter(f=>f.driver===d.id).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(d.record){
@@ -2914,42 +2837,6 @@ function fmtEndsIn(dateStr){
   const d=new Date(dateStr+'T00:00:00');if(isNaN(d))return '';
   const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
   return 'ends '+mo+' '+d.getDate();
-}
-function switchMktTab(name){var b=document.querySelector('.mkt-tab[data-tab="'+name+'"]');if(b)b.click();var m=document.querySelector('.mkt');if(m)m.scrollIntoView({behavior:'smooth',block:'start'});}
-function ckName(id){const d=getDriver(id);if(d&&d.name)return d.name;
-  return (CHECKLIST_PAGES[id]||'').replace('-card-checklist','').replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
-function renderHubPulse(){
-  const box=$('hubPulse');if(!box)return;
-  const now=Date.now();
-  const ending=(state.liveAuctions||[]).filter(a=>a.ends_on&&Date.parse(a.ends_on)>now)
-    .sort((a,b)=>Date.parse(a.ends_on)-Date.parse(b.ends_on))[0];
-  const sold=(state.feed||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
-  const n=Object.keys(CHECKLIST_PAGES||{}).length;
-  const cards=[];
-  if(ending)cards.push('<div class="hub-card" onclick="switchMktTab(\'live\')"><div class="hub-eye">⏳ Ending next</div>'+
-    '<div class="hub-main">'+esc(ending.title||sbCardName(ending))+'</div>'+
-    '<div class="hub-sub"><span class="hub-val">'+money(ending.current_bid)+'</span> · '+esc(fmtEndsIn(ending.ends_on))+' →</div></div>');
-  if(sold){const d=getDriver(sold.driver)||{};
-    cards.push('<div class="hub-card" onclick="switchMktTab(\'recent\')"><div class="hub-eye">💰 Just sold</div>'+
-    '<div class="hub-main">'+esc((d.name?d.name+' · ':'')+sold.card)+'</div>'+
-    '<div class="hub-sub"><span class="hub-val">'+money(sold.price)+'</span> · '+esc(fmtSaleDate(sold.date))+' →</div></div>');}
-  cards.push('<div class="hub-card" onclick="switchMktTab(\'check\')"><div class="hub-eye">📋 Checklists</div>'+
-    '<div class="hub-main">'+n+' driver collection trackers</div>'+
-    '<div class="hub-sub">every parallel · grail boards · want lists →</div></div>');
-  box.innerHTML=cards.join('');
-}
-function renderChecklistHub(filter){
-  const box=$('hubCheck');if(!box)return;
-  const q=(filter||'').trim().toLowerCase();
-  const ids=Object.keys(CHECKLIST_PAGES||{});
-  const grid=[],pros=[];
-  ids.forEach(id=>{const nm=ckName(id);if(q&&!nm.toLowerCase().includes(q))return;
-    const d=getDriver(id);(d?grid:pros).push({id,nm,color:(d&&d.color)||'#5c6773'});});
-  const chip=x=>'<a class="ck-chip" href="/'+CHECKLIST_PAGES[x.id]+'"><span class="ck-dot" style="background:'+x.color+'"></span>'+esc(x.nm)+'</a>';
-  let h='';
-  if(grid.length)h+='<div class="ck-group">F1 grid &amp; legends · '+grid.length+'</div><div class="ck-grid">'+grid.map(chip).join('')+'</div>';
-  if(pros.length)h+='<div class="ck-group">F2 / F3 prospects · '+pros.length+'</div><div class="ck-grid">'+pros.map(chip).join('')+'</div>';
-  box.innerHTML=h||'<div class="sub">No drivers match.</div>';
 }
 function renderLiveHero(){
   const box=$('liveHero');if(!box)return;
