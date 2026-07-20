@@ -315,35 +315,56 @@ class GoldinAdapter(Adapter):
             return html.unescape(m.group(1)) if m else None
         return {"title": og("title"), "image_url": og("image"), "url": url}
 
-    def search(self, driver: dict) -> list[Sale]:
-        """Direct call to Goldin's confirmed lots_v2 search — no browser needed.
-        Body format captured live: JSON POST, keyword search, no auth header."""
-        body = {"search": {"queryType": "Featured", "keyword": driver["aliases"][0],
-                           "size": 80, "from": 0, "hasAnalyticsConsent": False}}
+    def _query(self, driver: dict, sold: bool) -> list[dict]:
+        """One lots_v2 POST. sold=False -> live 'Featured'; sold=True -> ended
+        comps via the captured 'show_only':'Sold' param (queryType Highest_Bids)."""
+        search = {"keyword": driver["aliases"][0], "size": 80, "from": 0,
+                  "hasAnalyticsConsent": False}
+        if sold:
+            search["queryType"] = "Highest_Bids"
+            search["show_only"] = "Sold"
+        else:
+            search["queryType"] = "Featured"
         try:
-            r = requests.post(self.LOTS_API, json=body, timeout=25,
+            r = requests.post(self.LOTS_API, json={"search": search}, timeout=25,
                               headers={"User-Agent": UA, "Content-Type": "application/json",
                                        "Origin": self.base, "Referer": self.base + "/"})
             data = r.json()
         except Exception as e:
-            print(f"  [goldin] api error: {str(e)[:80]} — trying render fallback")
+            print(f"  [goldin] api error ({'sold' if sold else 'live'}): {str(e)[:70]}")
+            return []
+        return ((data or {}).get("searchalgolia") or {}).get("lots") or []
+
+    def search(self, driver: dict) -> list[Sale]:
+        """Two passes on Goldin's lots_v2: LIVE auctions + SOLD comps. Sold lots
+        ingest directly (no more waiting for finalize to catch a lot we saw live).
+        Deduped by lot id; if a lot shows in both, the live copy wins (still open)."""
+        live_lots = self._query(driver, sold=False)
+        sold_lots = self._query(driver, sold=True)
+        if not live_lots and not sold_lots:
+            print(f"  [goldin] both passes empty for {driver['id']} — render fallback")
             return self._render_fallback(driver)
-        lots = ((data or {}).get("searchalgolia") or {}).get("lots") or []
-        sales = []
-        for lot in lots:
-            it = self._lot_to_item(lot)
-            if not it:
-                continue
-            s = build_sale(self.source, it["id"], it["url"], it["title"], price=it["price"],
-                           currency="USD", sale_date=it["sale_date"], sale_type=it["sale_type"],
-                           bids=it["bids"], image_url=it["image_url"])
-            if not s or s.driver_id != driver["id"]:
-                continue
-            if it["live"]:
-                s.flags.append("live_auction")        # current bid, NOT final — don't approve as a comp
-            if it["premium"]:
-                s.flags.append(f"buyer_premium:{it['premium']}")
-            sales.append(s)
+
+        sales, seen = [], set()
+        # live first so a lot appearing in both keeps its (still-open) live row
+        for is_live_pass, lots in ((True, live_lots), (False, sold_lots)):
+            for lot in lots:
+                it = self._lot_to_item(lot)
+                if not it or it["id"] in seen:
+                    continue
+                s = build_sale(self.source, it["id"], it["url"], it["title"], price=it["price"],
+                               currency="USD", sale_date=it["sale_date"], sale_type=it["sale_type"],
+                               bids=it["bids"], image_url=it["image_url"])
+                if not s or s.driver_id != driver["id"]:
+                    continue
+                if it["live"]:
+                    s.flags.append("live_auction")     # current bid, NOT final — don't approve
+                elif not is_live_pass:
+                    s.flags.append("goldin_sold")      # settled comp from the sold pass
+                if it["premium"]:
+                    s.flags.append(f"buyer_premium:{it['premium']}")
+                seen.add(it["id"])
+                sales.append(s)
         return sales
 
     def _lot_to_item(self, lot: dict) -> Optional[dict]:
