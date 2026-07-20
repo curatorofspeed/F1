@@ -75,10 +75,27 @@ td.r,th.r{text-align:right;white-space:nowrap}
 
     <div class="toolrow">
       <a href="#queue">🛡️ Approval Queue</a>
+      <a href="#social">📱 Social studio</a>
       <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">🗄️ Supabase ↗</a>
       <a href="https://github.com/curatorofspeed/F1/actions" target="_blank" rel="noopener">⚙️ GitHub Actions ↗</a>
       <a href="https://resend.com/emails" target="_blank" rel="noopener">✉️ Resend ↗</a>
       <a href="https://www.f1cardindex.com" target="_blank" rel="noopener">🌐 Live site ↗</a>
+    </div>
+
+    <div class="card" id="social">
+      <h2>📱 Social studio — Top Sales card</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <span style="font-size:12.5px;color:var(--muted)">Format:</span>
+        <button class="ghost" id="fmt916" type="button" style="border-color:var(--gold);color:var(--gold)">9:16 Story/Reel</button>
+        <button class="ghost" id="fmt11" type="button">1:1 Feed</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Count:</span>
+        <button class="ghost" id="cnt5" type="button">Top 5</button>
+        <button class="ghost" id="cnt3" type="button">Top 3</button>
+        <button id="dlCard" type="button" style="margin-left:auto">⬇ Download PNG</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from this week's approved sales. Download the PNG (or screenshot it) and post straight to TikTok / IG. Card art shows when the sale has an image.</div>
+      <div id="socialStage" style="overflow:auto;background:#000;border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;justify-content:center"></div>
+      <div class="msg" id="socMsg"></div>
     </div>
 
     <div class="statgrid" id="stats"></div>
@@ -138,6 +155,7 @@ $('loadBtn').onclick=async()=>{
 function render(d){
   $('dash').style.display='block';
   $('genAt').textContent='snapshot '+new Date(d.generated_at).toLocaleString();
+  SOC.data=d; socWire(); socRender();
 
   const q=d.queue||{}, a=d.audience||{};
   $('stats').innerHTML=
@@ -236,6 +254,65 @@ async function qMod(idx,action,note){
   }catch(e){ qSay(e.message,true); }
 }
 window.qMod=qMod;
+
+/* ---- social studio: Top Sales share card ---- */
+let SOC={data:null, ratio:'916', count:5};
+function socWire(){
+  const set=(r,c)=>{ if(r)SOC.ratio=r; if(c)SOC.count=c;
+    [['fmt916','916'],['fmt11','11']].forEach(([id,v])=>$(id).style.cssText=(SOC.ratio===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    [['cnt5',5],['cnt3',3]].forEach(([id,v])=>$(id).style.cssText=(SOC.count===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    socRender(); };
+  $('fmt916').onclick=()=>set('916');$('fmt11').onclick=()=>set('11');
+  $('cnt5').onclick=()=>set(null,5);$('cnt3').onclick=()=>set(null,3);
+  $('dlCard').onclick=socDownload;
+}
+function socRender(){
+  const stage=$('socialStage'); if(!stage)return;
+  const rows=(SOC.data&&SOC.data.top_sales_7d||[]).slice(0,SOC.count);
+  if(!rows.length){ stage.innerHTML='<div style="color:#888;padding:40px">No approved sales this week yet — approve some in the queue, then reload.</div>'; return; }
+  const W=1080, H=SOC.ratio==='916'?1920:1080;
+  stage.innerHTML=socSVG(rows,W,H);
+}
+function socSVG(rows,W,H){
+  const pad=70, gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
+  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const listTop=SOC.ratio==='916'?430:300, rowH=(H-listTop-140)/rows.length;
+  let items='';
+  rows.forEach((r,i)=>{
+    const y=listTop+i*rowH;
+    items+=`<g transform="translate(${pad},${y})">
+      <text x="0" y="${rowH*0.42}" font-family="Arial" font-weight="800" font-size="40" fill="#3a3f45">#${i+1}</text>
+      <text x="90" y="${rowH*0.36}" font-family="Arial" font-weight="700" font-size="38" fill="#fff">${socEsc(cap(r.driver_id))}</text>
+      <text x="90" y="${rowH*0.62}" font-family="Arial" font-size="26" fill="#8a949c">${socEsc(String(r.title||'').slice(0,46))}</text>
+      <text x="${W-pad*2}" y="${rowH*0.5}" text-anchor="end" font-family="Arial" font-weight="800" font-size="46" fill="${gold}">${money(r.price_usd)}</text>
+      ${i<rows.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-pad*2}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
+    </g>`;
+  });
+  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
+    <rect width="${W}" height="${H}" fill="#0a0c0d"/>
+    <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
+    <text x="${pad}" y="${SOC.ratio==='916'?170:120}" font-family="Arial" font-weight="900" font-size="72" fill="#fff">TOP F1 CARD SALES</text>
+    <text x="${pad}" y="${SOC.ratio==='916'?250:180}" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
+    ${items}
+    <text x="${pad}" y="${H-70}" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
+    <text x="${W-pad}" y="${H-70}" text-anchor="end" font-family="Arial" font-size="30" fill="#8a949c">live market tracker</text>
+  </svg>`;
+}
+function socEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function socDownload(){
+  const svg=$('socSVG'); if(!svg){ $('socMsg').textContent='Nothing to download yet.'; return; }
+  const xml=new XMLSerializer().serializeToString(svg);
+  const img=new Image(); const W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
+  img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
+    c.getContext('2d').drawImage(img,0,0);
+    c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+      a.download='f1cardindex-topsales-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      $('socMsg').textContent='Downloaded — post it! 🏁'; });
+  };
+  img.onerror=()=>{ $('socMsg').textContent='Export failed — screenshot the card instead.'; };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+}
 
 function stat(n,label,cls){ return '<div class="stat '+(cls||'')+'"><div class="n">'+(n??'—')+'</div><div class="l">'+label+'</div></div>'; }
 function tbl(heads,rows,right){ if(!rows||!rows.length)return '';
