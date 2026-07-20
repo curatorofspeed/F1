@@ -91,6 +91,9 @@ td.r,th.r{text-align:right;white-space:nowrap}
         <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Count:</span>
         <button class="ghost" id="cnt5" type="button">Top 5</button>
         <button class="ghost" id="cnt3" type="button">Top 3</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Style:</span>
+        <button class="ghost" id="styList" type="button">List</button>
+        <button class="ghost" id="styHero" type="button">Hero image</button>
         <button id="dlCard" type="button" style="margin-left:auto">⬇ Download PNG</button>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from this week's approved sales. Download the PNG (or screenshot it) and post straight to TikTok / IG. Card art shows when the sale has an image.</div>
@@ -256,22 +259,45 @@ async function qMod(idx,action,note){
 window.qMod=qMod;
 
 /* ---- social studio: Top Sales share card ---- */
-let SOC={data:null, ratio:'916', count:5};
+let SOC={data:null, ratio:'916', count:5, style:'hero', imgCache:{}};
+async function socLoadImg(url){
+  if(!url) return null;
+  if(SOC.imgCache[url]!==undefined) return SOC.imgCache[url];
+  try{
+    const r=await fetch(url,{mode:'cors'}); if(!r.ok) throw 0;
+    const blob=await r.blob();
+    const data=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(blob);});
+    SOC.imgCache[url]=data; return data;
+  }catch(e){ SOC.imgCache[url]=null; return null; }   // cache misses too, so we don't retry every render
+}
 function socWire(){
-  const set=(r,c)=>{ if(r)SOC.ratio=r; if(c)SOC.count=c;
+  const paint=()=>{
     [['fmt916','916'],['fmt11','11']].forEach(([id,v])=>$(id).style.cssText=(SOC.ratio===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['cnt5',5],['cnt3',3]].forEach(([id,v])=>$(id).style.cssText=(SOC.count===v)?'border-color:var(--gold);color:var(--gold)':'' );
-    socRender(); };
-  $('fmt916').onclick=()=>set('916');$('fmt11').onclick=()=>set('11');
-  $('cnt5').onclick=()=>set(null,5);$('cnt3').onclick=()=>set(null,3);
+    [['styList','list'],['styHero','hero']].forEach(([id,v])=>$(id).style.cssText=(SOC.style===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    socRender();
+  };
+  $('fmt916').onclick=()=>{SOC.ratio='916';paint();};
+  $('fmt11').onclick=()=>{SOC.ratio='11';paint();};
+  $('cnt5').onclick=()=>{SOC.count=5;paint();};
+  $('cnt3').onclick=()=>{SOC.count=3;paint();};
+  $('styList').onclick=()=>{SOC.style='list';paint();};
+  $('styHero').onclick=()=>{SOC.style='hero';paint();};
   $('dlCard').onclick=socDownload;
+  paint();
 }
-function socRender(){
+async function socRender(){
   const stage=$('socialStage'); if(!stage)return;
   const rows=(SOC.data&&SOC.data.top_sales_7d||[]).slice(0,SOC.count);
   if(!rows.length){ stage.innerHTML='<div style="color:#888;padding:40px">No approved sales this week yet — approve some in the queue, then reload.</div>'; return; }
   const W=1080, H=SOC.ratio==='916'?1920:1080;
-  stage.innerHTML=socSVG(rows,W,H);
+  if(SOC.style==='hero'){
+    stage.innerHTML='<div style="color:#888;padding:40px">Rendering…</div>';
+    const heroImg=await socLoadImg(rows[0]&&rows[0].image_url);
+    stage.innerHTML=socHeroSVG(rows,W,H,heroImg);
+  } else {
+    stage.innerHTML=socSVG(rows,W,H);
+  }
 }
 function socSVG(rows,W,H){
   const pad=70, gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
@@ -299,11 +325,59 @@ function socSVG(rows,W,H){
     <text x="${W-pad}" y="${H-70}" text-anchor="end" font-family="Arial" font-size="30" fill="#8a949c">live market tracker</text>
   </svg>`;
 }
+function socHeroSVG(rows,W,H,heroData){
+  const gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
+  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const hero=rows[0], rest=rows.slice(1);
+  const isV=SOC.ratio==='916';
+  // hero image panel
+  const imgH=isV?980:620, imgW=W;
+  const imgBlock=heroData
+    ? `<clipPath id="hclip"><rect x="0" y="0" width="${imgW}" height="${imgH}"/></clipPath>
+       <image href="${heroData}" x="0" y="0" width="${imgW}" height="${imgH}" preserveAspectRatio="xMidYMid slice" clip-path="url(#hclip)"/>
+       <rect x="0" y="0" width="${imgW}" height="${imgH}" fill="url(#fade)"/>`
+    : `<rect x="0" y="0" width="${imgW}" height="${imgH}" fill="#12161a"/>
+       <text x="${W/2}" y="${imgH/2}" text-anchor="middle" font-family="Arial" font-size="40" fill="#3a3f45">no image on this sale</text>`;
+  // hero caption over image
+  const capY=imgH-160;
+  const heroBlock=`
+    <text x="70" y="${capY}" font-family="Arial" font-weight="700" font-size="42" fill="${gold}">#1 SALE OF THE WEEK</text>
+    <text x="70" y="${capY+70}" font-family="Arial" font-weight="900" font-size="64" fill="#fff">${socEsc(cap(hero.driver_id))}</text>
+    <text x="70" y="${capY+120}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,52))}</text>
+    <text x="${W-70}" y="${imgH-60}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>`;
+  // runner-up rows below the image
+  let list='';
+  const listTop=imgH+70, rowH=rest.length?((H-listTop-130)/rest.length):0;
+  rest.forEach((r,i)=>{
+    const y=listTop+i*rowH;
+    list+=`<g transform="translate(70,${y})">
+      <text x="0" y="${rowH*0.5}" font-family="Arial" font-weight="800" font-size="34" fill="#3a3f45">#${i+2}</text>
+      <text x="80" y="${rowH*0.44}" font-family="Arial" font-weight="700" font-size="34" fill="#fff">${socEsc(cap(r.driver_id))}</text>
+      <text x="80" y="${rowH*0.72}" font-family="Arial" font-size="23" fill="#8a949c">${socEsc(String(r.title||'').slice(0,44))}</text>
+      <text x="${W-140}" y="${rowH*0.55}" text-anchor="end" font-family="Arial" font-weight="800" font-size="40" fill="${gold}">${money(r.price_usd)}</text>
+      ${i<rest.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-140}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
+    </g>`;
+  });
+  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
+    <defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0c0d" stop-opacity="0.15"/>
+      <stop offset="0.55" stop-color="#0a0c0d" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0a0c0d" stop-opacity="0.96"/></linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="#0a0c0d"/>
+    ${imgBlock}
+    <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
+    ${heroBlock}
+    ${list}
+    <text x="70" y="${H-55}" font-family="Arial" font-weight="800" font-size="38" fill="#fff">f1cardindex.com</text>
+    <text x="${W-70}" y="${H-55}" text-anchor="end" font-family="Arial" font-size="27" fill="#8a949c">This week &#183; ${wk}</text>
+  </svg>`;
+}
 function socEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function socDownload(){
   const svg=$('socSVG'); if(!svg){ $('socMsg').textContent='Nothing to download yet.'; return; }
   const xml=new XMLSerializer().serializeToString(svg);
-  const img=new Image(); const W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
+  const img=new Image(); img.crossOrigin='anonymous'; const W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
   img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
     c.getContext('2d').drawImage(img,0,0);
     c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b);
