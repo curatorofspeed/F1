@@ -46,6 +46,12 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .jump a{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 12px;white-space:nowrap}
 .jump a:hover{color:var(--gold);border-color:var(--gold)}
 #social,#queue,.card,.statgrid{scroll-margin-top:56px}
+.fold>summary{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;list-style:none;padding:2px 0;user-select:none}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸ ";color:var(--gold)}
+.fold[open]>summary::before{content:"▾ "}
+.fold{padding:14px 16px}
+.fold:not([open]){padding:12px 16px}
 .qrow{display:grid;grid-template-columns:24px 52px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
 .qrow.live{border-left:3px solid var(--amber)}
 .qrow img{width:52px;height:52px;object-fit:cover;border-radius:7px;background:var(--panel2)}
@@ -96,8 +102,8 @@ td.r,th.r{text-align:right;white-space:nowrap}
       <a href="#audience">👥 Audience</a>
     </nav>
 
-    <div class="card" id="social">
-      <h2>📱 Social studio</h2>
+    <details class="card fold" id="social">
+      <summary>📱 Social studio</summary>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         <span style="font-size:12.5px;color:var(--muted)">Post:</span>
         <button class="ghost" id="ptTop" type="button">🏆 Top Sales</button>
@@ -129,10 +135,10 @@ td.r,th.r{text-align:right;white-space:nowrap}
       <div class="msg" id="socMsg"></div>
     </div>
 
-    <div class="statgrid" id="stats"></div>
+    <div class="statgrid" id="stats"></details>
 
-    <div class="card" id="queue">
-      <h2>🛡️ Moderation queue</h2>
+    <details class="card fold" id="queue" open>
+      <summary>🛡️ Moderation queue</summary>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         <input id="qDriver" placeholder="driver filter (blank = all)" style="max-width:220px">
         <button class="ghost" id="qLoad" type="button">Load pending</button>
@@ -143,7 +149,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
       </div>
       <div class="msg" id="qMsg"></div>
       <div id="qList"></div>
-    </div>
+    </details>
 
     <div class="cols">
       <div class="card"><h2>📡 Radar sources</h2><div id="sources"></div></div>
