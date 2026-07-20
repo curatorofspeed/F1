@@ -83,7 +83,21 @@ td.r,th.r{text-align:right;white-space:nowrap}
     </div>
 
     <div class="card" id="social">
-      <h2>📱 Social studio — Top Sales card</h2>
+      <h2>📱 Social studio</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <span style="font-size:12.5px;color:var(--muted)">Post:</span>
+        <button class="ghost" id="ptTop" type="button">🏆 Top Sales</button>
+        <button class="ghost" id="ptEnd" type="button">⏱ Ending Soon</button>
+        <button class="ghost" id="ptDriver" type="button">👤 Driver Spotlight</button>
+        <button class="ghost" id="ptRecap" type="button">📊 Week Recap</button>
+        <button class="ghost" id="ptRecord" type="button">🚨 New Record</button>
+      </div>
+      <div id="driverPick" style="display:none;margin-bottom:10px">
+        <select id="ptDriverSel" style="max-width:260px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
+      </div>
+      <div id="recordPick" style="display:none;margin-bottom:10px">
+        <select id="ptRecordSel" style="max-width:300px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
         <span style="font-size:12.5px;color:var(--muted)">Format:</span>
         <button class="ghost" id="fmt916" type="button" style="border-color:var(--gold);color:var(--gold)">9:16 Story/Reel</button>
@@ -259,7 +273,7 @@ async function qMod(idx,action,note){
 window.qMod=qMod;
 
 /* ---- social studio: Top Sales share card ---- */
-let SOC={data:null, ratio:'916', count:5, style:'hero', imgCache:{}};
+let SOC={data:null, ratio:'916', count:5, style:'hero', post:'top', driver:null, recordIdx:0, imgCache:{}};
 async function socLoadImg(url){
   if(!url) return null;
   if(SOC.imgCache[url]!==undefined) return SOC.imgCache[url];
@@ -275,6 +289,9 @@ function socWire(){
     [['fmt916','916'],['fmt11','11']].forEach(([id,v])=>$(id).style.cssText=(SOC.ratio===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['cnt5',5],['cnt3',3]].forEach(([id,v])=>$(id).style.cssText=(SOC.count===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['styList','list'],['styHero','hero']].forEach(([id,v])=>$(id).style.cssText=(SOC.style===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    [['ptTop','top'],['ptEnd','ending'],['ptDriver','driver'],['ptRecap','recap'],['ptRecord','record']].forEach(([id,v])=>$(id).style.cssText=(SOC.post===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    $('driverPick').style.display=(SOC.post==='driver')?'block':'none';
+    $('recordPick').style.display=(SOC.post==='record')?'block':'none';
     socRender();
   };
   $('fmt916').onclick=()=>{SOC.ratio='916';paint();};
@@ -283,23 +300,68 @@ function socWire(){
   $('cnt3').onclick=()=>{SOC.count=3;paint();};
   $('styList').onclick=()=>{SOC.style='list';paint();};
   $('styHero').onclick=()=>{SOC.style='hero';paint();};
+  $('ptTop').onclick=()=>{SOC.post='top';paint();};
+  $('ptEnd').onclick=()=>{SOC.post='ending';paint();};
+  $('ptDriver').onclick=()=>{SOC.post='driver';paint();};
+  $('ptRecap').onclick=()=>{SOC.post='recap';paint();};
+  $('ptRecord').onclick=()=>{SOC.post='record';paint();};
+  // populate driver picker from per_driver data
+  const pd=(SOC.data&&SOC.data.per_driver||[]);
+  const sel=$('ptDriverSel');
+  if(sel && pd.length && !sel.dataset.filled){
+    sel.innerHTML=pd.map(p=>'<option value="'+esc(p.driver_id)+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
+    sel.dataset.filled='1'; SOC.driver=pd[0]&&pd[0].driver_id;
+    sel.onchange=()=>{ SOC.driver=sel.value; socRender(); };
+  }
+  const rec=(SOC.data&&SOC.data.new_records||[]);
+  const rsel=$('ptRecordSel');
+  if(rsel && rec.length && !rsel.dataset.filled){
+    rsel.innerHTML=rec.map((p,i)=>'<option value="'+i+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
+    rsel.dataset.filled='1'; SOC.recordIdx=0;
+    rsel.onchange=()=>{ SOC.recordIdx=+rsel.value; socRender(); };
+  }
   $('dlCard').onclick=socDownload;
   paint();
 }
 async function socRender(){
   const stage=$('socialStage'); if(!stage)return;
-  const rows=(SOC.data&&SOC.data.top_sales_7d||[]).slice(0,SOC.count);
-  if(!rows.length){ stage.innerHTML='<div style="color:#888;padding:40px">No approved sales this week yet — approve some in the queue, then reload.</div>'; return; }
-  const W=1080, H=SOC.ratio==='916'?1920:1080;
-  if(SOC.style==='hero'){
-    stage.innerHTML='<div style="color:#888;padding:40px">Rendering…</div>';
-    const heroImg=await socLoadImg(rows[0]&&rows[0].image_url);
-    stage.innerHTML=socHeroSVG(rows,W,H,heroImg);
-  } else {
-    stage.innerHTML=socSVG(rows,W,H);
+  const d=SOC.data||{}; const W=1080, H=SOC.ratio==='916'?1920:1080;
+  const empty=m=>stage.innerHTML='<div style="color:#888;padding:40px">'+m+'</div>';
+
+  if(SOC.post==='recap'){
+    stage.innerHTML=socRecapSVG(d.week_stats||{}, (d.top_sales_7d||[]).slice(0,3), W,H); return;
   }
+  if(SOC.post==='ending'){
+    const rows=(d.ending_soon||[]).slice(0,SOC.count);
+    if(!rows.length){ empty('No live auctions ending soon in the data — run the Radar, then reload.'); return; }
+    if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url);
+      stage.innerHTML=socHeroSVG(rows,W,H,im,{kicker:'⏱ ENDING SOON',sub:'Live on Goldin'}); }
+    else stage.innerHTML=socSVG(rows,W,H,{title:'AUCTIONS ENDING SOON',accentBids:true});
+    return;
+  }
+  if(SOC.post==='driver'){
+    const pd=(d.per_driver||[]); const one=pd.find(p=>p.driver_id===SOC.driver)||pd[0];
+    if(!one){ empty('No per-driver sales yet — approve some, then reload.'); return; }
+    empty('Rendering…'); const im=await socLoadImg(one.image_url);
+    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'DRIVER SPOTLIGHT',sub:'Record sale on F1 Card Index',solo:true});
+    return;
+  }
+  if(SOC.post==='record'){
+    const recs=(d.new_records||[]); const one=recs[SOC.recordIdx||0];
+    if(!one){ empty('No new records in the last 30 days — when an approved sale becomes a driver\u2019s all-time #1, it shows here.'); return; }
+    empty('Rendering…'); const im=await socLoadImg(one.image_url);
+    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'🚨 NEW RECORD',solo:true,record:one});
+    return;
+  }
+  // default: top sales
+  const rows=(d.top_sales_7d||[]).slice(0,SOC.count);
+  if(!rows.length){ empty('No approved sales this week yet — approve some in the queue, then reload.'); return; }
+  if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url);
+    stage.innerHTML=socHeroSVG(rows,W,H,im); }
+  else stage.innerHTML=socSVG(rows,W,H);
 }
-function socSVG(rows,W,H){
+function socSVG(rows,W,H,opts){
+  opts=opts||{};
   const pad=70, gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
   const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
   const listTop=SOC.ratio==='916'?430:300, rowH=(H-listTop-140)/rows.length;
@@ -310,7 +372,7 @@ function socSVG(rows,W,H){
       <text x="0" y="${rowH*0.42}" font-family="Arial" font-weight="800" font-size="40" fill="#3a3f45">#${i+1}</text>
       <text x="90" y="${rowH*0.36}" font-family="Arial" font-weight="700" font-size="38" fill="#fff">${socEsc(cap(r.driver_id))}</text>
       <text x="90" y="${rowH*0.62}" font-family="Arial" font-size="26" fill="#8a949c">${socEsc(String(r.title||'').slice(0,46))}</text>
-      <text x="${W-pad*2}" y="${rowH*0.5}" text-anchor="end" font-family="Arial" font-weight="800" font-size="46" fill="${gold}">${money(r.price_usd)}</text>
+      <text x="${W-pad*2}" y="${rowH*0.5}" text-anchor="end" font-family="Arial" font-weight="800" font-size="46" fill="${gold}">${money(r.price_usd)}${opts.accentBids&&r.bids!=null?`<tspan font-size="26" fill="#8a949c"> ${r.bids} bids</tspan>`:``}</text>
       ${i<rows.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-pad*2}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
     </g>`;
   });
@@ -318,14 +380,15 @@ function socSVG(rows,W,H){
   return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
     <rect width="${W}" height="${H}" fill="#0a0c0d"/>
     <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
-    <text x="${pad}" y="${SOC.ratio==='916'?170:120}" font-family="Arial" font-weight="900" font-size="72" fill="#fff">TOP F1 CARD SALES</text>
+    <text x="${pad}" y="${SOC.ratio==='916'?170:120}" font-family="Arial" font-weight="900" font-size="${(opts.title||'TOP F1 CARD SALES').length>18?58:72}" fill="#fff">${opts.title||'TOP F1 CARD SALES'}</text>
     <text x="${pad}" y="${SOC.ratio==='916'?250:180}" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
     ${items}
     <text x="${pad}" y="${H-70}" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
     <text x="${W-pad}" y="${H-70}" text-anchor="end" font-family="Arial" font-size="30" fill="#8a949c">live market tracker</text>
   </svg>`;
 }
-function socHeroSVG(rows,W,H,heroData){
+function socHeroSVG(rows,W,H,heroData,opts){
+  opts=opts||{};
   const gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
   const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
   const hero=rows[0], rest=rows.slice(1);
@@ -341,13 +404,15 @@ function socHeroSVG(rows,W,H,heroData){
   // hero caption over image
   const capY=imgH-160;
   const heroBlock=`
-    <text x="70" y="${capY}" font-family="Arial" font-weight="700" font-size="42" fill="${gold}">#1 SALE OF THE WEEK</text>
+    <text x="70" y="${capY}" font-family="Arial" font-weight="700" font-size="42" fill="${gold}">${opts.kicker||'#1 SALE OF THE WEEK'}</text>
     <text x="70" y="${capY+70}" font-family="Arial" font-weight="900" font-size="64" fill="#fff">${socEsc(cap(hero.driver_id))}</text>
     <text x="70" y="${capY+120}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,52))}</text>
-    <text x="${W-70}" y="${imgH-60}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>`;
+    <text x="${W-70}" y="${imgH-60}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>
+    ${opts.record&&opts.record.previous_record?`<text x="${W-70}" y="${imgH-20}" text-anchor="end" font-family="Arial" font-size="30" fill="#39e08a">▲ ${opts.record.pct_over!=null?opts.record.pct_over+'% over':''} prev record ${money(opts.record.previous_record)}</text>`:''}`;
   // runner-up rows below the image
   let list='';
-  const listTop=imgH+70, rowH=rest.length?((H-listTop-130)/rest.length):0;
+  const listTop=imgH+70, rowH=(rest.length&&!opts.solo)?((H-listTop-130)/rest.length):0;
+  if(!opts.solo)
   rest.forEach((r,i)=>{
     const y=listTop+i*rowH;
     list+=`<g transform="translate(70,${y})">
@@ -371,6 +436,33 @@ function socHeroSVG(rows,W,H,heroData){
     ${list}
     <text x="70" y="${H-55}" font-family="Arial" font-weight="800" font-size="38" fill="#fff">f1cardindex.com</text>
     <text x="${W-70}" y="${H-55}" text-anchor="end" font-family="Arial" font-size="27" fill="#8a949c">This week &#183; ${wk}</text>
+  </svg>`;
+}
+function socRecapSVG(w,top,W,H){
+  const gold='#d9b878', money=v=>'$'+Math.round(Number(v||0)).toLocaleString();
+  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const isV=H>W;
+  const stats=[
+    [money(w.total_volume), 'tracked in sales this week'],
+    [(w.sales_count||0)+'', 'sales logged'],
+    [(w.live_now||0)+'', 'auctions live right now']
+  ];
+  let block='';
+  const startY=isV?520:360, gap=isV?300:200;
+  stats.forEach((s,i)=>{ const y=startY+i*gap;
+    block+=`<text x="${W/2}" y="${y}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="${i===0?120:96}" fill="${i===0?gold:'#fff'}">${socEsc(s[0])}</text>
+      <text x="${W/2}" y="${y+56}" text-anchor="middle" font-family="Arial" font-size="34" fill="#8a949c">${socEsc(s[1])}</text>`;
+  });
+  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  const topLine=top&&top[0]?`<text x="${W/2}" y="${H-180}" text-anchor="middle" font-family="Arial" font-size="30" fill="#8a949c">Top sale: ${socEsc(cap(top[0].driver_id))} ${money(top[0].price_usd)}</text>`:'';
+  return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
+    <rect width="${W}" height="${H}" fill="#0a0c0d"/>
+    <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
+    <text x="${W/2}" y="${isV?230:150}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="76" fill="#fff">F1 CARD MARKET</text>
+    <text x="${W/2}" y="${isV?300:210}" text-anchor="middle" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
+    ${block}
+    ${topLine}
+    <text x="${W/2}" y="${H-90}" text-anchor="middle" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
   </svg>`;
 }
 function socEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
