@@ -192,7 +192,10 @@ $('loadBtn').onclick=async()=>{
 function render(d){
   $('dash').style.display='block';
   $('genAt').textContent='snapshot '+new Date(d.generated_at).toLocaleString();
-  SOC.data=d; socWire(); socRender();
+  SOC.data=d; socWire();
+  const soc=$('social');
+  if(soc && !soc.dataset.wired){ soc.dataset.wired='1'; soc.addEventListener('toggle',()=>{ if(soc.open) socRender(); }); }
+  socRender();
 
   const q=d.queue||{}, a=d.audience||{};
   $('stats').innerHTML=
@@ -344,9 +347,10 @@ function socWire(){
   paint();
 }
 async function socRender(){
+  const soc=$('social'); if(soc&&soc.tagName==='DETAILS'&&!soc.open) return;  // collapsed -> skip
   const stage=$('socialStage'); if(!stage)return;
   const d=SOC.data||{}; const W=1080, H=SOC.ratio==='916'?1920:1080;
-  const empty=m=>stage.innerHTML='<div style="color:#888;padding:40px">'+m+'</div>';
+  const empty=m=>{ if($('socialStage')) $('socialStage').innerHTML='<div style="color:#888;padding:40px">'+m+'</div>'; };
 
   if(SOC.post==='recap'){
     stage.innerHTML=socRecapSVG(d.week_stats||{}, (d.top_sales_7d||[]).slice(0,3), W,H); return;
