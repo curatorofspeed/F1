@@ -131,8 +131,10 @@ function render(d){
   }),[false,true,true,true]) || '<span class="pill">no ingestion yet</span>';
 
   $('results').innerHTML=tbl(['Race','Updated'],(d.results||[]).map(r=>{
-    const stale=(Date.now()-new Date(r.updated_at))/36e5>24*8;
-    return ['<span class="mono">'+esc(r.race_id)+'</span>','<span class="'+(stale?'stale':'ok')+'">'+ago(r.updated_at)+'</span>'];
+    const id=r.race_id??r.id??r.race??r.key??'?';
+    const ts=r.updated_at??r.ingested_at??r.created_at??r.updatedat??null;
+    const stale=ts?((Date.now()-new Date(ts))/36e5>24*8):false;
+    return ['<span class="mono">'+esc(id)+'</span>',ts?'<span class="'+(stale?'stale':'ok')+'">'+ago(ts)+'</span>':'—'];
   }),[false,true]) || '<span class="pill">no results rows</span>';
 
   $('topSales').innerHTML=tbl(['Driver','Card','Price'],(d.top_sales_7d||[]).map(t=>
