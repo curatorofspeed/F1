@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Card Index · Admin</title>
+<style>
+:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 90px}
+h1{font-size:22px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-size:14px;font-family:inherit}
+.grid3{display:grid;grid-template-columns:2fr 2fr 1fr;gap:10px;margin-bottom:10px}
+button{background:var(--gold);color:#1a1508;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+button.ghost{background:none;border:1px solid var(--line);color:var(--txt);font-weight:600}
+.msg{font-size:13px;margin-top:8px;color:var(--muted)}
+.msg.err{color:var(--red)}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .n{font-size:26px;font-weight:800;font-family:ui-monospace,Menlo,monospace;line-height:1.1}
+.stat .l{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.stat.warn .n{color:var(--amber)}
+.stat.good .n{color:var(--green)}
+.stat.gold .n{color:var(--gold)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.r,th.r{text-align:right;white-space:nowrap}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.gold{color:var(--gold)}
+.ok{color:var(--green)}
+.stale{color:var(--red);font-weight:700}
+.pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11px;color:var(--muted)}
+.toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolrow a{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 14px;color:var(--txt);text-decoration:none;font-size:13px;font-weight:600}
+.toolrow a:hover{border-color:var(--gold);color:var(--gold)}
+#dash{display:none}
+.ts{font-size:11px;color:var(--muted);text-align:right;margin-top:-6px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎛️ F1 Card Index — Admin</h1>
+  <p class="sub">Operational snapshot: Radar pipeline, moderation queue, market activity, audience, sends.</p>
+
+  <div class="card" id="credCard">
+    <div class="grid3">
+      <div><label>Supabase URL</label><input id="sbUrl" placeholder="https://xxxx.supabase.co"></div>
+      <div><label>Anon key</label><input id="sbKey" type="password" placeholder="eyJ..."></div>
+      <div><label>Admin secret</label><input id="secret" type="password" placeholder="passphrase"></div>
+    </div>
+    <button id="loadBtn" type="button">Load dashboard</button>
+    <button class="ghost" id="saveBtn" type="button">Save creds</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div id="dash">
+    <div class="ts" id="genAt"></div>
+
+    <div class="toolrow">
+      <a href="approval-console.html">🛡️ Approval Console</a>
+      <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">🗄️ Supabase ↗</a>
+      <a href="https://github.com/curatorofspeed/F1/actions" target="_blank" rel="noopener">⚙️ GitHub Actions ↗</a>
+      <a href="https://resend.com/emails" target="_blank" rel="noopener">✉️ Resend ↗</a>
+      <a href="https://www.f1cardindex.com" target="_blank" rel="noopener">🌐 Live site ↗</a>
+    </div>
+
+    <div class="statgrid" id="stats"></div>
+
+    <div class="cols">
+      <div class="card"><h2>📡 Radar sources</h2><div id="sources"></div></div>
+      <div class="card"><h2>🏁 Race results freshness</h2><div id="results"></div></div>
+      <div class="card"><h2>💰 Top approved sales · 7d</h2><div id="topSales"></div></div>
+      <div class="card"><h2>🔥 Busiest drivers · 30d</h2><div id="active"></div></div>
+      <div class="card"><h2>👥 Audience</h2><div id="audience"></div></div>
+      <div class="card"><h2>📬 Last newsletter</h2><div id="newsletter"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const CREDS='f1idx-approval-creds';   // shared with the approval console
+(function(){ try{ const c=JSON.parse(localStorage.getItem(CREDS)||'{}');
+  if(c.url)$('sbUrl').value=c.url; if(c.key)$('sbKey').value=c.key; if(c.secret)$('secret').value=c.secret;
+}catch(e){} })();
+$('saveBtn').onclick=()=>{ localStorage.setItem(CREDS,JSON.stringify({url:$('sbUrl').value.trim(),key:$('sbKey').value.trim(),secret:$('secret').value.trim()})); say('Saved.'); };
+function say(t,err){ const m=$('msg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+const money=v=>v==null?'—':'$'+Math.round(Number(v)).toLocaleString();
+const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+function ago(iso){ if(!iso)return '—'; const h=(Date.now()-new Date(iso))/36e5;
+  if(h<1)return Math.round(h*60)+'m ago'; if(h<48)return Math.round(h)+'h ago'; return Math.round(h/24)+'d ago'; }
+
+$('loadBtn').onclick=async()=>{
+  say('Loading…');
+  try{
+    const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+    const r=await fetch(url+'/rest/v1/rpc/admin_stats',{method:'POST',
+      headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},
+      body:JSON.stringify({p_secret:$('secret').value.trim()})});
+    if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(e){}; throw new Error('HTTP '+r.status+' — '+t); }
+    render(await r.json());
+    say('');
+  }catch(e){ say(e.message,true); }
+};
+
+function render(d){
+  $('dash').style.display='block';
+  $('genAt').textContent='snapshot '+new Date(d.generated_at).toLocaleString();
+
+  const q=d.queue||{}, a=d.audience||{};
+  $('stats').innerHTML=
+    stat(q.pending,'pending review',q.pending>50?'warn':'good')+
+    stat(q.pending_live,'live auctions','')+
+    stat(q.approved,'approved comps','gold')+
+    stat(a.subscribers,'subscribers'+(a.subs_7d?' (+'+a.subs_7d+' wk)':''),'good')+
+    stat(a.alert_subs,'alert signups','')+
+    stat(a.giveaway,'giveaway entries','');
+
+  // sources with staleness flag (>48h = stale)
+  $('sources').innerHTML=tbl(['Source','24h','7d','Last pull'],(d.sources||[]).map(s=>{
+    const stale=(Date.now()-new Date(s.last_ingested))/36e5>48;
+    return [esc(s.source),s.rows_24h,s.rows_7d,'<span class="'+(stale?'stale':'ok')+'">'+ago(s.last_ingested)+'</span>'];
+  }),[false,true,true,true]) || '<span class="pill">no ingestion yet</span>';
+
+  $('results').innerHTML=tbl(['Race','Updated'],(d.results||[]).map(r=>{
+    const stale=(Date.now()-new Date(r.updated_at))/36e5>24*8;
+    return ['<span class="mono">'+esc(r.race_id)+'</span>','<span class="'+(stale?'stale':'ok')+'">'+ago(r.updated_at)+'</span>'];
+  }),[false,true]) || '<span class="pill">no results rows</span>';
+
+  $('topSales').innerHTML=tbl(['Driver','Card','Price'],(d.top_sales_7d||[]).map(t=>
+    [cap(esc(t.driver_id)),esc(String(t.title||'').slice(0,52)),'<span class="gold mono">'+money(t.price_usd)+'</span>']
+  ),[false,false,true]) || '<span class="pill">no approved sales this week — groom the queue</span>';
+
+  $('active').innerHTML=tbl(['Driver','Rows','Top price'],(d.active_drivers_30d||[]).map(x=>
+    [cap(esc(x.driver_id)),x.n,'<span class="mono">'+money(x.top)+'</span>']
+  ),[false,true,true]) || '<span class="pill">quiet month</span>';
+
+  const ad=(a.alert_drivers||[]).map(x=>cap(esc(x.driver_id))+' <span class="pill">'+x.n+'</span>').join(' &nbsp; ');
+  $('audience').innerHTML='<table><tr><td>Newsletter</td><td class="r mono">'+(a.subscribers??'—')+'</td></tr>'
+    +'<tr><td>New this week</td><td class="r mono">+'+(a.subs_7d??0)+'</td></tr>'
+    +'<tr><td>Giveaway entries</td><td class="r mono">'+(a.giveaway??0)+'</td></tr>'
+    +'<tr><td>Alert signups</td><td class="r mono">'+(a.alert_subs??0)+'</td></tr></table>'
+    +(ad?'<div style="margin-top:8px;font-size:12.5px">'+ad+'</div>':'');
+
+  const n=d.last_newsletter;
+  $('newsletter').innerHTML=n
+    ? '<table><tr><td>Week</td><td class="r mono">'+esc(n.week_key)+'</td></tr>'
+      +'<tr><td>Recipients</td><td class="r mono">'+(n.recipients??'—')+'</td></tr>'
+      +'<tr><td>Sent</td><td class="r">'+ago(n.sent_at)+'</td></tr></table>'
+    : '<span class="pill">none sent yet</span>';
+}
+function stat(n,label,cls){ return '<div class="stat '+(cls||'')+'"><div class="n">'+(n??'—')+'</div><div class="l">'+label+'</div></div>'; }
+function tbl(heads,rows,right){ if(!rows||!rows.length)return '';
+  return '<table><thead><tr>'+heads.map((h,i)=>'<th'+(right&&right[i]?' class="r"':'')+'>'+h+'</th>').join('')+'</tr></thead><tbody>'
+    +rows.map(r=>'<tr>'+r.map((c,i)=>'<td'+(right&&right[i]?' class="r"':'')+'>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>'; }
+</script>
+</body>
+</html>
