@@ -42,6 +42,16 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .toolrow a:hover{border-color:var(--gold);color:var(--gold)}
 #dash{display:none}
 .ts{font-size:11px;color:var(--muted);text-align:right;margin-top:-6px;margin-bottom:10px}
+.qrow{display:grid;grid-template-columns:24px 52px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.qrow.live{border-left:3px solid var(--amber)}
+.qrow img{width:52px;height:52px;object-fit:cover;border-radius:7px;background:var(--panel2)}
+.qrow .noimg{width:52px;height:52px;border-radius:7px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.qt{font-size:13px;font-weight:600;line-height:1.3}
+.qm{font-size:12px;color:var(--muted);margin-top:1px}
+.qm b{color:var(--gold)}
+.qtag{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:0 5px;margin-left:6px;background:rgba(230,182,92,.15);color:var(--amber);border:1px solid #4a3d1d;vertical-align:1px}
+.qact{display:flex;gap:5px}
+.qact button{padding:5px 10px;font-size:12px}
 </style>
 </head>
 <body>
@@ -64,7 +74,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
     <div class="ts" id="genAt"></div>
 
     <div class="toolrow">
-      <a href="approval-console.html">🛡️ Approval Console</a>
+      <a href="#queue">🛡️ Approval Queue</a>
       <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">🗄️ Supabase ↗</a>
       <a href="https://github.com/curatorofspeed/F1/actions" target="_blank" rel="noopener">⚙️ GitHub Actions ↗</a>
       <a href="https://resend.com/emails" target="_blank" rel="noopener">✉️ Resend ↗</a>
@@ -72,6 +82,20 @@ td.r,th.r{text-align:right;white-space:nowrap}
     </div>
 
     <div class="statgrid" id="stats"></div>
+
+    <div class="card" id="queue">
+      <h2>🛡️ Moderation queue</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <input id="qDriver" placeholder="driver filter (blank = all)" style="max-width:220px">
+        <button class="ghost" id="qLoad" type="button">Load pending</button>
+        <button class="ghost" id="qAll" type="button">Select all</button>
+        <button id="qAppr" type="button" style="background:var(--green);color:#052">✓ Approve selected</button>
+        <button id="qRej" type="button" style="background:var(--red);color:#400">✕ Reject selected</button>
+        <span style="font-size:12.5px;color:var(--muted)" id="qCount"></span>
+      </div>
+      <div class="msg" id="qMsg"></div>
+      <div id="qList"></div>
+    </div>
 
     <div class="cols">
       <div class="card"><h2>📡 Radar sources</h2><div id="sources"></div></div>
@@ -150,7 +174,8 @@ function render(d){
     +'<tr><td>New this week</td><td class="r mono">+'+(a.subs_7d??0)+'</td></tr>'
     +'<tr><td>Giveaway entries</td><td class="r mono">'+(a.giveaway??0)+'</td></tr>'
     +'<tr><td>Alert signups</td><td class="r mono">'+(a.alert_subs??0)+'</td></tr></table>'
-    +(ad?'<div style="margin-top:8px;font-size:12.5px">'+ad+'</div>':'');
+    +(ad?'<div style="margin-top:8px;font-size:12.5px">'+ad+'</div>':'')
+    +(a.alerts_deployed===false?'<div style="margin-top:8px"><span class="pill" style="color:var(--amber)">⚠ alerts-setup.sql not run — driver-page alert signups are failing</span></div>':'');
 
   const n=d.last_newsletter;
   $('newsletter').innerHTML=n
@@ -159,6 +184,59 @@ function render(d){
       +'<tr><td>Sent</td><td class="r">'+ago(n.sent_at)+'</td></tr></table>'
     : '<span class="pill">none sent yet</span>';
 }
+/* ---- moderation queue (uses list_pending_sales / moderate_sales RPCs) ---- */
+let qRows=[];
+async function rpc(fn, body){
+  const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+  const r=await fetch(url+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},
+    body:JSON.stringify(body)});
+  const t=await r.text();
+  if(!r.ok){ let m=t; try{m=JSON.parse(t).message||t}catch(e){}; throw new Error('HTTP '+r.status+' — '+m); }
+  return t?JSON.parse(t):null;
+}
+function qSay(t,err){ const m=$('qMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function qLive(r){ const f=r.flags; return Array.isArray(f)?f.includes('live_auction'):String(f||'').includes('live_auction'); }
+$('qLoad').onclick=async()=>{
+  qSay('Loading…');
+  try{
+    qRows=await rpc('list_pending_sales',{p_secret:$('secret').value.trim(),p_driver:($('qDriver').value.trim()||null),p_limit:300});
+    qPaint(); qSay(qRows.length?qRows.length+' pending loaded.':'Queue is empty. 🎉');
+  }catch(e){ qSay(e.message,true); }
+};
+function qPaint(){
+  $('qList').innerHTML=qRows.map((r,i)=>{
+    const live=qLive(r);
+    return '<div class="qrow'+(live?' live':'')+'">'
+      +'<input type="checkbox" class="qck" data-i="'+i+'">'
+      +(r.image_url?'<img src="'+esc(r.image_url)+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">':'<div class="noimg">🃏</div>')
+      +'<div><div class="qt">'+(r.url?'<a href="'+esc(r.url)+'" target="_blank" rel="noopener" style="color:inherit">':'')+esc(r.title||'(no title)')+(r.url?'</a>':'')
+      +(live?'<span class="qtag">LIVE — not a comp</span>':'')+'</div>'
+      +'<div class="qm"><b>'+money(r.price_usd)+'</b> · '+esc(r.driver_id||'no driver')+(r.sale_date?' · '+esc(r.sale_date):'')+' · '+esc(r.source||'')+'</div></div>'
+      +'<div class="qact"><button style="background:var(--green);color:#052" onclick="qMod(['+i+'],\'approved\')"'+(live?' disabled title="live bid, not a settled price"':'')+'>✓</button>'
+      +'<button style="background:var(--red);color:#400" onclick="qMod(['+i+'],\'rejected\')">✕</button></div></div>';
+  }).join('')||'';
+  qUpd();
+  $('qList').querySelectorAll('.qck').forEach(c=>c.onchange=qUpd);
+}
+function qPicked(){ return [...document.querySelectorAll('.qck:checked')].map(c=>Number(c.dataset.i)); }
+function qUpd(){ $('qCount').textContent=qRows.length?qRows.length+' pending · '+qPicked().length+' selected':''; }
+$('qAll').onclick=()=>{ document.querySelectorAll('.qck').forEach(c=>c.checked=true); qUpd(); };
+$('qAppr').onclick=()=>{ const idx=qPicked().filter(i=>!qLive(qRows[i])); const skip=qPicked().length-idx.length;
+  if(!idx.length){ qSay(skip?'Only live auctions selected — those stay pending.':'Nothing selected.',true); return; }
+  qMod(idx,'approved',skip?skip+' live skipped.':''); };
+$('qRej').onclick=()=>{ const idx=qPicked(); if(!idx.length){ qSay('Nothing selected.',true); return; } qMod(idx,'rejected'); };
+async function qMod(idx,action,note){
+  const ids=idx.map(i=>String(qRows[i].id));
+  qSay((action==='approved'?'Approving ':'Rejecting ')+ids.length+'…');
+  try{
+    const n=await rpc('moderate_sales',{p_secret:$('secret').value.trim(),p_ids:ids,p_action:action});
+    const kept=new Set(idx); qRows=qRows.filter((_,i)=>!kept.has(i)); qPaint();
+    qSay(n+' '+action+'.'+(note?' '+note:''));
+  }catch(e){ qSay(e.message,true); }
+}
+window.qMod=qMod;
+
 function stat(n,label,cls){ return '<div class="stat '+(cls||'')+'"><div class="n">'+(n??'—')+'</div><div class="l">'+label+'</div></div>'; }
 function tbl(heads,rows,right){ if(!rows||!rows.length)return '';
   return '<table><thead><tr>'+heads.map((h,i)=>'<th'+(right&&right[i]?' class="r"':'')+'>'+h+'</th>').join('')+'</tr></thead><tbody>'
