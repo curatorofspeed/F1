@@ -102,7 +102,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
       <a href="#audience">👥 Audience</a>
     </nav>
 
-    <details class="card fold" id="social" open>
+    <details class="card fold" id="social">
       <summary>📱 Social studio</summary>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         <span style="font-size:12.5px;color:var(--muted)">Post:</span>
@@ -315,6 +315,8 @@ function socWire(){
     [['ptTop','top'],['ptEnd','ending'],['ptDriver','driver'],['ptRecap','recap'],['ptRecord','record']].forEach(([id,v])=>$(id).style.cssText=(SOC.post===v)?'border-color:var(--gold);color:var(--gold)':'' );
     $('driverPick').style.display=(SOC.post==='driver')?'block':'none';
     $('recordPick').style.display=(SOC.post==='record')?'block':'none';
+    const listMode=(SOC.post==='top'||SOC.post==='ending');
+    ['cnt5','cnt3','styList','styHero'].forEach(id=>{ const b=$(id); b.disabled=!listMode; b.style.opacity=listMode?'1':'.4'; b.style.cursor=listMode?'pointer':'not-allowed'; });
     socRender();
   };
   $('fmt916').onclick=()=>{SOC.ratio='916';paint();};
@@ -328,27 +330,32 @@ function socWire(){
   $('ptDriver').onclick=()=>{SOC.post='driver';paint();};
   $('ptRecap').onclick=()=>{SOC.post='recap';paint();};
   $('ptRecord').onclick=()=>{SOC.post='record';paint();};
-  // populate driver picker from per_driver data
+  // populate driver picker from per_driver data (re-run each load so new data lands)
   const pd=(SOC.data&&SOC.data.per_driver||[]);
   const sel=$('ptDriverSel');
-  if(sel && pd.length && !sel.dataset.filled){
+  if(sel && pd.length){
+    const prev=SOC.driver;
     sel.innerHTML=pd.map(p=>'<option value="'+esc(p.driver_id)+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
-    sel.dataset.filled='1'; SOC.driver=pd[0]&&pd[0].driver_id;
+    SOC.driver=pd.some(p=>p.driver_id===prev)?prev:(pd[0]&&pd[0].driver_id);
+    sel.value=SOC.driver;
     sel.onchange=()=>{ SOC.driver=sel.value; socRender(); };
   }
   const rec=(SOC.data&&SOC.data.new_records||[]);
   const rsel=$('ptRecordSel');
-  if(rsel && rec.length && !rsel.dataset.filled){
+  if(rsel && rec.length){
     rsel.innerHTML=rec.map((p,i)=>'<option value="'+i+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
-    rsel.dataset.filled='1'; SOC.recordIdx=0;
+    if(SOC.recordIdx>=rec.length)SOC.recordIdx=0;
+    rsel.value=SOC.recordIdx;
     rsel.onchange=()=>{ SOC.recordIdx=+rsel.value; socRender(); };
   }
   $('dlCard').onclick=socDownload;
   paint();
 }
+let socToken=0;
 async function socRender(){
   const soc=$('social'); if(soc&&soc.tagName==='DETAILS'&&!soc.open) return;  // collapsed -> skip
   const stage=$('socialStage'); if(!stage)return;
+  const my=++socToken;
   const d=SOC.data||{}; const W=1080, H=SOC.ratio==='916'?1920:1080;
   const empty=m=>{ if($('socialStage')) $('socialStage').innerHTML='<div style="color:#888;padding:40px">'+m+'</div>'; };
 
@@ -358,7 +365,7 @@ async function socRender(){
   if(SOC.post==='ending'){
     const rows=(d.ending_soon||[]).slice(0,SOC.count);
     if(!rows.length){ empty('No live auctions ending soon in the data — run the Radar, then reload.'); return; }
-    if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url);
+    if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
       stage.innerHTML=socHeroSVG(rows,W,H,im,{kicker:'⏱ ENDING SOON',sub:'Live on Goldin'}); }
     else stage.innerHTML=socSVG(rows,W,H,{title:'AUCTIONS ENDING SOON',accentBids:true});
     return;
@@ -366,21 +373,21 @@ async function socRender(){
   if(SOC.post==='driver'){
     const pd=(d.per_driver||[]); const one=pd.find(p=>p.driver_id===SOC.driver)||pd[0];
     if(!one){ empty('No per-driver sales yet — approve some, then reload.'); return; }
-    empty('Rendering…'); const im=await socLoadImg(one.image_url);
+    empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
     stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'DRIVER SPOTLIGHT',sub:'Record sale on F1 Card Index',solo:true});
     return;
   }
   if(SOC.post==='record'){
     const recs=(d.new_records||[]); const one=recs[SOC.recordIdx||0];
     if(!one){ empty('No new records in the last 30 days — when an approved sale becomes a driver\u2019s all-time #1, it shows here.'); return; }
-    empty('Rendering…'); const im=await socLoadImg(one.image_url);
+    empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
     stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'🚨 NEW RECORD',solo:true,record:one});
     return;
   }
   // default: top sales
   const rows=(d.top_sales_7d||[]).slice(0,SOC.count);
   if(!rows.length){ empty('No approved sales this week yet — approve some in the queue, then reload.'); return; }
-  if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url);
+  if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
     stage.innerHTML=socHeroSVG(rows,W,H,im); }
   else stage.innerHTML=socSVG(rows,W,H);
 }
@@ -497,7 +504,7 @@ function socDownload(){
   img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
     c.getContext('2d').drawImage(img,0,0);
     c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b);
-      a.download='f1cardindex-topsales-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      a.download='f1cardindex-'+SOC.post+'-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
       $('socMsg').textContent='Downloaded — post it! 🏁'; });
   };
   img.onerror=()=>{ $('socMsg').textContent='Export failed — screenshot the card instead.'; };
