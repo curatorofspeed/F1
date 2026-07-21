@@ -65,75 +65,53 @@ def prospect_id(abbr, surname):
 
 
 def parse_driver_cell(text):
-    """Pull name + 3-letter abbr from a FIA driver cell. Handles both the glued
-    form 'N. TsolovTSOCampos Racing' and the spaced form 'N. Tsolov TSO Campos'."""
+    """'N. TsolovTSOCampos Racing' -> (name='N. Tsolov', abbr='TSO', surname='Tsolov')."""
     text = re.sub(r"\s+", " ", text or "").strip()
-    # the abbr is a standalone 3-uppercase token (or glued run) after the name
-    m = re.search(r"^(.*?)\s*\b([A-Z]{3})\b(?:\s+|(?=[A-Z]))(.*)$", text)
-    if not m:  # fallback: 3 caps glued directly onto the name (no boundary)
-        m = re.search(r"^(.*?)([A-Z]{3})([A-Z].*)$", text)
+    m = re.search(r"^(.*?)([A-Z]{3})([A-Z].*)$", text)  # name | 3-letter abbr | team
     if m:
-        name, abbr = m.group(1).strip(), m.group(2)
+        name = m.group(1).strip()
+        abbr = m.group(2)
     else:
         name, abbr = text, ""
-    # surname = last alphabetic token of the name (drop the "N." initial)
-    toks = re.findall(r"[A-Za-zÀ-ÿ'\-]+", name)
-    surname = toks[-1] if toks else name
+    surname = name.split(".")[-1].strip() if "." in name else name.strip()
     return name, abbr, surname
 
 
-def _get(url):
-    return requests.get(url, headers={"User-Agent": UA}, timeout=25).text
-
-
-def _extract_city(html):
-    """Find the round venue so results tie to the F1 weekend (gbr, bel, ...).
-    Look in the <title> and the top of the page (not the full calendar, which
-    lists every venue)."""
-    m = re.search(r"<title[^>]*>([^<]+)</title>", html, re.I)
-    title = m.group(1) if m else ""
-    head = html[:3500]                       # round heading area, before the calendar
-    for scope in (title, head):
-        for city in CITY_TO_RACE:
-            if re.search(r"\b" + re.escape(city) + r"\b", scope, re.I):
-                return city
-    return ""
-
-
-def _dump(series_key, where, html):
-    """Print the real page structure so a failed run reveals how to parse it."""
-    print(f"  [{series_key}] ===== DIAGNOSTIC ({where}) len={len(html)} =====")
-    print(f"  __NEXT_DATA__={'__NEXT_DATA__' in html}  <table>={html.count('<table')}  "
-          f"'Feature'={html.count('Feature')}  raceid_hits={len(re.findall(r'raceid=', html, re.I))}")
-    for marker in ["Feature Race", "raceid=", "position", '"pos"', "driverCode",
-                   "lastName", "familyName", "tla"]:
-        i = html.lower().find(marker.lower())
-        if i >= 0:
-            snip = re.sub(r"\s+", " ", html[max(0, i - 70):i + 240])
-            print(f"  ~{marker}: ...{snip}...")
-
-
 def find_latest_completed(series_key):
-    """Return (raceid, city, feature_rows) for the newest round that has a
-    populated feature race. Dumps page structure to the log if nothing parses."""
+    """Fetch homepage -> a results page -> read the calendar -> pick the newest
+    round whose date is on/before today. Returns (raceid, city, date) or None."""
     base = SERIES[series_key]["base"]
-    home = _get(base + "/")
-    ids = sorted({int(x) for x in re.findall(r"[?&]raceid=(\d+)", home, re.I)}, reverse=True)
-    print(f"  [{series_key}] homepage len={len(home)} raceids={ids[:15]}")
-    if not ids:
-        _dump(series_key, "homepage", home)
+    home = requests.get(base + "/", headers={"User-Agent": UA}, timeout=25).text
+    m = re.search(r"/Results\?raceid=(\d+)", home)
+    if not m:
         return None
-    first_html = None
-    for rid in ids[:15]:                       # newest first; stop at first with results
-        html = _get(f"{base}/Results?raceid={rid}")
-        if first_html is None:
-            first_html = html
-        rows = parse_feature_html(html)
-        print(f"  [{series_key}] raceid={rid} feature_rows={len(rows)}")
-        if rows:
-            return rid, _extract_city(html), rows
-    _dump(series_key, f"raceid={ids[0]}", first_html)
-    return None
+    seed = m.group(1)
+    page = requests.get(f"{base}/Results?raceid={seed}", headers={"User-Agent": UA}, timeout=25).text
+
+    # calendar entries look like: >Silverstone Silverstone 03-05 Jul<  (a=/Results?raceid=NNNN)
+    rounds = []
+    for a in re.finditer(r'/Results\?raceid=(\d+)"[^>]*>([^<]*?)(\d{1,2})-(\d{1,2})\s+([A-Za-z]{3,4})', page):
+        rid, city = a.group(1), a.group(2)
+        day2, mon = int(a.group(4)), a.group(5)[:3]
+        months = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,
+                  "Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
+        mnum = months.get(mon.title())
+        if not mnum:
+            continue
+        year = dt.date.today().year
+        try:
+            end = dt.date(year, mnum, day2)
+        except ValueError:
+            continue
+        city_clean = re.sub(r"([a-z])([A-Z])", r"\1 \2", city).strip().split("  ")[0].strip()
+        rounds.append((rid, city_clean, end))
+
+    today = dt.date.today()
+    done = [r for r in rounds if r[2] <= today]
+    if not done:
+        return None
+    done.sort(key=lambda r: r[2])
+    return done[-1]
 
 
 def parse_feature_html(html):
@@ -179,7 +157,7 @@ def build_result(series_key, city, rows):
     code = CITY_TO_RACE.get((city or "").strip().lower())
     top = []
     prospect_hit = None
-    for r in rows:                       # full classification, not just the top 6
+    for r in rows[:6]:
         pid = prospect_id(r["abbr"], r["surname"])
         if pid and prospect_hit is None:
             prospect_hit = {"pos": r["pos"], "id": pid, "name": r["name"]}
@@ -194,7 +172,7 @@ def build_result(series_key, city, rows):
     }, code
 
 
-def upsert(race_id, results):
+def upsert(race_id, results, race_date):
     url = os.environ.get("SUPABASE_URL")
     key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or os.environ.get("SUPABASE_SERVICE_KEY")
     if not (url and key):
@@ -203,7 +181,7 @@ def upsert(race_id, results):
          "Content-Type": "application/json", "Prefer": "return=minimal"}
     base = url.rstrip("/")
     requests.delete(f"{base}/rest/v1/race_results?race_id=eq.{race_id}", headers=h, timeout=25)
-    body = {"race_id": race_id, "race_date": dt.date.today().isoformat(), "results": results}
+    body = {"race_id": race_id, "race_date": race_date.isoformat(), "results": results}
     r = requests.post(f"{base}/rest/v1/race_results", headers=h, data=json.dumps(body), timeout=25)
     print(f"  [supabase] {race_id} -> HTTP {r.status_code}")
 
@@ -214,14 +192,17 @@ def run():
             latest = find_latest_completed(sk)
             if not latest:
                 print(f"{sk}: no completed round found"); continue
-            raceid, city, rows = latest
+            raceid, city, end = latest
+            rows = scrape_feature(sk, raceid)
+            if not rows:
+                print(f"{sk}: {city} — no feature rows parsed (check HTML structure)"); continue
             results, code = build_result(sk, city, rows)
             rid = f"{sk}-{code}" if code else f"{sk}-r{raceid}"
             win = results["winner"]["name"] if results["winner"] else "?"
             pr = results["prospect"]
             print(f"{sk}: {city} feature — winner {win}" +
                   (f" · prospect {pr['name']} P{pr['pos']}" if pr else ""))
-            upsert(rid, results)
+            upsert(rid, results, end)
         except Exception as e:
             print(f"{sk}: error — {e}")
 
