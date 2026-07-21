@@ -727,7 +727,7 @@ class EbayBrowseAdapter(Adapter):
         return sales
 
 
-ADAPTERS = [GoldinAdapter(), EbayBrowseAdapter()], FanaticsAdapter()]   # FanaticsAdapter() next, same shape
+ADAPTERS = [GoldinAdapter(), EbayBrowseAdapter(), FanaticsAdapter()]   # FanaticsAdapter() next, same shape
 
 
 # ----------------------------------------------------------------------------
