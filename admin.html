@@ -102,7 +102,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
       <a href="#audience">👥 Audience</a>
     </nav>
 
-    <details class="card fold" id="social" open>
+    <details class="card fold" id="social">
       <summary>📱 Social studio</summary>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         <span style="font-size:12.5px;color:var(--muted)">Post:</span>
@@ -424,22 +424,22 @@ function socHeroSVG(rows,W,H,heroData,opts){
   const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
   const hero=rows[0], rest=rows.slice(1);
   const isV=SOC.ratio==='916';
-  // hero image panel
-  const imgH=isV?980:620, imgW=W;
+  // hero image panel — solo cards fill the frame (no runner-up rows below), so extend the image nearly full-height and drop the caption to the bottom
+  const imgH=opts.solo?(isV?1680:900):(isV?980:620), imgW=W;
   const imgBlock=heroData
     ? `<clipPath id="hclip"><rect x="0" y="0" width="${imgW}" height="${imgH}"/></clipPath>
        <image href="${heroData}" x="0" y="0" width="${imgW}" height="${imgH}" preserveAspectRatio="xMidYMid slice" clip-path="url(#hclip)"/>
        <rect x="0" y="0" width="${imgW}" height="${imgH}" fill="url(#fade)"/>`
     : `<rect x="0" y="0" width="${imgW}" height="${imgH}" fill="#12161a"/>
        <text x="${W/2}" y="${imgH/2}" text-anchor="middle" font-family="Arial" font-size="40" fill="#3a3f45">no image on this sale</text>`;
-  // hero caption over image
-  const capY=imgH-160;
+  // caption sits lower and roomier on solo cards so the image gets the space
+  const capY=opts.solo?imgH-210:imgH-160;
   const heroBlock=`
     <text x="70" y="${capY}" font-family="Arial" font-weight="700" font-size="42" fill="${gold}">${opts.kicker||'#1 SALE OF THE WEEK'}</text>
     <text x="70" y="${capY+70}" font-family="Arial" font-weight="900" font-size="64" fill="#fff">${socEsc(cap(hero.driver_id))}</text>
-    <text x="70" y="${capY+120}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,52))}</text>
-    <text x="${W-70}" y="${imgH-60}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>
-    ${opts.record&&opts.record.previous_record?`<text x="${W-70}" y="${imgH-20}" text-anchor="end" font-family="Arial" font-size="30" fill="#39e08a">▲ ${opts.record.pct_over!=null?opts.record.pct_over+'% over':''} prev record ${money(opts.record.previous_record)}</text>`:''}`;
+    <text x="70" y="${capY+118}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,opts.solo?60:52))}</text>
+    <text x="${W-70}" y="${capY+40}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>
+    ${opts.record&&opts.record.previous_record?`<text x="${W-70}" y="${capY+80}" text-anchor="end" font-family="Arial" font-size="28" fill="#39e08a">▲ ${opts.record.pct_over!=null?opts.record.pct_over+'% over':''} prev record ${money(opts.record.previous_record)}</text>`:''}`;
   // runner-up rows below the image
   let list='';
   const listTop=imgH+70, rowH=(rest.length&&!opts.solo)?((H-listTop-130)/rest.length):0;
