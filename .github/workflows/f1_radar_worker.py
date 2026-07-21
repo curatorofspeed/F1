@@ -532,7 +532,120 @@ def normalize_goldin_lot(base, lot):
             "sale_date": (str(date)[:10] if date else None), "sale_type": "auction",
             "bids": _first(d, _BID_KEYS), "image_url": img}
 
+class FanaticsAdapter(Adapter):
+    source = "fanatics"
+    base = "https://sales-history.fanaticscollect.com"
 
+    # Public sold-history REST API (no auth). Spring/HAL pagination. Settled, PAID
+    # sales across all markets — the sold-comp analogue to GoldinAdapter's sold pass.
+    # Live weekly-auction bids are NOT ingested here (those live on the marketplace
+    # GraphQL and are exactly the "current bid, not final" noise we don't want).
+    SALES_API = "https://sales-history-api.services.fanaticscollect.com/api/v1/pub/sales"
+    _TZ = {"PDT": -7, "PST": -8, "EDT": -4, "EST": -5, "UTC": 0, "GMT": 0}
+
+    def _parse_sold(self, s):
+        """'2026-07-21T14:32:25.000 PDT' -> 'YYYY-MM-DD' (Pacific → UTC date)."""
+        if not s:
+            return None
+        m = re.match(r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.\d+)?\s*([A-Z]{2,4})?$", s.strip())
+        if not m:
+            return None
+        try:
+            naive = dt.datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%S")
+        except ValueError:
+            return None
+        off = self._TZ.get(m.group(2) or "UTC", 0)
+        return (naive - dt.timedelta(hours=off)).replace(tzinfo=dt.timezone.utc).date().isoformat()
+
+    def _price(self, rec):
+        try:
+            return float(rec.get("purchasePrice"))     # already USD; build_sale() runs to_usd
+        except (TypeError, ValueError):
+            return None
+
+    def _image(self, rec):
+        return rec.get("mediumImage1") or rec.get("smallImage1") or rec.get("thumbnailImage1")
+
+    def _url(self, rec):
+        u = rec.get("listingUuid")
+        return f"https://sales-history.fanaticscollect.com/item/{u}" if u else self.base
+
+    def _sale_type(self, rec):
+        # FIXED = buy_now ; WEEKLY/PREMIER = auction (mirrors Goldin's Fixed_Price mapping)
+        return "buy_now" if (rec.get("auctionType") or "").upper() == "FIXED" else "auction"
+
+    def _api_grade(self, rec):
+        svc = (rec.get("gradingService") or "").strip()
+        g = rec.get("grade")
+        if svc and g not in (None, "", 0):
+            gtxt = ("%g" % g) if isinstance(g, (int, float)) else str(g)   # 0.5 = CGC Authentic
+            return f"{svc} {gtxt}"
+        return None
+
+    def _query(self, driver: dict) -> str:
+        # bare surname for the title= search (matches parse_title's surname aliases)
+        for a in driver.get("aliases", []):
+            if " " not in a:
+                return a
+        nm = driver.get("name", "")
+        return nm.split()[-1] if nm else driver.get("id", "")
+
+    def search(self, driver: dict) -> list[Sale]:
+        """Settled F1 sold comps for one driver from Fanatics' public sales-history
+        API. Newest-first; each row routed through the shared build_sale() so
+        exclusions, FX, dedup-flags and high-value review all apply — then tagged
+        fanatics_sold, exactly like GoldinAdapter's sold pass tags goldin_sold."""
+        q = self._query(driver)
+        if not q:
+            return []
+
+        sales, seen = [], set()
+        for page in range(20):   # safety cap; breaks early when _links.next is absent
+            params = {"title": q, "sort": "soldDate,desc", "page": page, "size": 100}
+            try:
+                r = requests.get(self.SALES_API, params=params,
+                                 headers={"User-Agent": UA}, timeout=25)
+                r.raise_for_status()
+                data = r.json()
+            except Exception as e:
+                print(f"  [fanatics] {q} p{page}: {e}", file=sys.stderr)
+                break
+
+            recs = (data.get("_embedded") or {}).get("SalesRecords") or []
+            if not recs:
+                break
+
+            for rec in recs:
+                if (rec.get("paymentStatus") or "").lower() != "paid":
+                    continue
+                sid = rec.get("id")
+                if not sid or sid in seen:
+                    continue
+                price = self._price(rec)
+                if price is None:
+                    continue
+
+                s = build_sale(
+                    self.source, sid, self._url(rec), (rec.get("title") or "").strip(),
+                    price=price, currency="USD",
+                    sale_date=self._parse_sold(rec.get("soldDate")),
+                    sale_type=self._sale_type(rec), bids=None,
+                    image_url=self._image(rec))
+
+                if not s or s.driver_id != driver["id"]:   # same strict check Goldin uses
+                    continue
+                ag = self._api_grade(rec)                    # API grade beats title-parsed
+                if ag:
+                    s.grade = ag
+                s.flags.append("fanatics_sold")             # settled comp (mirrors goldin_sold)
+                seen.add(sid)
+                sales.append(s)
+
+            if not (data.get("_links") or {}).get("next"):
+                break
+
+        print(f"  [fanatics] {q}: {len(sales)} sold comps", file=sys.stderr)
+        return sales
 class EbayBrowseAdapter(Adapter):
     """eBay ACTIVE listings via the official Browse API (OAuth, JSON) — free and
     ToS-clean, unlike scraping search HTML. Browse returns *active* listings
@@ -614,7 +727,7 @@ class EbayBrowseAdapter(Adapter):
         return sales
 
 
-ADAPTERS = [GoldinAdapter(), EbayBrowseAdapter()]   # FanaticsAdapter() next, same shape
+ADAPTERS = [GoldinAdapter(), EbayBrowseAdapter()], FanaticsAdapter()]   # FanaticsAdapter() next, same shape
 
 
 # ----------------------------------------------------------------------------
