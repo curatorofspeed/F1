@@ -12,12 +12,22 @@
 <meta property="og:title" content="F1 Card Index — Live Formula 1 Trading Card Market">
 <meta property="og:description" content="Track Topps Chrome F1 auctions ending soon, recent sold prices, and record sales for every 2026 driver.">
 <meta property="og:url" content="https://f1cardindex.com/">
+<meta property="og:image" content="https://f1cardindex.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://f1cardindex.com/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="F1 Card Index — Live Formula 1 Trading Card Market">
 <meta name="twitter:description" content="Live Topps Chrome F1 auctions, sold prices, and record sales for every 2026 driver.">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"F1 Card Index","url":"https://f1cardindex.com/","description":"The live market index for Formula 1 trading cards — Topps Chrome auctions, sold prices, and record sales."}
 </script>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0a0c0d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -419,6 +429,16 @@
   .note-cov{font-size:12px;color:var(--muted);margin:-6px 0 12px;line-height:1.5}
   .grid-label{grid-column:1/-1;font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin:18px 0 6px;padding-bottom:8px;border-bottom:1px solid var(--line)}
   /* Race calendar */
+  .rec-ticker{overflow:hidden;background:linear-gradient(100deg,rgba(230,182,92,.10),rgba(20,22,25,.6));border:1px solid #4a3d1d;border-radius:12px;margin:0 0 16px;padding:0;position:relative}
+  .rec-ticker::before{content:"🚨 NEW RECORDS";position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding:0 16px;background:#0a0c0d;color:var(--gold);font-weight:800;font-size:12px;letter-spacing:.08em;z-index:2;border-right:1px solid #4a3d1d;white-space:nowrap}
+  .rec-track{display:flex;gap:34px;align-items:center;padding:12px 16px 12px 168px;animation:recScroll 42s linear infinite;white-space:nowrap;width:max-content}
+  .rec-ticker:hover .rec-track{animation-play-state:paused}
+  .rec-item{font-size:14px;color:var(--txt);white-space:nowrap}
+  .rec-item b{color:#fff}
+  .rec-item .rp{color:var(--gold);font-weight:800;font-family:'JetBrains Mono',ui-monospace,monospace}
+  .rec-item .rup{color:#39e08a;font-size:12px;font-weight:700;margin-left:4px}
+  @keyframes recScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  @media(max-width:640px){.rec-track{padding-left:150px}}
   .trending{margin-bottom:22px}
   .tr-head{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt);margin-bottom:11px}
   .tr-sub{color:var(--muted);font-weight:400;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0;text-transform:none}
@@ -705,6 +725,7 @@
 .kit-hot .mff-go{color:#e5484d}
 @keyframes kitPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}50%{box-shadow:0 0 12px 1px rgba(229,72,77,.35)}}
 </style>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -850,6 +871,7 @@
         <button class="vt" id="vtList" title="List view" aria-label="List view">☰</button>
       </div>
     </div>
+    <div class="rec-ticker" id="recTicker" style="display:none"></div>
     <div class="drivers" id="driversBox"></div>
 
     <!-- ===== COLLECTOR GEAR (Amazon) ===== -->
@@ -3327,6 +3349,22 @@ function sbStrip(){
   (state.drivers||[]).forEach(d=>{if(d.top10)d.top10=d.top10.filter(e=>!e.sb);});
   if(Array.isArray(state.feed))state.feed=state.feed.filter(f=>!f.sb);
 }
+async function loadRecordTicker(){
+  if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return;
+  try{
+    const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/rpc/recent_records',{
+      method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:'{}'});
+    if(!r.ok)return;
+    const recs=await r.json();
+    const box=$('recTicker'); if(!box||!recs||!recs.length)return;
+    const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+    const money=v=>'$'+Math.round(Number(v)).toLocaleString();
+    const item=x=>`<span class="rec-item"><b>${cap(x.driver_name||x.driver_id)}</b> record <span class="rp">${money(x.price_usd)}</span>${x.pct_over!=null?`<span class="rup">▲${x.pct_over}%</span>`:''}</span>`;
+    const one=recs.map(item).join('');
+    box.innerHTML='<div class="rec-track">'+one+one+'</div>';  // doubled for seamless scroll
+    box.style.display='block';
+  }catch(e){}
+}
 async function loadSupabaseSales(){
   if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return;
   const base=SUPABASE_URL.replace(/\/+$/,'');
@@ -3380,7 +3418,7 @@ async function loadSupabaseSales(){
   applyTheme(state.theme||'light');wireThemes();wireViewToggle();wireNavSearch();
   const h=(location.hash||'').replace(/^#/,'').toLowerCase();
   if(h&&h!=='admin'&&h!=='lock'&&getDriver(h)){showDriver(h,true);}else{showIndex(true);}
-  loadLiveResults();applyAdmin();checkAdminHash();loadSupabaseSales();initAdsense();initSignup();
+  loadLiveResults();applyAdmin();checkAdminHash();loadSupabaseSales();loadRecordTicker();initAdsense();initSignup();
   window.addEventListener('hashchange',routeHash);
 })();
 </script>
