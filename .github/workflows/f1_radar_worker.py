@@ -646,6 +646,13 @@ class FanaticsAdapter(Adapter):
 
         print(f"  [fanatics] {q}: {len(sales)} sold comps", file=sys.stderr)
         return sales
+
+      def robots_ok(self, path: str, ignore_robots: bool = False) -> bool:
+        # Ingestion uses the PUBLIC JSON API on a separate host
+        # (sales-history-api.services.fanaticscollect.com/api/v1/pub/), not a
+        # crawl of the sales-history website that robots.txt governs.
+        return True
+        
 class EbayBrowseAdapter(Adapter):
     """eBay ACTIVE listings via the official Browse API (OAuth, JSON) — free and
     ToS-clean, unlike scraping search HTML. Browse returns *active* listings
