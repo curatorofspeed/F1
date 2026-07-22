@@ -724,6 +724,24 @@
 .kit-hot{border-color:#e5484d!important;animation:kitPulse 2.6s ease-in-out infinite}
 .kit-hot .mff-go{color:#e5484d}
 @keyframes kitPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}50%{box-shadow:0 0 12px 1px rgba(229,72,77,.35)}}
+/* ===== index shop teaser ===== */
+#shopTeaser{display:none;margin:14px 0 4px}
+.shoprow{display:grid;grid-auto-flow:column;grid-auto-columns:150px;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.shopitem{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--txt);display:flex;flex-direction:column;transition:border-color .15s}
+.shopitem:hover{border-color:var(--gold)}
+.shopitem .im{aspect-ratio:3/4;background:#0d1110;overflow:hidden;position:relative}
+.shopitem .im img{width:100%;height:100%;object-fit:cover;display:block}
+.shopitem .im .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;opacity:.35}
+.shopitem .in{padding:8px 9px 10px}
+.shopitem .dv{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.shopitem .tt{font-size:11.5px;line-height:1.3;color:var(--muted);height:2.6em;overflow:hidden;margin:2px 0 5px}
+.shopitem .pr{font-family:ui-monospace,monospace;font-size:15px;font-weight:800;color:var(--gold)}
+.shopcta{display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,rgba(217,184,120,.13),var(--panel));border:1px solid #4a3d1c;border-radius:12px;padding:13px 16px;margin:0 0 14px;text-decoration:none;color:var(--txt)}
+.shopcta:hover{border-color:var(--gold)}
+.shopcta .ic{font-size:22px}
+.shopcta .t1{font-weight:800;font-size:15px;color:var(--gold)}
+.shopcta .t2{font-size:12.5px;color:var(--muted)}
+.shopcta .go{margin-left:auto;font-weight:800;color:var(--gold);white-space:nowrap}
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -838,6 +856,7 @@
       </div>
     </div>
     <div class="streams">
+      <a class="btn primary" href="/shop.html" style="background:var(--gold);color:#171204;border-color:var(--gold)">🛍️ The Index Shop — buy direct</a>
       <a class="btn primary" href="https://www.whatnot.com/tag/f1" target="_blank" rel="noopener">🏁 F1 Card Streams ↗</a>
       <a class="btn ghost" href="https://www.whatnot.com/tag/sports_cards" target="_blank" rel="noopener">Sports Cards ↗</a>
       <a class="btn ghost" href="https://www.whatnot.com/browse" target="_blank" rel="noopener">Browse All ↗</a>
@@ -861,6 +880,12 @@
     </div>
     <div class="promo" id="promoBox"></div>
     <div class="promo-disc" id="promoDisc"></div>
+
+    <!-- ===== IN THE SHOP (direct sales, from shop_listings) ===== -->
+    <div id="shopTeaser">
+      <div class="sec-h"><h2>🛍️ In the Shop</h2><a class="sub" href="/shop.html" style="color:var(--gold)">Full shop →</a></div>
+      <div class="shoprow" id="shopRow"></div>
+    </div>
 
     <!-- ===== DRIVERS ===== -->
     <div class="sec-h">
@@ -936,6 +961,7 @@
 
     <div id="raceCountdown"></div>
     <div id="gvDriverCallout"></div>
+    <div id="dShopCta"></div>
 
     <div class="la-wrap" id="dLiveAuctions"></div>
 
@@ -983,6 +1009,7 @@
 
   <div class="foot">
     <nav class="foot-links" aria-label="Site pages">
+      <a href="/shop.html">Shop</a>
       <a href="/sets">Set Checklists</a>
       <a href="/f1-card-price-guide">Price Guide</a>
       <a href="/topps-chrome-f1-guide">Topps Chrome Guide</a>
@@ -3463,6 +3490,70 @@ async function loadSupabaseSales(){
     panels.forEach(function(p){ p.classList.toggle('on', p.getAttribute('data-panel')===name); });
     if(name==='rank'&&typeof renderDriverLeaderboard==='function'){try{renderDriverLeaderboard();}catch(e){}}
   }); });
+})();
+</script>
+<script>
+/* ===== Index Shop wiring: homepage teaser + per-driver CTA on the #driver boards ===== */
+(function(){
+  if(typeof SUPABASE_URL==='undefined'||!SUPABASE_URL||!SUPABASE_ANON_KEY) return;
+  var eshc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
+  var capw=function(s){return String(s||'').replace(/\b\w/g,function(c){return c.toUpperCase();});};
+
+  // one fetch, shared by the teaser and every driver board
+  var SHOP_READY=fetch(SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/rpc/shop_public_listings',{method:'POST',
+      headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_driver:null})})
+    .then(function(r){return r.ok?r.json():[];})
+    .then(function(rows){return (rows||[]).filter(function(r){return r.status==='available';});})
+    .catch(function(e){return [];});
+
+  // ── homepage teaser strip ──
+  SHOP_READY.then(function(avail){
+    var top=avail.slice(0,8);
+    if(!top.length) return;   // no inventory → section stays hidden
+    document.getElementById('shopRow').innerHTML=top.map(function(r){
+      return '<a class="shopitem" href="/shop.html'+(r.driver_id?'?driver='+encodeURIComponent(r.driver_id):'')+'">'
+        +'<div class="im">'+(r.image_url?'<img src="'+eshc(r.image_url)+'" alt="'+eshc(r.title||'F1 card')+'" loading="lazy">':'<div class="noimg">🃏</div>')+'</div>'
+        +'<div class="in">'+(r.driver_id?'<div class="dv">'+eshc(capw(r.driver_id))+'</div>':'')
+        +'<div class="tt">'+eshc(r.title||'')+'</div>'
+        +'<div class="pr">$'+Math.round(Number(r.price_usd||0)).toLocaleString()+'</div></div></a>';
+    }).join('');
+    document.getElementById('shopTeaser').style.display='block';
+  });
+
+  // ── driver-board CTA (renders on #verstappen, #antonelli, …) ──
+  function renderDriverShop(id){
+    var box=document.getElementById('dShopCta');
+    if(!box) return;
+    box.innerHTML='';
+    if(!id) return;
+    SHOP_READY.then(function(avail){
+      // driver may have changed while we waited
+      if(typeof currentDriverId!=='undefined'&&currentDriverId!==id) return;
+      var mine=avail.filter(function(r){return r.driver_id===id;});
+      if(!mine.length) return;   // nothing in stock → no CTA
+      var prices=mine.map(function(r){return Number(r.price_usd||0);}).filter(function(n){return n>0;});
+      var min=prices.length?Math.min.apply(null,prices):0;
+      var nm=id;
+      try{var d=(typeof getDriver==='function')&&getDriver(id);if(d&&d.name)nm=d.name;}catch(e){}
+      box.innerHTML='<a class="shopcta" href="/shop.html?driver='+encodeURIComponent(id)+'">'
+        +'<span class="ic">🛍️</span>'
+        +'<span><span class="t1">'+eshc(capw(nm))+' cards in the Index Shop</span><br>'
+        +'<span class="t2">'+mine.length+(mine.length===1?' card':' cards')+' in stock'
+        +(min?' from $'+Math.round(min).toLocaleString():'')+' — buy instantly, ships insured.</span></span>'
+        +'<span class="go">Shop &rarr;</span></a>';
+    });
+  }
+
+  // hook driver navigation without touching the original function
+  if(window.showDriver){
+    var _sd=window.showDriver;
+    window.showDriver=function(id,noHash){_sd(id,noHash);renderDriverShop(id);};
+  }
+  // deep links (someone lands directly on /#verstappen before this hook installed)
+  SHOP_READY.then(function(){
+    try{if(typeof currentDriverId!=='undefined'&&currentDriverId)renderDriverShop(currentDriverId);}catch(e){}
+  });
 })();
 </script>
 </body>
