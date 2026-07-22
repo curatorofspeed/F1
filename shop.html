@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop · F1 Card Index</title>
+<meta name="description" content="Graded F1 cards for sale — direct from the F1 Card Index vault. Buy instantly with a secure payment link.">
+<style>
+:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:26px 16px 90px}
+a{color:var(--gold)}
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.brand:hover{color:var(--gold)}
+h1{font-size:30px;margin:0;letter-spacing:-.01em}
+h1 .accent{color:var(--gold)}
+.sub{color:var(--muted);font-size:14px;margin:4px 0 18px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px}
+.chips button{background:var(--panel);border:1px solid var(--line);border-radius:20px;color:var(--muted);padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.chips button:hover{border-color:var(--gold);color:var(--gold)}
+.chips button.on{background:var(--gold);border-color:var(--gold);color:#1a1508}
+.chips button .n{opacity:.65;font-weight:400;margin-left:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.item{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;position:relative;transition:border-color .15s}
+.item:hover{border-color:#3c4148}
+.ph{position:relative;aspect-ratio:3/4;background:var(--panel2);overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;color:#2c3136}
+.item.sold .ph img{filter:grayscale(.7) brightness(.6)}
+.ribbon{position:absolute;top:14px;left:-38px;transform:rotate(-45deg);background:var(--red);color:#fff;font-size:11px;font-weight:800;letter-spacing:.12em;padding:4px 44px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.drv{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.ttl{font-size:14px;font-weight:600;line-height:1.35;min-height:2.6em}
+.meta{display:flex;gap:6px;flex-wrap:wrap}
+.pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:11px;color:var(--muted)}
+.pill.grade{color:var(--teal);border-color:#234a42}
+.rowb{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px}
+.price{font-family:ui-monospace,Menlo,monospace;font-size:20px;font-weight:800;color:var(--gold)}
+.item.sold .price{color:var(--muted);text-decoration:line-through}
+.buy{background:var(--gold);color:#1a1508;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
+.buy:hover{filter:brightness(1.08)}
+.buy.ask{background:none;border:1px solid var(--line);color:var(--txt);font-weight:600}
+.soldtag{font-size:12px;color:var(--muted)}
+.empty{border:1px dashed var(--line);border-radius:14px;padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
+.state{color:var(--muted);font-size:14px;padding:30px 0}
+.state.err{color:var(--red)}
+.soldhead{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:34px 0 12px;border-top:1px solid var(--line);padding-top:22px}
+.foot{margin-top:46px;border-top:1px solid var(--line);padding-top:18px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
+    <a class="brand" href="shop.html" id="allLink" style="display:none">← Full shop</a>
+  </div>
+  <h1 id="hTitle">The <span class="accent">Shop</span></h1>
+  <p class="sub" id="hSub">Graded F1 cards from the index vault. Every card ships insured &amp; tracked. Buy instantly — the link takes you straight to secure checkout.</p>
+
+  <div class="chips" id="chips"></div>
+  <div class="state" id="state">Loading the vault…</div>
+  <div class="grid" id="grid"></div>
+  <div id="soldWrap" style="display:none">
+    <div class="soldhead">Recently sold</div>
+    <div class="grid" id="soldGrid"></div>
+  </div>
+
+  <div class="foot">
+    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a></span>
+    <span>Questions about a card? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></span>
+  </div>
+</div>
+
+<script>
+/* ── config: same project as the main site ── */
+const SB_URL='https://YOUR-PROJECT.supabase.co';   // ← fill in
+const SB_KEY='YOUR-ANON-KEY';                       // ← fill in (anon key only)
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+const money=v=>v==null?'—':'$'+Math.round(Number(v)).toLocaleString();
+function ago(iso){ if(!iso)return ''; const h=(Date.now()-new Date(iso))/36e5;
+  if(h<48)return Math.max(1,Math.round(h))+'h ago'; return Math.round(h/24)+'d ago'; }
+
+let ALL=[], DRIVER=(new URLSearchParams(location.search).get('driver')||'').trim().toLowerCase()||null;
+
+async function load(){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/shop_public_listings',{method:'POST',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_driver:null})});   // fetch all; filter client-side so chips stay instant
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    ALL=await r.json();
+    $('state').style.display='none';
+    paint();
+  }catch(e){
+    $('state').textContent='Couldn’t load the shop right now — try a refresh.';
+    $('state').className='state err';
+  }
+}
+
+function paint(){
+  // header — per-driver shop gets its own storefront branding
+  if(DRIVER){
+    $('hTitle').innerHTML='<span class="accent">'+esc(cap(DRIVER))+'</span> Shop';
+    $('hSub').textContent='Every '+cap(DRIVER)+' card currently for sale on F1 Card Index. Ships insured & tracked — buy instantly via secure checkout.';
+    $('allLink').style.display='inline';
+    document.title=cap(DRIVER)+' Shop · F1 Card Index';
+  }else{
+    $('hTitle').innerHTML='The <span class="accent">Shop</span>';
+    $('hSub').textContent='Graded F1 cards from the index vault. Every card ships insured & tracked. Buy instantly — the link takes you straight to secure checkout.';
+    $('allLink').style.display='none';
+    document.title='Shop · F1 Card Index';
+  }
+
+  // driver chips with live counts (available cards only)
+  const counts={};
+  ALL.forEach(r=>{ if(r.status==='available'&&r.driver_id) counts[r.driver_id]=(counts[r.driver_id]||0)+1; });
+  const drivers=Object.keys(counts).sort();
+  $('chips').innerHTML=
+    '<button class="'+(DRIVER?'':'on')+'" data-d="">All <span class="n">'+ALL.filter(r=>r.status==='available').length+'</span></button>'
+    +drivers.map(d=>'<button class="'+(DRIVER===d?'on':'')+'" data-d="'+esc(d)+'">'+esc(cap(d))+' <span class="n">'+counts[d]+'</span></button>').join('');
+  $('chips').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    DRIVER=b.dataset.d||null;
+    const u=new URL(location.href);
+    if(DRIVER)u.searchParams.set('driver',DRIVER); else u.searchParams.delete('driver');
+    history.replaceState(null,'',u);
+    paint();
+  });
+
+  const mine=DRIVER?ALL.filter(r=>r.driver_id===DRIVER):ALL;
+  const avail=mine.filter(r=>r.status==='available');
+  const sold=mine.filter(r=>r.status==='sold');
+
+  $('grid').innerHTML=avail.map(card).join('')
+    ||'<div class="empty" style="grid-column:1/-1">'+(DRIVER
+      ?'No '+esc(cap(DRIVER))+' cards in the shop right now — new inventory drops often, check back soon. 🏁'
+      :'The vault is being restocked — check back soon. 🏁')+'</div>';
+
+  $('soldWrap').style.display=sold.length?'block':'none';
+  $('soldGrid').innerHTML=sold.map(card).join('');
+}
+
+function card(r){
+  const soldCls=r.status==='sold'?' sold':'';
+  return '<div class="item'+soldCls+'">'
+    +'<div class="ph">'
+    +(r.status==='sold'?'<div class="ribbon">SOLD</div>':'')
+    +(r.image_url
+      ?'<img src="'+esc(r.image_url)+'" alt="'+esc(r.title||'F1 card')+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">'
+      :'<div class="noimg">🃏</div>')
+    +'</div><div class="body">'
+    +(r.driver_id?'<div class="drv">'+esc(cap(r.driver_id))+'</div>':'')
+    +'<div class="ttl">'+esc(r.title||'')+'</div>'
+    +'<div class="meta">'
+    +(r.grade?'<span class="pill grade">'+esc(r.grade)+'</span>':'')
+    +(r.cert?'<span class="pill">cert '+esc(r.cert)+'</span>':'')
+    +'</div>'
+    +'<div class="rowb"><span class="price">'+money(r.price_usd)+'</span>'
+    +(r.status==='sold'
+      ?'<span class="soldtag">sold '+ago(r.sold_at)+'</span>'
+      :(r.payment_link_url
+        ?'<a class="buy" href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener">Buy now</a>'
+        :'<a class="buy ask" href="mailto:hello@f1cardindex.com?subject='+encodeURIComponent('Card inquiry: '+(r.title||''))+'">Inquire</a>'))
+    +'</div></div></div>';
+}
+
+load();
+</script>
+</body>
+</html>
