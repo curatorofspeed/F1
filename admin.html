@@ -73,6 +73,18 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .shform .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
 @media(max-width:760px){.shform .g2,.shform .g4{grid-template-columns:1fr 1fr}}
 select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-size:14px;font-family:inherit}
+.cnrow{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
+.cnrow .ph{display:flex;gap:4px;flex-wrap:wrap}
+.cnrow .ph a{width:60px;height:60px;border-radius:7px;overflow:hidden;background:var(--panel2);display:block}
+.cnrow .ph img{width:60px;height:60px;object-fit:cover;display:block}
+.cnrow .noimg{width:60px;height:60px;border-radius:7px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.cnt{font-size:13px;font-weight:600;line-height:1.3}
+.cnm{font-size:12px;color:var(--muted);margin-top:2px}.cnm b{color:var(--gold)}
+.cnseller{font-size:12px;color:var(--muted);margin-top:3px}.cnseller b{color:var(--txt);font-weight:600}
+.cnseller a{color:var(--teal);text-decoration:none}
+.cnst{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:1px 7px;margin-left:6px;vertical-align:1px;border:1px solid var(--line)}
+.cnact{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.cnact button{padding:6px 11px;font-size:12px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -106,6 +118,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
     <nav class="jump" id="jumpNav">
       <a href="#social">📱 Social</a>
       <a href="#queue">🛡️ Queue</a>
+      <a href="#consign">📦 Consign</a>
       <a href="#shop">🛍️ Shop</a>
       <a href="#stats">📊 Stats</a>
       <a href="#sources">📡 Radar</a>
@@ -161,6 +174,24 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
       </div>
       <div class="msg" id="qMsg"></div>
       <div id="qList"></div>
+    </details>
+
+    <details class="card fold" id="consign" open style="scroll-margin-top:56px">
+      <summary>📦 Consignment intake</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="ghost" id="cnLoad" type="button">Load submissions</button>
+        <select id="cnFilter" class="sh" style="max-width:210px">
+          <option value="submitted">Submitted · new</option>
+          <option value="approved">Approved · awaiting card</option>
+          <option value="listed">Listed</option>
+          <option value="rejected">Rejected</option>
+          <option value="">All statuses</option>
+        </select>
+        <span style="font-size:12.5px;color:var(--muted)" id="cnCount"></span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Seller submissions from consign.html. Approve → seller ships the card in → hit <b>🚀 Push to shop</b> to create the live listing (then add its payment link in the Shop desk).</div>
+      <div class="msg" id="cnMsg"></div>
+      <div id="cnList"></div>
     </details>
 
     <details class="card fold" id="shop" open style="scroll-margin-top:56px">
@@ -440,6 +471,77 @@ window.shQuick=async(id,status)=>{
     shSay(status==='sold'?'Marked sold 💰':'Updated.');
     $('shLoad').click();
   }catch(e){ shSay(e.message,true); }
+};
+
+/* ---- consignment intake desk (list_consignments / moderate_consignment / promote_consignment) ---- */
+let cnRows=[];
+const CN_ST={submitted:['SUBMITTED','var(--amber)'],approved:['APPROVED','var(--teal)'],
+  listed:['LISTED','var(--green)'],rejected:['REJECTED','var(--red)']};
+function cnSay(t,err){ const m=$('cnMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function cnPill(s){ const p=CN_ST[s]||[String(s||'—').toUpperCase(),'var(--muted)'];
+  return '<span class="cnst" style="color:'+p[1]+';border-color:'+p[1]+'">'+p[0]+'</span>'; }
+$('cnLoad').onclick=async()=>{
+  cnSay('Loading…');
+  try{
+    cnRows=await rpc('list_consignments',{p_secret:$('secret').value.trim(),
+      p_status:($('cnFilter').value||null),p_limit:300})||[];
+    cnPaint(); cnSay(cnRows.length?'':'Nothing here. 📭');
+  }catch(e){ cnSay(e.message,true); }
+};
+$('cnFilter').onchange=()=>$('cnLoad').click();
+function cnPhotos(urls){
+  const a=Array.isArray(urls)?urls.filter(Boolean):[];
+  if(!a.length) return '<div class="noimg">🃏</div>';
+  return '<div class="ph">'+a.map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" loading="lazy"></a>').join('')+'</div>';
+}
+function cnActs(r){
+  const s=r.status||'submitted', id=esc(String(r.id));
+  const b=(l,fn,bg,fg)=>'<button style="background:'+bg+';color:'+fg+'" onclick="'+fn+'(\''+id+'\')">'+l+'</button>';
+  if(s==='submitted') return b('✓ Approve','cnApprove','var(--green)','#052')+b('✕ Reject','cnReject','var(--red)','#400');
+  if(s==='approved')  return b('🚀 Push to shop','cnPromote','var(--gold)','#1a1508')+b('✕ Reject','cnReject','var(--red)','#400');
+  if(s==='listed')    return '<span class="pill">✓ in shop</span>';
+  if(s==='rejected')  return b('↩ Reopen','cnReopen','none','var(--txt)');
+  return '';
+}
+function cnPaint(){
+  const sub=cnRows.filter(r=>r.status==='submitted').length;
+  $('cnCount').textContent=cnRows.length?(cnRows.length+' shown'+(sub?' · '+sub+' new':'')):'';
+  $('cnList').innerHTML=cnRows.map(r=>
+    '<div class="cnrow">'
+    +cnPhotos(r.image_urls)
+    +'<div><div class="cnt">'+esc(r.title||'(untitled)')+cnPill(r.status)+'</div>'
+    +'<div class="cnm"><b>'+money(r.asking_price)+'</b> asking'
+      +(r.driver_id?' · '+cap(esc(r.driver_id)):'')
+      +(r.grade?' · '+esc(r.grade):'')
+      +(r.cert?' · cert <span class="mono">'+esc(r.cert)+'</span>':'')
+      +(r.created_at?' · '+ago(r.created_at):'')+'</div>'
+    +'<div class="cnseller">'+esc(r.seller_name||'—')
+      +(r.seller_email?' · <a href="mailto:'+esc(r.seller_email)+'">'+esc(r.seller_email)+'</a>':'')
+      +(r.seller_phone?' · '+esc(r.seller_phone):'')+'</div>'
+    +(r.notes?'<div class="cnm" style="margin-top:3px">📝 '+esc(r.notes)+'</div>':'')
+    +(r.review_note?'<div class="cnm" style="margin-top:2px;color:var(--amber)">note: '+esc(r.review_note)+'</div>':'')
+    +'</div>'
+    +'<div class="cnact">'+cnActs(r)+'</div></div>'
+  ).join('')||'<span class="pill">no submissions loaded</span>';
+}
+async function cnDo(id,action,extra){
+  cnSay('Working…');
+  try{
+    await rpc('moderate_consignment',Object.assign({p_secret:$('secret').value.trim(),p_id:String(id),p_action:action},extra||{}));
+    $('cnLoad').click();
+  }catch(e){ cnSay(e.message,true); }
+}
+window.cnApprove=id=>cnDo(id,'approve');
+window.cnReopen =id=>cnDo(id,'reopen');
+window.cnReject =id=>{ const note=prompt('Reason for rejection (optional, emailed to no one — just your record):')||''; cnDo(id,'reject',{p_note:note}); };
+window.cnPromote=async id=>{
+  cnSay('Creating shop listing…');
+  try{
+    await rpc('promote_consignment',{p_secret:$('secret').value.trim(),p_id:String(id)});
+    cnSay('Listed in the shop 🛍️ — add its payment link in the Shop desk.');
+    $('cnLoad').click();
+    if($('shLoad')) $('shLoad').click();   // refresh shop desk if it's been used
+  }catch(e){ cnSay(e.message,true); }
 };
 
 /* ---- social studio: Top Sales share card ---- */

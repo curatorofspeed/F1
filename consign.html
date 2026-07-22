@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consign a Card · F1 Card Index</title>
+<meta name="description" content="Consign your graded F1 cards through F1 Card Index. Submit your card, set your price, and we handle the listing, payment, and buyer.">
+<style>
+:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding:26px 16px 90px}
+a{color:var(--gold)}
+.brand{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.brand:hover{color:var(--gold)}
+h1{font-size:30px;margin:14px 0 6px;letter-spacing:-.01em}
+h1 .accent{color:var(--gold)}
+.sub{color:var(--muted);font-size:15px;margin:0 0 22px}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 24px;font-size:12.5px;color:var(--muted)}
+.steps b{color:var(--gold)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+.req label::after{content:" *";color:var(--gold)}
+input,textarea,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:11px 12px;font-size:15px;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+textarea{resize:vertical;min-height:74px}
+.f{margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.g2{grid-template-columns:1fr}}
+.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.drop{border:1.5px dashed var(--line);border-radius:11px;padding:20px;text-align:center;cursor:pointer;transition:.15s;background:var(--panel2)}
+.drop:hover,.drop.drag{border-color:var(--gold);color:var(--gold)}
+.drop .big{font-size:26px}
+.drop .t{font-size:14px;margin-top:4px}
+.drop .s{font-size:12px;color:var(--muted);margin-top:2px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.thumb{position:relative;width:78px;height:78px;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:var(--panel2)}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .x{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;font-size:13px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.thumb .up{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-size:11px;color:#fff}
+.terms{background:linear-gradient(100deg,rgba(217,184,120,.1),var(--panel));border:1px solid #3d3416;border-radius:11px;padding:13px 15px;font-size:13px;color:#d7cdb4;margin-bottom:16px}
+.terms b{color:var(--gold)}
+button.submit{width:100%;background:var(--gold);color:#171204;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+button.submit:disabled{opacity:.5;cursor:not-allowed}
+.msg{font-size:14px;margin-top:12px;text-align:center;min-height:20px}
+.msg.err{color:var(--red)}
+.done{text-align:center;padding:40px 16px}
+.done .ico{font-size:52px}
+.done h2{font-size:24px;margin:12px 0 8px}
+.done p{color:var(--muted);font-size:15px}
+.foot{margin-top:34px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
+  <h1>Consign a <span class="accent">Card</span></h1>
+  <p class="sub">Have a graded F1 card you want to sell? Submit it below. If it's a fit, we list it in the Index Shop in front of thousands of F1 collectors — you set the price, we handle the rest.</p>
+  <div class="steps"><span><b>1.</b> Submit your card</span> <span>·</span> <span><b>2.</b> We review &amp; confirm</span> <span>·</span> <span><b>3.</b> Ship it in</span> <span>·</span> <span><b>4.</b> It goes live &amp; sells</span></div>
+
+  <form id="form">
+    <div class="card">
+      <div class="g2">
+        <div class="f req"><label for="name">Your name</label><input id="name" autocomplete="name" required></div>
+        <div class="f req"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@email.com" required></div>
+      </div>
+      <div class="f"><label for="phone">Phone (optional)</label><input id="phone" type="tel" autocomplete="tel" placeholder="For faster coordination"></div>
+    </div>
+
+    <div class="card">
+      <div class="f req"><label for="title">Card</label>
+        <input id="title" list="driverList2" placeholder="2020 Topps Chrome Max Verstappen RC PSA 10" required>
+        <div class="hint">Full name: year, set, driver, parallel/insert, and grade.</div>
+      </div>
+      <div class="g2">
+        <div class="f"><label for="driver">Driver</label>
+          <input id="driver" list="driverList" placeholder="start typing…">
+          <datalist id="driverList">
+            <option value="verstappen">Max Verstappen</option>
+            <option value="norris">Lando Norris</option>
+            <option value="antonelli">Andrea Kimi Antonelli</option>
+            <option value="hamilton">Lewis Hamilton</option>
+            <option value="leclerc">Charles Leclerc</option>
+            <option value="piastri">Oscar Piastri</option>
+            <option value="russell">George Russell</option>
+            <option value="alonso">Fernando Alonso</option>
+            <option value="sainz">Carlos Sainz</option>
+            <option value="hadjar">Isack Hadjar</option>
+            <option value="bortoleto">Gabriel Bortoleto</option>
+            <option value="bearman">Oliver Bearman</option>
+            <option value="lawson">Liam Lawson</option>
+            <option value="albon">Alex Albon</option>
+            <option value="hulkenberg">Nico Hulkenberg</option>
+            <option value="ocon">Esteban Ocon</option>
+            <option value="stroll">Lance Stroll</option>
+            <option value="colapinto">Franco Colapinto</option>
+            <option value="tsunoda">Yuki Tsunoda</option>
+            <option value="gasly">Pierre Gasly</option>
+            <option value="senna">Ayrton Senna</option>
+            <option value="schumacher">Michael Schumacher</option>
+            <option value="raikkonen">Kimi Raikkonen</option>
+          </datalist>
+          <div class="hint">Helps us route it to the right driver page.</div>
+        </div>
+        <div class="f"><label for="grade">Grade</label><input id="grade" placeholder="PSA 10 · BGS 9.5 · Raw"></div>
+      </div>
+      <div class="g2">
+        <div class="f"><label for="cert">Cert # (optional)</label><input id="cert" placeholder="PSA/BGS/SGC serial"></div>
+        <div class="f req"><label for="price">Your asking price (USD)</label><input id="price" type="number" min="1" step="0.01" placeholder="450"></div>
+      </div>
+      <div class="f"><label for="notes">Anything else (optional)</label><textarea id="notes" placeholder="Condition notes, why it's special, flexibility on price…"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="req" style="margin-bottom:8px"><label>Photos</label></div>
+      <div class="drop" id="drop">
+        <div class="big">📸</div>
+        <div class="t">Tap to add photos</div>
+        <div class="s">Front &amp; back, clear and in focus · up to 6 · JPG/PNG/WebP</div>
+      </div>
+      <input id="file" type="file" accept="image/*" multiple hidden>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="hint">Good photos sell cards — shoot straight-on in even light, and include the grading label if slabbed.</div>
+    </div>
+
+    <div class="terms">
+      <b>How it works:</b> You set the asking price and it lists at exactly that. When it sells, our consignment fee is <b id="feePct">15%</b> of the sale price — that covers the listing, promotion to our audience, secure payment, and buyer coordination. Nothing is charged until your card sells. We'll email you to confirm and arrange insured shipping before anything goes live.
+    </div>
+
+    <button class="submit" id="submit" type="submit">Submit card for consignment</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <div id="done" class="done" style="display:none">
+    <div class="ico">✅</div>
+    <h2>Card submitted!</h2>
+    <p id="doneMsg">Thanks — we've got your submission and we'll email you within 1–2 days to confirm next steps. Keep an eye on your inbox (and spam folder).</p>
+    <p style="margin-top:18px"><a href="https://www.f1cardindex.com/shop.html">Browse the shop →</a></p>
+  </div>
+
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a></div>
+</div>
+
+<script>
+/* ── config: same project as the rest of the site ── */
+const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
+const FEE_PCT=15;   // consignment fee shown to sellers — edit to taste
+
+const $=id=>document.getElementById(id);
+$('feePct').textContent=FEE_PCT+'%';
+let photos=[];   // {url, name, uploading}
+
+function paintThumbs(){
+  $('thumbs').innerHTML=photos.map((p,i)=>
+    '<div class="thumb">'+(p.url?'<img src="'+p.url+'" alt="">':'')
+    +(p.uploading?'<div class="up">…</div>':'<button type="button" class="x" data-i="'+i+'">&times;</button>')
+    +'</div>').join('');
+  $('thumbs').querySelectorAll('.x').forEach(b=>b.onclick=()=>{ photos.splice(+b.dataset.i,1); paintThumbs(); });
+}
+
+async function uploadPhoto(file){
+  const clean=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-40);
+  const path='sub/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'-'+clean;
+  const r=await fetch(SB_URL+'/storage/v1/object/consignments/'+path,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},
+    body:file});
+  if(!r.ok) throw new Error('Photo upload failed ('+r.status+')');
+  return SB_URL+'/storage/v1/object/public/consignments/'+path;
+}
+
+async function addFiles(files){
+  const room=6-photos.length;
+  const list=[...files].slice(0,Math.max(0,room));
+  for(const f of list){
+    if(!/^image\//.test(f.type)) continue;
+    if(f.size>12*1024*1024){ $('msg').textContent=f.name+' is over 12MB — skipped.'; $('msg').className='msg err'; continue; }
+    const slot={url:null,name:f.name,uploading:true}; photos.push(slot); paintThumbs();
+    try{ slot.url=await uploadPhoto(f); slot.uploading=false; paintThumbs(); }
+    catch(e){ photos=photos.filter(x=>x!==slot); paintThumbs(); $('msg').textContent=e.message; $('msg').className='msg err'; }
+  }
+}
+
+$('drop').onclick=()=>$('file').click();
+$('file').onchange=e=>{ addFiles(e.target.files); $('file').value=''; };
+['dragover','dragenter'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('drag');}));
+$('drop').addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+
+$('form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const m=$('msg'); m.className='msg'; m.textContent='';
+  if(!$('name').value.trim()||!$('email').value.trim()||!$('title').value.trim()){ m.textContent='Please fill in your name, email, and the card.'; m.className='msg err'; return; }
+  const price=Number($('price').value);
+  if(!price||price<=0){ m.textContent='Please enter your asking price.'; m.className='msg err'; return; }
+  if(photos.some(p=>p.uploading)){ m.textContent='Hang on — photos are still uploading.'; m.className='msg err'; return; }
+  if(!photos.length){ m.textContent='Please add at least one photo of the card.'; m.className='msg err'; return; }
+
+  $('submit').disabled=true; m.textContent='Submitting…';
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/submit_consignment',{method:'POST',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({
+        p_name:$('name').value.trim(), p_email:$('email').value.trim(), p_phone:$('phone').value.trim(),
+        p_driver:$('driver').value.trim(), p_title:$('title').value.trim(),
+        p_grade:$('grade').value.trim(), p_cert:$('cert').value.trim(),
+        p_price:price, p_images:photos.map(p=>p.url), p_notes:$('notes').value.trim()
+      })});
+    if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(_){}; throw new Error(t); }
+    $('form').style.display='none'; $('done').style.display='block';
+    window.scrollTo(0,0);
+  }catch(err){ m.textContent='Couldn’t submit: '+err.message; m.className='msg err'; $('submit').disabled=false; }
+});
+</script>
+</body>
+</html>
