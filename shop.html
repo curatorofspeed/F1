@@ -47,6 +47,23 @@ h1 .accent{color:var(--gold)}
 .state.err{color:var(--red)}
 .soldhead{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:34px 0 12px;border-top:1px solid var(--line);padding-top:22px}
 .foot{margin-top:46px;border-top:1px solid var(--line);padding-top:18px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.offerbtn{width:100%;margin-top:8px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.offerbtn:hover{border-color:var(--gold);color:var(--gold)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:50;align-items:center;justify-content:center;padding:16px}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:420px;width:100%}
+.sheet h3{margin:0 0 2px;font-size:19px}
+.sheet .ask{color:var(--muted);font-size:13px;margin-bottom:14px}
+.sheet label{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+.sheet input,.sheet textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:11px 12px;font-size:15px;font-family:inherit;margin-bottom:12px}
+.sheet textarea{min-height:60px;resize:vertical}
+.sheet .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sheet .row{display:flex;gap:10px;margin-top:4px}
+.sheet .send{flex:1;background:var(--gold);color:#171204;border:none;border-radius:9px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
+.sheet .send:disabled{opacity:.5}
+.sheet .cancel{background:none;border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:13px 16px;font-weight:700;cursor:pointer;font-family:inherit}
+.sheet .err{color:var(--red);font-size:13px;min-height:16px;margin-top:8px}
+.sheet .done{text-align:center;padding:20px 0}
+.sheet .done .i{font-size:44px}
 </style>
 </head>
 <body>
@@ -72,10 +89,31 @@ h1 .accent{color:var(--gold)}
   </div>
 </div>
 
+<div class="modal" id="offerModal">
+  <div class="sheet">
+    <div id="ofForm">
+      <h3 id="ofTitle">Card</h3>
+      <div class="ask" id="ofAsk"></div>
+      <label>Your offer (USD)</label><input id="ofAmount" type="number" min="1" step="0.01" placeholder="e.g. 400">
+      <div class="g2"><div><label>Name</label><input id="ofName" placeholder="Optional"></div>
+        <div><label>Email</label><input id="ofEmail" type="email" placeholder="you@email.com"></div></div>
+      <label>Message to seller (optional)</label><textarea id="ofMsg2" placeholder="Anything you want to add…"></textarea>
+      <div class="err" id="ofErr"></div>
+      <div class="row"><button class="send" id="ofSend">Send offer</button><button class="cancel" id="ofCancel">Cancel</button></div>
+    </div>
+    <div id="ofDone" class="done" style="display:none">
+      <div class="i">🤝</div>
+      <h3>Offer sent!</h3>
+      <p style="color:var(--muted);font-size:14px">The seller will review it and get back to you by email. If they accept, you’ll get a secure checkout link at your offer price.</p>
+      <button class="cancel" style="width:100%;margin-top:8px" id="ofClose">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ── config: same project as the main site ── */
-const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';   // ← fill in
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';                       // ← fill in (anon key only)
+const SB_URL='https://YOUR-PROJECT.supabase.co';   // ← fill in
+const SB_KEY='YOUR-ANON-KEY';                       // ← fill in (anon key only)
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -85,6 +123,12 @@ function ago(iso){ if(!iso)return ''; const h=(Date.now()-new Date(iso))/36e5;
   if(h<48)return Math.max(1,Math.round(h))+'h ago'; return Math.round(h/24)+'d ago'; }
 
 let ALL=[], DRIVER=(new URLSearchParams(location.search).get('driver')||'').trim().toLowerCase()||null;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  $('ofSend').onclick=sendOffer;
+  $('ofCancel').onclick=closeOffer; $('ofClose').onclick=closeOffer;
+  $('offerModal').addEventListener('click',e=>{ if(e.target===$('offerModal')) closeOffer(); });
+});
 
 async function load(){
   try{
@@ -141,6 +185,7 @@ function paint(){
 
   $('soldWrap').style.display=sold.length?'block':'none';
   $('soldGrid').innerHTML=sold.map(card).join('');
+  wireOffers();
 }
 
 function card(r){
@@ -164,7 +209,39 @@ function card(r){
       :(r.payment_link_url
         ?'<a class="buy" href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener">Buy now</a>'
         :'<a class="buy ask" href="mailto:hello@f1cardindex.com?subject='+encodeURIComponent('Card inquiry: '+(r.title||''))+'">Inquire</a>'))
-    +'</div></div></div>';
+    +'</div>'
+    +(r.status!=='sold'&&r.allow_offers!==false
+      ?'<button class="offerbtn" data-id="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'" data-price="'+esc(r.price_usd)+'">or make an offer</button>':'')
+    +'</div></div>';
+}
+
+/* ── offers ── */
+function wireOffers(){
+  document.querySelectorAll('.offerbtn').forEach(b=>b.onclick=()=>openOffer(b.dataset.id,b.dataset.title,b.dataset.price));
+}
+function openOffer(id,title,price){
+  $('ofTitle').textContent=title;
+  $('ofAsk').textContent='Asking '+money(price);
+  $('ofId').value=id;
+  $('ofAmount').value=''; $('ofName').value=''; $('ofEmail').value=''; $('ofMsg2').value='';
+  $('ofErr').textContent=''; $('ofForm').style.display='block'; $('ofDone').style.display='none';
+  $('offerModal').style.display='flex';
+}
+function closeOffer(){ $('offerModal').style.display='none'; }
+async function sendOffer(){
+  const amt=Number($('ofAmount').value), email=$('ofEmail').value.trim();
+  const e=$('ofErr'); e.textContent='';
+  if(!amt||amt<=0){ e.textContent='Enter your offer amount.'; return; }
+  if(!email||!/.+@.+\..+/.test(email)){ e.textContent='Enter a valid email.'; return; }
+  $('ofSend').disabled=true; $('ofSend').textContent='Sending…';
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/submit_offer',{method:'POST',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_listing:$('ofId').value,p_name:$('ofName').value.trim(),p_email:email,p_amount:amt,p_message:$('ofMsg2').value.trim()})});
+    if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(_){}; throw new Error(t); }
+    $('ofForm').style.display='none'; $('ofDone').style.display='block';
+  }catch(err){ e.textContent=err.message; }
+  finally{ $('ofSend').disabled=false; $('ofSend').textContent='Send offer'; }
 }
 
 load();

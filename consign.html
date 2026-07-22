@@ -59,7 +59,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 <div class="wrap">
   <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
   <h1>List a Card <span class="accent">for Sale</span></h1>
-  <p class="sub">Sell your F1 card as Buy It Now to thousands of collectors on the Index Shop. You set the price and keep the card until it sells — then you ship it straight to the buyer and we pay you out. We never touch the card.</p>
+  <p class="sub"><b style="color:var(--gold)">Free to list.</b> Sell your F1 card as Buy It Now to thousands of collectors on the Index Shop. You set the price and keep the card until it sells — then you ship it straight to the buyer and we pay you out. We only take 7% when it sells. We never touch the card.</p>
 
   <div class="steps">
     <div class="step"><b>1</b>List your card</div>
@@ -157,7 +157,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     </div>
 
     <div class="terms">
-      <b>How it works:</b> You set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop. When a buyer purchases, <b>we collect the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them.</b> Once it's on the way, we pay you out: your price minus our <b id="feePct">15%</b> fee. We never handle or ship the card, and nothing is charged to you — the fee comes out of the sale.
+      <b>How it works:</b> Listing is <b>free</b> — you set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop, and buyers can also send you offers to accept or decline. When it sells, <b>we collect the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them</b> with USPS. Once it's on the way, we pay you out: your price minus our <b id="feePct">7%</b> fee. We never handle or ship the card, and you're never charged up front — the fee only comes out of a completed sale.
     </div>
 
     <button class="submit" id="submit" type="submit">List my card</button>
@@ -178,7 +178,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 /* ── config: same project as the rest of the site ── */
 const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
-const FEE_PCT=15;   // marketplace fee shown to sellers — edit to your real rate
+const FEE_PCT=7;   // marketplace fee shown to sellers — charged only when the card sells
 
 const $=id=>document.getElementById(id);
 $('feePct').textContent=FEE_PCT+'%'; $('feeTxt').textContent=FEE_PCT+'%';

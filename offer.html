@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage your listing · F1 Card Index</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.55}
+.wrap{max-width:600px;margin:0 auto;padding:26px 16px 90px}
+a{color:var(--gold)}
+.brand{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+h1{font-size:24px;margin:14px 0 4px}
+.state{color:var(--muted);font-size:15px;padding:40px 0;text-align:center}
+.state.err{color:var(--red)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.lst{display:flex;gap:14px;align-items:center}
+.lst img{width:82px;height:82px;object-fit:cover;border-radius:10px;background:var(--panel2)}
+.lst .noimg{width:82px;height:82px;border-radius:10px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:30px;opacity:.4}
+.lst .tt{font-size:15px;font-weight:700;line-height:1.3}
+.lst .mt{font-size:12.5px;color:var(--muted);margin-top:3px}
+.lst .pr{font-family:ui-monospace,monospace;font-size:19px;font-weight:800;color:var(--gold);margin-top:4px}
+.badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;border-radius:5px;padding:2px 8px;border:1px solid var(--line);text-transform:uppercase}
+h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:22px 0 10px}
+.offer{border:1px solid var(--line);border-radius:11px;padding:13px 14px;margin-bottom:10px}
+.offer.pending{border-left:3px solid var(--amber)}
+.offer .amt{font-family:ui-monospace,monospace;font-size:20px;font-weight:800}
+.offer .who{font-size:13px;color:var(--muted);margin-top:2px}
+.offer .msg{font-size:13px;color:#cdd6d1;margin-top:7px;background:var(--panel2);border-radius:8px;padding:8px 10px}
+.offer .net{font-size:12px;color:var(--green);margin-top:6px}
+.acts{display:flex;gap:8px;margin-top:11px}
+button{font-family:inherit;font-weight:800;border:none;border-radius:9px;padding:10px 16px;font-size:14px;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.acc{background:var(--green);color:#05231a;flex:1}
+.dec{background:none;border:1px solid var(--line);color:var(--txt)}
+.ostat{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.ship{background:linear-gradient(100deg,rgba(76,201,176,.1),var(--panel));border:1px solid #1f4a43}
+.addr{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-size:14px;white-space:pre-line;margin:8px 0}
+.usps{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.usps a{flex:1;min-width:150px;text-align:center;text-decoration:none;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px;font-size:13px;font-weight:700;color:var(--txt)}
+.usps a:hover{border-color:var(--teal);color:var(--teal)}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:11px 12px;font-size:15px;font-family:inherit}
+.trk{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.trk>div{flex:1;min-width:120px}
+.msg{font-size:13px;margin-top:10px;min-height:18px}
+.msg.err{color:var(--red)} .msg.ok{color:var(--green)}
+.foot{margin-top:30px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
+  <h1>Your listing</h1>
+  <div class="state" id="state">Loading…</div>
+  <div id="main" style="display:none"></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></div>
+</div>
+
+<script>
+const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+const money=v=>v==null?'—':'$'+Math.round(Number(v)).toLocaleString();
+const TOKEN=new URLSearchParams(location.search).get('token');
+let DATA=null;
+
+async function rpc(fn,body){
+  const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const t=await r.text();
+  if(!r.ok){ let m=t; try{m=JSON.parse(t).message||t}catch(e){}; throw new Error(m); }
+  return t?JSON.parse(t):null;
+}
+
+async function load(){
+  if(!TOKEN){ $('state').textContent='This link is missing its access token.'; $('state').className='state err'; return; }
+  try{ DATA=await rpc('seller_view',{p_token:TOKEN}); render(); }
+  catch(e){ $('state').textContent=e.message; $('state').className='state err'; }
+}
+
+const STMAP={available:['LIVE','var(--green)'],reserved:['OFFER ACCEPTED','var(--teal)'],sold:['SOLD','var(--gold)'],hidden:['HIDDEN','var(--muted)']};
+function render(){
+  const l=DATA.listing, fee=DATA.fee_pct||7;
+  const st=STMAP[l.status]||[String(l.status||'').toUpperCase(),'var(--muted)'];
+  let h='<div class="card"><div class="lst">'
+    +(l.image_url?'<img src="'+esc(l.image_url)+'">':'<div class="noimg">🃏</div>')
+    +'<div><div class="tt">'+esc(l.title||'')+'</div>'
+    +'<div class="mt">'+(l.driver_id?cap(esc(l.driver_id))+' · ':'')+(l.grade?esc(l.grade)+' · ':'')
+    +'<span class="badge" style="color:'+st[1]+';border-color:'+st[1]+'">'+st[0]+'</span></div>'
+    +'<div class="pr">'+money(l.reserved_price||l.price_usd)+'</div></div></div></div>';
+
+  // ---- offers ----
+  const offers=DATA.offers||[];
+  const pending=offers.filter(o=>o.status==='pending');
+  if(l.status==='available'){
+    h+='<h2>Offers'+(pending.length?' · '+pending.length+' waiting':'')+'</h2>';
+    if(!offers.length){ h+='<div class="card" style="color:var(--muted);font-size:14px">No offers yet. When a buyer makes one, it shows up here to accept or decline.</div>'; }
+    else h+=offers.map(o=>offerCard(o,fee)).join('');
+  }else if(l.status==='reserved'){
+    h+='<div class="card ship"><div style="font-weight:800;color:var(--teal);margin-bottom:4px">✅ Offer accepted</div>'
+      +'<div style="font-size:13.5px;color:#cdd6d1">The buyer is being sent a secure checkout for '+money(l.reserved_price)+'. Once they pay, this page will show their shipping address and USPS tools. You’ll get an email too.</div></div>';
+  }
+
+  // ---- sold: shipping panel ----
+  if(l.status==='sold'){
+    h+='<h2>Ship it 📦</h2><div class="card ship">';
+    h+='<div style="font-size:14px;margin-bottom:4px">Sold for <b style="color:var(--gold)">'+money(l.reserved_price||l.price_usd)+'</b>'
+      +' — you’ll be paid '+money((l.reserved_price||l.price_usd)*(1-fee/100))+' after the '+fee+'% fee once it’s shipped.</div>';
+    if(l.ship_addr||l.ship_name){
+      h+='<div style="font-size:12px;color:var(--muted);margin-top:10px">Ship to:</div>'
+        +'<div class="addr">'+esc([l.ship_name,l.ship_addr].filter(Boolean).join('\n'))+'</div>';
+    }else{
+      h+='<div style="font-size:13px;color:var(--amber);margin-top:8px">Buyer shipping address will appear here once payment clears.</div>';
+    }
+    const trk=l.tracking_number?encodeURIComponent(l.tracking_number):'';
+    h+='<div class="usps">'
+      +'<a href="https://cnsb.usps.com/" target="_blank" rel="noopener">🏷️ Buy a label (Click-N-Ship)</a>'
+      +'<a href="https://postcalc.usps.com/" target="_blank" rel="noopener">💲 Postage calculator</a>'
+      +(trk?'<a href="https://tools.usps.com/go/TrackConfirmAction?tLabels='+trk+'" target="_blank" rel="noopener">🔎 Track this package</a>':'')
+      +'</div>';
+    h+='<div style="margin-top:6px"><label>Tracking number</label><div class="trk">'
+      +'<div><input id="trkNum" placeholder="9400 1000 0000 0000 0000 00" value="'+esc(l.tracking_number||'')+'"></div>'
+      +'<div style="flex:0 0 120px"><select id="trkCar"><option'+(l.carrier==='USPS'?' selected':'')+'>USPS</option>'
+        +'<option'+(l.carrier==='UPS'?' selected':'')+'>UPS</option><option'+(l.carrier==='FedEx'?' selected':'')+'>FedEx</option></select></div>'
+      +'<button class="acc" style="flex:0 0 auto" id="trkSave">Save</button></div>'
+      +'<div class="msg" id="trkMsg">'+(l.shipped_at?'Marked shipped — buyer has been notified.':'')+'</div></div>';
+    h+='</div>';
+  }
+
+  $('state').style.display='none';
+  $('main').style.display='block';
+  $('main').innerHTML=h;
+
+  offers.forEach(o=>{
+    const a=$('acc_'+o.id), d=$('dec_'+o.id);
+    if(a) a.onclick=()=>decide(o.id,'accept');
+    if(d) d.onclick=()=>decide(o.id,'decline');
+  });
+  if($('trkSave')) $('trkSave').onclick=saveTracking;
+}
+
+function offerCard(o,fee){
+  const net=money(o.amount*(1-fee/100));
+  let acts='';
+  if(o.status==='pending'){
+    acts='<div class="acts"><button class="acc" id="acc_'+o.id+'">✓ Accept '+money(o.amount)+'</button>'
+      +'<button class="dec" id="dec_'+o.id+'">Decline</button></div>';
+  }else{
+    const c={accepted:'var(--green)',declined:'var(--red)',expired:'var(--muted)',withdrawn:'var(--muted)'}[o.status]||'var(--muted)';
+    acts='<div class="ostat" style="color:'+c+';margin-top:9px">'+o.status+'</div>';
+  }
+  return '<div class="offer '+(o.status==='pending'?'pending':'')+'">'
+    +'<div class="amt">'+money(o.amount)+'</div>'
+    +'<div class="who">'+esc(o.buyer_name||'A buyer')+' · '+new Date(o.created_at).toLocaleDateString()+'</div>'
+    +(o.status==='pending'?'<div class="net">You’d net '+net+' after the '+fee+'% fee</div>':'')
+    +(o.message?'<div class="msg" style="min-height:0">“'+esc(o.message)+'”</div>':'')
+    +acts+'</div>';
+}
+
+async function decide(offerId,action){
+  const a=$('acc_'+offerId), d=$('dec_'+offerId);
+  if(a)a.disabled=true; if(d)d.disabled=true;
+  try{ await rpc('decide_offer',{p_token:TOKEN,p_offer:offerId,p_action:action}); DATA=await rpc('seller_view',{p_token:TOKEN}); render(); }
+  catch(e){ if(a)a.disabled=false; if(d)d.disabled=false; alert(e.message); }
+}
+
+async function saveTracking(){
+  const m=$('trkMsg'); m.className='msg';
+  try{
+    await rpc('seller_set_tracking',{p_token:TOKEN,p_carrier:$('trkCar').value,p_tracking:$('trkNum').value.trim()});
+    m.textContent='Saved — the buyer can now track it. Thanks!'; m.className='msg ok';
+  }catch(e){ m.textContent=e.message; m.className='msg err'; }
+}
+
+load();
+</script>
+</body>
+</html>

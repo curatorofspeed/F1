@@ -120,6 +120,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
       <a href="#queue">🛡️ Queue</a>
       <a href="#consign">📦 Consign</a>
       <a href="#shop">🛍️ Shop</a>
+      <a href="#offers">🤝 Offers</a>
       <a href="#stats">📊 Stats</a>
       <a href="#sources">📡 Radar</a>
       <a href="#topSales">💰 Sales</a>
@@ -232,6 +233,23 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
       </div>
       <div class="msg" id="shMsg"></div>
       <div id="shList"></div>
+    </details>
+
+    <details class="card fold" id="offers" open style="scroll-margin-top:56px">
+      <summary>🤝 Offers</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="ghost" id="ofLoad" type="button">Load offers</button>
+        <select id="ofFilter" class="sh" style="max-width:190px">
+          <option value="pending">Pending</option>
+          <option value="accepted">Accepted</option>
+          <option value="declined">Declined</option>
+          <option value="">All</option>
+        </select>
+        <span style="font-size:12.5px;color:var(--muted)" id="ofCount"></span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Buyer offers across all listings. You can accept/decline on the seller's behalf, or copy their private <b>manage link</b> to email them. Accepting reserves the card at the offer price.</div>
+      <div class="msg" id="ofMsg"></div>
+      <div id="ofList"></div>
     </details>
 
     <div class="cols">
@@ -543,6 +561,52 @@ window.cnPromote=async id=>{
     $('cnLoad').click();
     if($('shLoad')) $('shLoad').click();   // refresh shop desk if it's been used
   }catch(e){ cnSay(e.message,true); }
+};
+
+/* ---- offers desk (admin_offers / decide_offer via the listing's manage_token) ---- */
+let ofRows=[];
+const SITE='https://www.f1cardindex.com';
+function ofSay(t,err){ const m=$('ofMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+$('ofLoad').onclick=async()=>{
+  ofSay('Loading…');
+  try{
+    ofRows=await rpc('admin_offers',{p_secret:$('secret').value.trim(),p_status:($('ofFilter').value||null)})||[];
+    ofPaint(); ofSay(ofRows.length?'':'No offers.');
+  }catch(e){ ofSay(e.message,true); }
+};
+$('ofFilter').onchange=()=>$('ofLoad').click();
+function ofPaint(){
+  const pend=ofRows.filter(o=>o.status==='pending').length;
+  $('ofCount').textContent=ofRows.length?(ofRows.length+' shown'+(pend?' · '+pend+' pending':'')):'';
+  $('ofList').innerHTML=ofRows.map(o=>{
+    const mlink=SITE+'/offer.html?token='+encodeURIComponent(o.manage_token);
+    const net=Math.round(o.amount*0.93);
+    return '<div class="cnrow" style="grid-template-columns:1fr auto">'
+      +'<div><div class="cnt">'+money(o.amount)+' offer'
+        +' <span class="cnst" style="color:var(--muted);border-color:var(--line)">'+esc((o.status||'').toUpperCase())+'</span>'
+        +' <span style="font-size:11px;color:var(--muted)">on</span> '+esc(o.title||'(listing)')+'</div>'
+      +'<div class="cnm">ask '+money(o.ask)+' · net ~$'+net.toLocaleString()+' · '+ago(o.created_at)+' · listing: '+esc(o.listing_status||'')+'</div>'
+      +'<div class="cnseller">'+esc(o.buyer_name||'buyer')+(o.buyer_email?' · <a href="mailto:'+esc(o.buyer_email)+'">'+esc(o.buyer_email)+'</a>':'')+'</div>'
+      +(o.message?'<div class="cnm" style="margin-top:2px">“'+esc(o.message)+'”</div>':'')
+      +'<div class="cnm" style="margin-top:3px">seller link: <a href="'+esc(mlink)+'" target="_blank" rel="noopener">offer.html ↗</a> '
+        +'<button class="ghost" style="padding:2px 8px;font-size:11px" onclick="ofCopy(\''+esc(mlink)+'\')">copy</button></div>'
+      +'</div>'
+      +'<div class="cnact">'
+      +(o.status==='pending'
+        ?'<button style="background:var(--green);color:#052" onclick="ofDecide(\''+esc(o.manage_token)+'\',\''+esc(o.id)+'\',\'accept\')">✓ Accept</button>'
+         +'<button style="background:var(--red);color:#400" onclick="ofDecide(\''+esc(o.manage_token)+'\',\''+esc(o.id)+'\',\'decline\')">✕ Decline</button>'
+        :'<span class="pill">—</span>')
+      +'</div></div>';
+  }).join('')||'<span class="pill">no offers loaded</span>';
+}
+window.ofCopy=t=>{ try{navigator.clipboard.writeText(t);ofSay('Manage link copied.');}catch(e){ofSay('Copy: '+t);} };
+window.ofDecide=async(token,offerId,action)=>{
+  ofSay(action==='accept'?'Accepting…':'Declining…');
+  try{
+    await rpc('decide_offer',{p_token:token,p_offer:offerId,p_action:action});
+    ofSay(action==='accept'?'Accepted — card reserved at the offer price.':'Declined.');
+    $('ofLoad').click(); if($('shLoad'))$('shLoad').click();
+  }catch(e){ ofSay(e.message,true); }
 };
 
 /* ---- social studio: Top Sales share card ---- */
