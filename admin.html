@@ -45,7 +45,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .jump{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;background:var(--bg);padding:8px 0;margin-bottom:12px;border-bottom:1px solid var(--line)}
 .jump a{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 12px;white-space:nowrap}
 .jump a:hover{color:var(--gold);border-color:var(--gold)}
-#social,#queue,.card,.statgrid{scroll-margin-top:56px}
+#social,#queue,#shop,.card,.statgrid{scroll-margin-top:56px}
 .fold>summary{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;list-style:none;padding:2px 0;user-select:none}
 .fold>summary::-webkit-details-marker{display:none}
 .fold>summary::before{content:"▸ ";color:var(--gold)}
@@ -67,7 +67,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 <body>
 <div class="wrap">
   <h1>🎛️ F1 Card Index — Admin</h1>
-  <p class="sub">Operational snapshot: Radar pipeline, moderation queue, market activity, audience, sends.</p>
+  <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop, market activity, audience, sends.</p>
 
   <div class="card" id="credCard">
     <div class="grid3">
@@ -86,6 +86,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
     <div class="toolrow">
       <a href="#queue">🛡️ Approval Queue</a>
       <a href="#social">📱 Social studio</a>
+      <a href="#shop">🛒 Shop</a>
       <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">🗄️ Supabase ↗</a>
       <a href="https://github.com/curatorofspeed/F1/actions" target="_blank" rel="noopener">⚙️ GitHub Actions ↗</a>
       <a href="https://resend.com/emails" target="_blank" rel="noopener">✉️ Resend ↗</a>
@@ -95,6 +96,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
     <nav class="jump" id="jumpNav">
       <a href="#social">📱 Social</a>
       <a href="#queue">🛡️ Queue</a>
+      <a href="#shop">🛒 Shop</a>
       <a href="#stats">📊 Stats</a>
       <a href="#sources">📡 Radar</a>
       <a href="#topSales">💰 Sales</a>
@@ -149,6 +151,25 @@ td.r,th.r{text-align:right;white-space:nowrap}
       </div>
       <div class="msg" id="qMsg"></div>
       <div id="qList"></div>
+    </details>
+
+    <details class="card fold" id="shop">
+      <summary>🛒 Shop — my listings</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+        <input id="shDriver" placeholder="driver_id (e.g. verstappen)" style="max-width:180px">
+        <input id="shTitle" placeholder="card title" style="flex:1;min-width:220px">
+        <input id="shGrade" placeholder="grade (PSA 10)" style="max-width:120px">
+        <input id="shCert" placeholder="cert #" style="max-width:130px">
+        <input id="shPrice" placeholder="price USD" style="max-width:110px">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <input id="shImg" placeholder="image URL" style="flex:1;min-width:220px">
+        <input id="shLink" placeholder="Stripe Payment Link URL" style="flex:1;min-width:220px">
+        <button id="shAdd" type="button">＋ Add listing</button>
+        <button class="ghost" id="shLoad" type="button">Load listings</button>
+      </div>
+      <div class="msg" id="shMsg"></div>
+      <div id="shList"></div>
     </details>
 
     <div class="cols">
@@ -294,6 +315,46 @@ async function qMod(idx,action,note){
   }catch(e){ qSay(e.message,true); }
 }
 window.qMod=qMod;
+
+/* ---- shop (uses shop_admin_listings / shop_upsert_listing RPCs) ---- */
+let shRows=[];
+function shSay(t,err){ const m=$('shMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+$('shLoad').onclick=async()=>{ shSay('Loading…');
+  try{ shRows=await rpc('shop_admin_listings',{p_secret:$('secret').value.trim()}); shPaint(); shSay(shRows.length+' listings.'); }
+  catch(e){ shSay(e.message,true); } };
+$('shAdd').onclick=async()=>{
+  const price=parseFloat($('shPrice').value);
+  if(!$('shDriver').value.trim()||!$('shTitle').value.trim()||!(price>0)){ shSay('driver, title, and a real price required.',true); return; }
+  shSay('Saving…');
+  try{ await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:null,
+      p_driver:$('shDriver').value.trim().toLowerCase(),p_title:$('shTitle').value.trim(),
+      p_grade:$('shGrade').value.trim()||null,p_cert:$('shCert').value.trim()||null,
+      p_price:price,p_image:$('shImg').value.trim()||null,p_link:$('shLink').value.trim()||null,p_status:'available'});
+    ['shTitle','shGrade','shCert','shPrice','shImg','shLink'].forEach(i=>$(i).value='');
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); } };
+async function shSet(id,status){ shSay('Updating…');
+  try{ const r=shRows.find(x=>x.id===id);
+    await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:id,
+      p_driver:r.driver_id,p_title:r.title,p_grade:r.grade,p_cert:r.cert,
+      p_price:r.price_usd,p_image:r.image_url,p_link:r.payment_link_url,p_status:status});
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true) } }
+window.shSet=shSet;
+function shPaint(){
+  $('shList').innerHTML=shRows.map(r=>'<div class="qrow'+(r.status!=='available'?' live':'')+'">'
+    +'<span></span>'
+    +(r.image_url?'<img src="'+esc(r.image_url)+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">':'<div class="noimg">🃏</div>')
+    +'<div><div class="qt">'+esc(r.title)
+    +' <span class="pill">'+esc(r.status)+'</span></div>'
+    +'<div class="qm"><b>'+money(r.price_usd)+'</b> · '+esc(r.driver_id)+(r.grade?' · '+esc(r.grade):'')+(r.cert?' · cert '+esc(r.cert):'')
+    +(r.payment_link_url?' · <a href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener" style="color:var(--gold)">link↗</a>':' · <span style="color:var(--amber)">no payment link</span>')+'</div></div>'
+    +'<div class="qact">'
+    +(r.status!=='sold'?'<button style="background:var(--gold)" onclick="shSet(\''+r.id+'\',\'sold\')">Sold</button>':'')
+    +(r.status==='available'?'<button class="ghost" onclick="shSet(\''+r.id+'\',\'hidden\')">Hide</button>'
+      :'<button class="ghost" onclick="shSet(\''+r.id+'\',\'available\')">Show</button>')
+    +'</div></div>').join('')||'<span class="pill">no listings yet</span>';
+}
 
 /* ---- social studio: Top Sales share card ---- */
 let SOC={data:null, ratio:'916', count:5, style:'hero', post:'top', driver:null, recordIdx:0, imgCache:{}};
