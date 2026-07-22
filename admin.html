@@ -177,19 +177,19 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
     </details>
 
     <details class="card fold" id="consign" open style="scroll-margin-top:56px">
-      <summary>📦 Consignment intake</summary>
+      <summary>📦 Seller listings</summary>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         <button class="ghost" id="cnLoad" type="button">Load submissions</button>
         <select id="cnFilter" class="sh" style="max-width:210px">
           <option value="submitted">Submitted · new</option>
-          <option value="approved">Approved · awaiting card</option>
+          <option value="approved">Approved · ready to list</option>
           <option value="listed">Listed</option>
           <option value="rejected">Rejected</option>
           <option value="">All statuses</option>
         </select>
         <span style="font-size:12.5px;color:var(--muted)" id="cnCount"></span>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Seller submissions from consign.html. Approve → seller ships the card in → hit <b>🚀 Push to shop</b> to create the live listing (then add its payment link in the Shop desk).</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Buy-It-Now listings submitted on consign.html. <b>Approve</b> → <b>🚀 Push to shop</b> creates the live listing (then paste its Stripe payment link in the Shop desk). When it sells: email the seller the buyer's shipping address, they ship direct, then pay them out (price − fee) to the payout handle shown below.</div>
       <div class="msg" id="cnMsg"></div>
       <div id="cnList"></div>
     </details>
@@ -518,6 +518,7 @@ function cnPaint(){
     +'<div class="cnseller">'+esc(r.seller_name||'—')
       +(r.seller_email?' · <a href="mailto:'+esc(r.seller_email)+'">'+esc(r.seller_email)+'</a>':'')
       +(r.seller_phone?' · '+esc(r.seller_phone):'')+'</div>'
+    +((r.payout_method||r.payout_handle)?'<div class="cnseller">💵 payout: <b>'+esc(r.payout_method||'—')+'</b>'+(r.payout_handle?' · '+esc(r.payout_handle):'')+'</div>':'')
     +(r.notes?'<div class="cnm" style="margin-top:3px">📝 '+esc(r.notes)+'</div>':'')
     +(r.review_note?'<div class="cnm" style="margin-top:2px;color:var(--amber)">note: '+esc(r.review_note)+'</div>':'')
     +'</div>'

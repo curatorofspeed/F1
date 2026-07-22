@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Consign a Card · F1 Card Index</title>
-<meta name="description" content="Consign your graded F1 cards through F1 Card Index. Submit your card, set your price, and we handle the listing, payment, and buyer.">
+<title>List a Card for Sale · F1 Card Index</title>
+<meta name="description" content="List your F1 card as Buy It Now on F1 Card Index. Set your price, we handle the sale, you ship straight to the buyer.">
 <style>
 :root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
 *{box-sizing:border-box}
@@ -15,9 +15,12 @@ a{color:var(--gold)}
 h1{font-size:30px;margin:14px 0 6px;letter-spacing:-.01em}
 h1 .accent{color:var(--gold)}
 .sub{color:var(--muted);font-size:15px;margin:0 0 22px}
-.steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 24px;font-size:12.5px;color:var(--muted)}
-.steps b{color:var(--gold)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 24px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px;color:var(--muted);text-align:center}
+.step b{display:block;color:var(--gold);font-size:15px;margin-bottom:2px}
+@media(max-width:520px){.steps{grid-template-columns:1fr 1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h3{margin:0 0 14px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
 .req label::after{content:" *";color:var(--gold)}
 input,textarea,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:11px 12px;font-size:15px;font-family:inherit}
@@ -27,6 +30,8 @@ textarea{resize:vertical;min-height:74px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:520px){.g2{grid-template-columns:1fr}}
 .hint{font-size:12px;color:var(--muted);margin-top:5px}
+.net{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-top:8px;font-size:13.5px;display:none}
+.net b{color:var(--green);font-family:ui-monospace,monospace}
 .drop{border:1.5px dashed var(--line);border-radius:11px;padding:20px;text-align:center;cursor:pointer;transition:.15s;background:var(--panel2)}
 .drop:hover,.drop.drag{border-color:var(--gold);color:var(--gold)}
 .drop .big{font-size:26px}
@@ -53,12 +58,19 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 <body>
 <div class="wrap">
   <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
-  <h1>Consign a <span class="accent">Card</span></h1>
-  <p class="sub">Have a graded F1 card you want to sell? Submit it below. If it's a fit, we list it in the Index Shop in front of thousands of F1 collectors — you set the price, we handle the rest.</p>
-  <div class="steps"><span><b>1.</b> Submit your card</span> <span>·</span> <span><b>2.</b> We review &amp; confirm</span> <span>·</span> <span><b>3.</b> Ship it in</span> <span>·</span> <span><b>4.</b> It goes live &amp; sells</span></div>
+  <h1>List a Card <span class="accent">for Sale</span></h1>
+  <p class="sub">Sell your F1 card as Buy It Now to thousands of collectors on the Index Shop. You set the price and keep the card until it sells — then you ship it straight to the buyer and we pay you out. We never touch the card.</p>
+
+  <div class="steps">
+    <div class="step"><b>1</b>List your card</div>
+    <div class="step"><b>2</b>We approve it</div>
+    <div class="step"><b>3</b>It sells — buyer pays us</div>
+    <div class="step"><b>4</b>You ship &amp; get paid</div>
+  </div>
 
   <form id="form">
     <div class="card">
+      <h3>Your details</h3>
       <div class="g2">
         <div class="f req"><label for="name">Your name</label><input id="name" autocomplete="name" required></div>
         <div class="f req"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@email.com" required></div>
@@ -67,8 +79,9 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     </div>
 
     <div class="card">
+      <h3>The card</h3>
       <div class="f req"><label for="title">Card</label>
-        <input id="title" list="driverList2" placeholder="2020 Topps Chrome Max Verstappen RC PSA 10" required>
+        <input id="title" placeholder="2020 Topps Chrome Max Verstappen RC PSA 10" required>
         <div class="hint">Full name: year, set, driver, parallel/insert, and grade.</div>
       </div>
       <div class="g2">
@@ -105,13 +118,15 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
       </div>
       <div class="g2">
         <div class="f"><label for="cert">Cert # (optional)</label><input id="cert" placeholder="PSA/BGS/SGC serial"></div>
-        <div class="f req"><label for="price">Your asking price (USD)</label><input id="price" type="number" min="1" step="0.01" placeholder="450"></div>
+        <div class="f req"><label for="price">Your Buy It Now price (USD)</label><input id="price" type="number" min="1" step="0.01" placeholder="450"></div>
       </div>
-      <div class="f"><label for="notes">Anything else (optional)</label><textarea id="notes" placeholder="Condition notes, why it's special, flexibility on price…"></textarea></div>
+      <div class="net" id="net">You'll receive <b id="netVal">—</b> after our <span id="feeTxt">15%</span> fee, once it sells.</div>
+      <div class="f" style="margin-top:14px"><label for="notes">Anything else (optional)</label><textarea id="notes" placeholder="Condition notes, centering, why it's special…"></textarea></div>
     </div>
 
     <div class="card">
-      <div class="req" style="margin-bottom:8px"><label>Photos</label></div>
+      <h3>Photos</h3>
+      <div class="req" style="margin-bottom:8px"><label>Add photos</label></div>
       <div class="drop" id="drop">
         <div class="big">📸</div>
         <div class="t">Tap to add photos</div>
@@ -122,18 +137,37 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
       <div class="hint">Good photos sell cards — shoot straight-on in even light, and include the grading label if slabbed.</div>
     </div>
 
-    <div class="terms">
-      <b>How it works:</b> You set the asking price and it lists at exactly that. When it sells, our consignment fee is <b id="feePct">15%</b> of the sale price — that covers the listing, promotion to our audience, secure payment, and buyer coordination. Nothing is charged until your card sells. We'll email you to confirm and arrange insured shipping before anything goes live.
+    <div class="card">
+      <h3>How you'll get paid</h3>
+      <div class="g2">
+        <div class="f"><label for="payMethod">Payout method</label>
+          <select id="payMethod">
+            <option value="">Choose…</option>
+            <option>PayPal</option>
+            <option>Venmo</option>
+            <option>Zelle</option>
+            <option>Cash App</option>
+            <option>Bank transfer</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="f"><label for="payHandle">Payout handle / email</label><input id="payHandle" placeholder="@handle, email, or phone"></div>
+      </div>
+      <div class="hint">Optional now — we confirm payout details by email before your card goes live. We only pay out after a sale.</div>
     </div>
 
-    <button class="submit" id="submit" type="submit">Submit card for consignment</button>
+    <div class="terms">
+      <b>How it works:</b> You set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop. When a buyer purchases, <b>we collect the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them.</b> Once it's on the way, we pay you out: your price minus our <b id="feePct">15%</b> fee. We never handle or ship the card, and nothing is charged to you — the fee comes out of the sale.
+    </div>
+
+    <button class="submit" id="submit" type="submit">List my card</button>
     <div class="msg" id="msg"></div>
   </form>
 
   <div id="done" class="done" style="display:none">
     <div class="ico">✅</div>
-    <h2>Card submitted!</h2>
-    <p id="doneMsg">Thanks — we've got your submission and we'll email you within 1–2 days to confirm next steps. Keep an eye on your inbox (and spam folder).</p>
+    <h2>Listing submitted!</h2>
+    <p id="doneMsg">Thanks — we've got your card and we'll email you within 1–2 days to confirm details and get it live in the shop. Keep an eye on your inbox (and spam folder).</p>
     <p style="margin-top:18px"><a href="https://www.f1cardindex.com/shop.html">Browse the shop →</a></p>
   </div>
 
@@ -144,11 +178,18 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 /* ── config: same project as the rest of the site ── */
 const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
-const FEE_PCT=15;   // consignment fee shown to sellers — edit to taste
+const FEE_PCT=15;   // marketplace fee shown to sellers — edit to your real rate
 
 const $=id=>document.getElementById(id);
-$('feePct').textContent=FEE_PCT+'%';
+$('feePct').textContent=FEE_PCT+'%'; $('feeTxt').textContent=FEE_PCT+'%';
 let photos=[];   // {url, name, uploading}
+
+function updateNet(){
+  const p=Number($('price').value);
+  if(p>0){ $('netVal').textContent='$'+Math.round(p*(1-FEE_PCT/100)).toLocaleString(); $('net').style.display='block'; }
+  else $('net').style.display='none';
+}
+$('price').addEventListener('input',updateNet);
 
 function paintThumbs(){
   $('thumbs').innerHTML=photos.map((p,i)=>
@@ -191,7 +232,7 @@ $('form').addEventListener('submit',async e=>{
   const m=$('msg'); m.className='msg'; m.textContent='';
   if(!$('name').value.trim()||!$('email').value.trim()||!$('title').value.trim()){ m.textContent='Please fill in your name, email, and the card.'; m.className='msg err'; return; }
   const price=Number($('price').value);
-  if(!price||price<=0){ m.textContent='Please enter your asking price.'; m.className='msg err'; return; }
+  if(!price||price<=0){ m.textContent='Please enter your Buy It Now price.'; m.className='msg err'; return; }
   if(photos.some(p=>p.uploading)){ m.textContent='Hang on — photos are still uploading.'; m.className='msg err'; return; }
   if(!photos.length){ m.textContent='Please add at least one photo of the card.'; m.className='msg err'; return; }
 
@@ -203,7 +244,8 @@ $('form').addEventListener('submit',async e=>{
         p_name:$('name').value.trim(), p_email:$('email').value.trim(), p_phone:$('phone').value.trim(),
         p_driver:$('driver').value.trim(), p_title:$('title').value.trim(),
         p_grade:$('grade').value.trim(), p_cert:$('cert').value.trim(),
-        p_price:price, p_images:photos.map(p=>p.url), p_notes:$('notes').value.trim()
+        p_price:price, p_images:photos.map(p=>p.url), p_notes:$('notes').value.trim(),
+        p_payout_method:$('payMethod').value.trim(), p_payout_handle:$('payHandle').value.trim()
       })});
     if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(_){}; throw new Error(t); }
     $('form').style.display='none'; $('done').style.display='block';
