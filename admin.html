@@ -45,7 +45,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .jump{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;background:var(--bg);padding:8px 0;margin-bottom:12px;border-bottom:1px solid var(--line)}
 .jump a{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 12px;white-space:nowrap}
 .jump a:hover{color:var(--gold);border-color:var(--gold)}
-#social,#queue,#shop,.card,.statgrid{scroll-margin-top:56px}
+#social,#queue,.card,.statgrid{scroll-margin-top:56px}
 .fold>summary{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;list-style:none;padding:2px 0;user-select:none}
 .fold>summary::-webkit-details-marker{display:none}
 .fold>summary::before{content:"▸ ";color:var(--gold)}
@@ -62,12 +62,23 @@ td.r,th.r{text-align:right;white-space:nowrap}
 .qtag{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:0 5px;margin-left:6px;background:rgba(230,182,92,.15);color:var(--amber);border:1px solid #4a3d1d;vertical-align:1px}
 .qact{display:flex;gap:5px}
 .qact button{padding:5px 10px;font-size:12px}
+.shrow{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.shrow.sold{opacity:.55}
+.shrow img{width:52px;height:52px;object-fit:cover;border-radius:7px;background:var(--panel2)}
+.shrow .noimg{width:52px;height:52px;border-radius:7px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.shst{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:1px 7px;margin-left:6px;border:1px solid var(--line);vertical-align:1px}
+.shform{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px;display:none}
+.shform input{background:var(--panel)}
+.shform .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.shform .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:760px){.shform .g2,.shform .g4{grid-template-columns:1fr 1fr}}
+select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-size:14px;font-family:inherit}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🎛️ F1 Card Index — Admin</h1>
-  <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop, market activity, audience, sends.</p>
+  <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop listings, market activity, audience, sends.</p>
 
   <div class="card" id="credCard">
     <div class="grid3">
@@ -86,7 +97,6 @@ td.r,th.r{text-align:right;white-space:nowrap}
     <div class="toolrow">
       <a href="#queue">🛡️ Approval Queue</a>
       <a href="#social">📱 Social studio</a>
-      <a href="#shop">🛒 Shop</a>
       <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">🗄️ Supabase ↗</a>
       <a href="https://github.com/curatorofspeed/F1/actions" target="_blank" rel="noopener">⚙️ GitHub Actions ↗</a>
       <a href="https://resend.com/emails" target="_blank" rel="noopener">✉️ Resend ↗</a>
@@ -96,7 +106,7 @@ td.r,th.r{text-align:right;white-space:nowrap}
     <nav class="jump" id="jumpNav">
       <a href="#social">📱 Social</a>
       <a href="#queue">🛡️ Queue</a>
-      <a href="#shop">🛒 Shop</a>
+      <a href="#shop">🛍️ Shop</a>
       <a href="#stats">📊 Stats</a>
       <a href="#sources">📡 Radar</a>
       <a href="#topSales">💰 Sales</a>
@@ -153,20 +163,41 @@ td.r,th.r{text-align:right;white-space:nowrap}
       <div id="qList"></div>
     </details>
 
-    <details class="card fold" id="shop">
-      <summary>🛒 Shop — my listings</summary>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
-        <input id="shDriver" placeholder="driver_id (e.g. verstappen)" style="max-width:180px">
-        <input id="shTitle" placeholder="card title" style="flex:1;min-width:220px">
-        <input id="shGrade" placeholder="grade (PSA 10)" style="max-width:120px">
-        <input id="shCert" placeholder="cert #" style="max-width:130px">
-        <input id="shPrice" placeholder="price USD" style="max-width:110px">
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-        <input id="shImg" placeholder="image URL" style="flex:1;min-width:220px">
-        <input id="shLink" placeholder="Stripe Payment Link URL" style="flex:1;min-width:220px">
-        <button id="shAdd" type="button">＋ Add listing</button>
+    <details class="card fold" id="shop" open style="scroll-margin-top:56px">
+      <summary>🛍️ Shop listings</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
         <button class="ghost" id="shLoad" type="button">Load listings</button>
+        <select id="shFilter" class="sh" style="max-width:170px">
+          <option value="">All statuses</option>
+          <option value="available">Available</option>
+          <option value="sold">Sold</option>
+          <option value="hidden">Hidden</option>
+        </select>
+        <button id="shNew" type="button">＋ New listing</button>
+        <span style="font-size:12.5px;color:var(--muted)" id="shCount"></span>
+      </div>
+      <div class="shform" id="shForm">
+        <div class="g2">
+          <div><label>Title</label><input id="shTitle" placeholder="2020 Topps Chrome Lando Norris RC PSA 10"></div>
+          <div><label>Driver ID</label><input id="shDriver" placeholder="norris"></div>
+        </div>
+        <div class="g4">
+          <div><label>Price USD</label><input id="shPrice" type="number" step="0.01" placeholder="450"></div>
+          <div><label>Grade</label><input id="shGrade" placeholder="PSA 10"></div>
+          <div><label>Cert #</label><input id="shCert" placeholder="87654321"></div>
+          <div><label>Status</label><select id="shStatus" class="sh">
+            <option value="available">available</option>
+            <option value="sold">sold</option>
+            <option value="hidden">hidden</option>
+          </select></div>
+        </div>
+        <div class="g2">
+          <div><label>Image URL</label><input id="shImage" placeholder="https://…/card.jpg"></div>
+          <div><label>Payment link URL</label><input id="shLink" placeholder="https://buy.stripe.com/…"></div>
+        </div>
+        <button id="shSave" type="button">💾 Save listing</button>
+        <button class="ghost" id="shCancel" type="button">Cancel</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:8px" id="shFormTag"></span>
       </div>
       <div class="msg" id="shMsg"></div>
       <div id="shList"></div>
@@ -316,45 +347,100 @@ async function qMod(idx,action,note){
 }
 window.qMod=qMod;
 
-/* ---- shop (uses shop_admin_listings / shop_upsert_listing RPCs) ---- */
-let shRows=[];
+/* ---- shop listings desk (uses shop_admin_listings / shop_upsert_listing RPCs) ---- */
+let shRows=[], shEditId=null;
+const SH_ST={available:['AVAILABLE','var(--green)'],sold:['SOLD','var(--gold)'],hidden:['HIDDEN','var(--muted)']};
 function shSay(t,err){ const m=$('shMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
-$('shLoad').onclick=async()=>{ shSay('Loading…');
-  try{ shRows=await rpc('shop_admin_listings',{p_secret:$('secret').value.trim()}); shPaint(); shSay(shRows.length+' listings.'); }
-  catch(e){ shSay(e.message,true); } };
-$('shAdd').onclick=async()=>{
-  const price=parseFloat($('shPrice').value);
-  if(!$('shDriver').value.trim()||!$('shTitle').value.trim()||!(price>0)){ shSay('driver, title, and a real price required.',true); return; }
-  shSay('Saving…');
-  try{ await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:null,
-      p_driver:$('shDriver').value.trim().toLowerCase(),p_title:$('shTitle').value.trim(),
-      p_grade:$('shGrade').value.trim()||null,p_cert:$('shCert').value.trim()||null,
-      p_price:price,p_image:$('shImg').value.trim()||null,p_link:$('shLink').value.trim()||null,p_status:'available'});
-    ['shTitle','shGrade','shCert','shPrice','shImg','shLink'].forEach(i=>$(i).value='');
-    $('shLoad').click();
-  }catch(e){ shSay(e.message,true); } };
-async function shSet(id,status){ shSay('Updating…');
-  try{ const r=shRows.find(x=>x.id===id);
-    await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:id,
-      p_driver:r.driver_id,p_title:r.title,p_grade:r.grade,p_cert:r.cert,
-      p_price:r.price_usd,p_image:r.image_url,p_link:r.payment_link_url,p_status:status});
-    $('shLoad').click();
-  }catch(e){ shSay(e.message,true) } }
-window.shSet=shSet;
+function shPill(s){ const p=SH_ST[s]||[String(s||'—').toUpperCase(),'var(--muted)'];
+  return '<span class="shst" style="color:'+p[1]+';border-color:'+p[1]+'">'+p[0]+'</span>'; }
+$('shLoad').onclick=async()=>{
+  shSay('Loading…');
+  try{
+    shRows=await rpc('shop_admin_listings',{p_secret:$('secret').value.trim()})||[];
+    shPaint(); shSay(shRows.length?'':'No listings yet — hit ＋ New listing.');
+  }catch(e){ shSay(e.message,true); }
+};
+$('shFilter').onchange=()=>shPaint();
 function shPaint(){
-  $('shList').innerHTML=shRows.map(r=>'<div class="qrow'+(r.status!=='available'?' live':'')+'">'
-    +'<span></span>'
-    +(r.image_url?'<img src="'+esc(r.image_url)+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">':'<div class="noimg">🃏</div>')
-    +'<div><div class="qt">'+esc(r.title)
-    +' <span class="pill">'+esc(r.status)+'</span></div>'
-    +'<div class="qm"><b>'+money(r.price_usd)+'</b> · '+esc(r.driver_id)+(r.grade?' · '+esc(r.grade):'')+(r.cert?' · cert '+esc(r.cert):'')
-    +(r.payment_link_url?' · <a href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener" style="color:var(--gold)">link↗</a>':' · <span style="color:var(--amber)">no payment link</span>')+'</div></div>'
-    +'<div class="qact">'
-    +(r.status!=='sold'?'<button style="background:var(--gold)" onclick="shSet(\''+r.id+'\',\'sold\')">Sold</button>':'')
-    +(r.status==='available'?'<button class="ghost" onclick="shSet(\''+r.id+'\',\'hidden\')">Hide</button>'
-      :'<button class="ghost" onclick="shSet(\''+r.id+'\',\'available\')">Show</button>')
-    +'</div></div>').join('')||'<span class="pill">no listings yet</span>';
+  const f=$('shFilter').value;
+  const rows=f?shRows.filter(r=>(r.status||'available')===f):shRows;
+  const avail=shRows.filter(r=>(r.status||'available')==='available');
+  const sold=shRows.filter(r=>r.status==='sold');
+  const availVal=avail.reduce((s,r)=>s+Number(r.price_usd||0),0);
+  $('shCount').textContent=shRows.length
+    ? avail.length+' available ('+money(availVal)+') · '+sold.length+' sold'
+    : '';
+  $('shList').innerHTML=rows.map(r=>{
+    const st=r.status||'available', id=esc(String(r.id));
+    return '<div class="shrow'+(st==='sold'?' sold':'')+'">'
+      +(r.image_url?'<img src="'+esc(r.image_url)+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">':'<div class="noimg">🃏</div>')
+      +'<div><div class="qt">'+esc(r.title||'(untitled)')+shPill(st)+'</div>'
+      +'<div class="qm"><b>'+money(r.price_usd)+'</b>'
+        +(r.driver_id?' · '+cap(esc(r.driver_id)):'')
+        +(r.grade?' · '+esc(r.grade):'')
+        +(r.cert?' · cert <span class="mono">'+esc(r.cert)+'</span>':'')
+        +(st==='sold'&&r.sold_at?' · sold '+ago(r.sold_at):(r.created_at?' · listed '+ago(r.created_at):''))
+        +(r.payment_link_url
+          ?' · <a href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener" style="color:var(--teal)">pay link ↗</a>'
+          :' · <span style="color:var(--amber)">⚠ no pay link</span>')
+      +'</div></div>'
+      +'<div class="qact">'
+      +'<button class="ghost" onclick="shEditRow(\''+id+'\')" title="edit">✎</button>'
+      +(st==='available'?'<button style="background:var(--gold);color:#1a1508" onclick="shQuick(\''+id+'\',\'sold\')">💰 Sold</button>':'')
+      +(st==='sold'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">↩ Relist</button>':'')
+      +(st==='hidden'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">👁 Show</button>':'')
+      +(st==='available'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'hidden\')" title="hide from shop">🙈</button>':'')
+      +'</div></div>';
+  }).join('')||'<span class="pill">'+(shRows.length?'nothing with this filter':'no listings loaded')+'</span>';
 }
+function shOpenForm(r){
+  shEditId=r?String(r.id):null;
+  $('shForm').style.display='block';
+  $('shFormTag').textContent=r?('editing: '+(r.title||r.id)):'new listing';
+  $('shTitle').value=r?(r.title||''):'';
+  $('shDriver').value=r?(r.driver_id||''):'';
+  $('shPrice').value=r?(r.price_usd??''):'';
+  $('shGrade').value=r?(r.grade||''):'';
+  $('shCert').value=r?(r.cert||''):'';
+  $('shStatus').value=r?(r.status||'available'):'available';
+  $('shImage').value=r?(r.image_url||''):'';
+  $('shLink').value=r?(r.payment_link_url||''):'';
+  $('shTitle').focus();
+}
+window.shEditRow=id=>{ const r=shRows.find(x=>String(x.id)===id); if(r)shOpenForm(r); };
+$('shNew').onclick=()=>shOpenForm(null);
+$('shCancel').onclick=()=>{ $('shForm').style.display='none'; shEditId=null; };
+$('shSave').onclick=async()=>{
+  if(!$('shTitle').value.trim()){ shSay('Title is required.',true); return; }
+  shSay('Saving…');
+  try{
+    await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:shEditId,
+      p_driver:($('shDriver').value.trim().toLowerCase()||null),
+      p_title:$('shTitle').value.trim(),
+      p_grade:($('shGrade').value.trim()||null),
+      p_cert:($('shCert').value.trim()||null),
+      p_price:($('shPrice').value===''?null:Number($('shPrice').value)),
+      p_image:($('shImage').value.trim()||null),
+      p_link:($('shLink').value.trim()||null),
+      p_status:$('shStatus').value});
+    $('shForm').style.display='none'; shEditId=null;
+    shSay('Saved ✅');
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
+};
+window.shQuick=async(id,status)=>{
+  const r=shRows.find(x=>String(x.id)===id); if(!r)return;
+  shSay('Updating…');
+  try{
+    // upsert overwrites every field, so pass the row back verbatim with the new status
+    await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:String(r.id),
+      p_driver:(r.driver_id||null),p_title:(r.title||null),p_grade:(r.grade||null),
+      p_cert:(r.cert||null),p_price:(r.price_usd??null),p_image:(r.image_url||null),
+      p_link:(r.payment_link_url||null),p_status:status});
+    shSay(status==='sold'?'Marked sold 💰':'Updated.');
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
+};
 
 /* ---- social studio: Top Sales share card ---- */
 let SOC={data:null, ratio:'916', count:5, style:'hero', post:'top', driver:null, recordIdx:0, imgCache:{}};
