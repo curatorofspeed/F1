@@ -603,8 +603,14 @@ class FanaticsAdapter(Adapter):
         for page in range(20):   # safety cap; breaks early when _links.next is absent
             params = {"title": q, "sort": "soldDate,desc", "page": page, "size": 100}
             try:
-                r = requests.get(self.SALES_API, params=params,
-                                 headers={"User-Agent": UA}, timeout=25)
+                r = requests.get(self.SALES_API, params=params, headers={
+                    "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                                   "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                   "Chrome/126.0.0.0 Safari/537.36"),
+                    "Accept": "application/json, text/plain, */*",
+                    "Origin": "https://sales-history.fanaticscollect.com",
+                    "Referer": "https://sales-history.fanaticscollect.com/",
+                }, timeout=25)
                 r.raise_for_status()
                 data = r.json()
             except Exception as e:
