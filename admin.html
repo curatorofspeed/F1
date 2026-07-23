@@ -432,10 +432,14 @@ function shPaint(){
         +(r.payment_link_url
           ?' · <a href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener" style="color:var(--teal)">pay link ↗</a>'
           :' · <span style="color:var(--amber)">⚠ no pay link</span>')
-      +'</div></div>'
+      +'</div>'
+      +(st==='sold'?shEscrow(r):'')
+      +'</div>'
       +'<div class="qact">'
       +'<button class="ghost" onclick="shEditRow(\''+id+'\')" title="edit">✎</button>'
       +(st==='available'?'<button style="background:var(--gold);color:#1a1508" onclick="shQuick(\''+id+'\',\'sold\')">💰 Sold</button>':'')
+      +(st==='sold'&&!r.delivered_at?'<button style="background:var(--teal);color:#052" onclick="shDelivered(\''+id+'\')">📬 Mark delivered</button>':'')
+      +(st==='sold'&&r.delivered_at&&!r.payout_released_at?'<button style="background:var(--green);color:#052" onclick="shRelease(\''+id+'\')">💸 Release payout</button>':'')
       +(st==='sold'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">↩ Relist</button>':'')
       +(st==='hidden'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">👁 Show</button>':'')
       +(st==='available'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'hidden\')" title="hide from shop">🙈</button>':'')
@@ -490,6 +494,30 @@ window.shQuick=async(id,status)=>{
     $('shLoad').click();
   }catch(e){ shSay(e.message,true); }
 };
+/* escrow status line under a sold listing */
+function shEscrow(r){
+  const net=r.reserved_price??r.price_usd;
+  const paid=money(net?Number(net)*0.93:null);
+  let stage, color;
+  if(r.payout_released_at){ stage='payout released '+ago(r.payout_released_at); color='var(--green)'; }
+  else if(r.delivered_at){ stage='delivered '+ago(r.delivered_at)+' · payout ready ('+paid+')'; color='var(--teal)'; }
+  else if(r.shipped_at){ stage='shipped '+ago(r.shipped_at)+' · awaiting delivery · funds held'; color='var(--amber)'; }
+  else { stage='sold · awaiting ship + delivery · funds held'; color='var(--amber)'; }
+  return '<div class="qm" style="margin-top:3px;color:'+color+'">🔒 '+stage+'</div>'
+    +(r.ship_addr?'<div class="qm" style="margin-top:2px">📦 ship to: '+esc(String(r.ship_addr).replace(/\n/g,', '))+(r.tracking_number?' · '+esc(r.carrier||'USPS')+' '+esc(r.tracking_number):'')+'</div>':'');
+}
+window.shDelivered=async id=>{
+  shSay('Confirming delivery…');
+  try{ await rpc('admin_mark_delivered',{p_secret:$('secret').value.trim(),p_id:String(id)}); shSay('Delivery confirmed — payout can be released.'); $('shLoad').click(); }
+  catch(e){ shSay(e.message,true); }
+};
+window.shRelease=async id=>{
+  const r=shRows.find(x=>String(x.id)===id);
+  if(!confirm('Release payout to the seller for "'+((r&&r.title)||'this card')+'"? Do this only after delivery is confirmed and you’ve verified no issue was raised.')) return;
+  shSay('Releasing payout…');
+  try{ await rpc('admin_release_payout',{p_secret:$('secret').value.trim(),p_id:String(id)}); shSay('Payout released 💸'); $('shLoad').click(); }
+  catch(e){ shSay(e.message,true); }
+};
 
 /* ---- consignment intake desk (list_consignments / moderate_consignment / promote_consignment) ---- */
 let cnRows=[];
@@ -537,6 +565,7 @@ function cnPaint(){
       +(r.seller_email?' · <a href="mailto:'+esc(r.seller_email)+'">'+esc(r.seller_email)+'</a>':'')
       +(r.seller_phone?' · '+esc(r.seller_phone):'')+'</div>'
     +((r.payout_method||r.payout_handle)?'<div class="cnseller">💵 payout: <b>'+esc(r.payout_method||'—')+'</b>'+(r.payout_handle?' · '+esc(r.payout_handle):'')+'</div>':'')
+    +(r.seller_addr?'<div class="cnseller">🏠 '+esc(String(r.seller_addr).replace(/\n/g,', '))+'</div>':'')
     +(r.notes?'<div class="cnm" style="margin-top:3px">📝 '+esc(r.notes)+'</div>':'')
     +(r.review_note?'<div class="cnm" style="margin-top:2px;color:var(--amber)">note: '+esc(r.review_note)+'</div>':'')
     +'</div>'
