@@ -210,9 +210,7 @@ function card(r){
     +'<div class="rowb"><span class="price">'+money(r.price_usd)+'</span>'
     +(r.status==='sold'
       ?'<span class="soldtag">sold '+ago(r.sold_at)+'</span>'
-      :(r.payment_link_url
-        ?'<a class="buy" href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener">Buy now</a>'
-        :'<a class="buy ask" href="mailto:hello@f1cardindex.com?subject='+encodeURIComponent('Card inquiry: '+(r.title||''))+'">Inquire</a>'))
+      :'<button class="buy" onclick="buyNow(\''+esc(r.id)+'\',this)">Buy now</button>')
     +'</div>'
     +(r.status!=='sold'&&r.allow_offers!==false
       ?'<button class="offerbtn" data-id="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'" data-price="'+esc(r.price_usd)+'">or make an offer</button>':'')
@@ -246,6 +244,22 @@ async function sendOffer(){
     $('ofForm').style.display='none'; $('ofDone').style.display='block';
   }catch(err){ e.textContent=err.message; }
   finally{ $('ofSend').disabled=false; $('ofSend').textContent='Send offer'; }
+}
+
+/* ── Buy Now → Stripe Checkout (create-checkout edge function) ── */
+async function buyNow(id,btn){
+  const label=btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.textContent='…'; }
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/create-checkout',{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+SB_KEY},
+      body:JSON.stringify({listing_id:id,mode:'bin'})});
+    let j={}; try{ j=await r.json(); }catch(e){}
+    if(!r.ok||!j.url) throw new Error(j.error||('HTTP '+r.status));
+    location.href=j.url;
+  }catch(e){
+    if(btn){ btn.disabled=false; btn.textContent=label||'Buy now'; }
+    alert('Sorry — checkout couldn’t start: '+e.message);
+  }
 }
 
 load();
