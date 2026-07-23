@@ -513,10 +513,18 @@ window.shDelivered=async id=>{
 };
 window.shRelease=async id=>{
   const r=shRows.find(x=>String(x.id)===id);
-  if(!confirm('Release payout to the seller for "'+((r&&r.title)||'this card')+'"? Do this only after delivery is confirmed and you’ve verified no issue was raised.')) return;
+  if(!confirm('Release payout to the seller for "'+((r&&r.title)||'this card')+'"? This sends the real Stripe transfer. Do this only after delivery is confirmed and no issue was raised.')) return;
   shSay('Releasing payout…');
-  try{ await rpc('admin_release_payout',{p_secret:$('secret').value.trim(),p_id:String(id)}); shSay('Payout released 💸'); $('shLoad').click(); }
-  catch(e){ shSay(e.message,true); }
+  try{
+    const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+    const resp=await fetch(url+'/functions/v1/admin-payout',{method:'POST',
+      headers:{'Content-Type':'application/json',apikey:key,Authorization:'Bearer '+key},
+      body:JSON.stringify({secret:$('secret').value.trim(),listing_id:String(id)})});
+    let j={}; try{ j=await resp.json(); }catch(e){}
+    if(!resp.ok||j.error) throw new Error(j.error||('HTTP '+resp.status));
+    shSay(j.already?'Already paid out.':('Payout sent 💸 ($'+(j.amount||'')+' to the seller)'));
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
 };
 
 /* ---- consignment intake desk (list_consignments / moderate_consignment / promote_consignment) ---- */
