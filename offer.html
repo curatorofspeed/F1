@@ -77,8 +77,29 @@ async function rpc(fn,body){
   return t?JSON.parse(t):null;
 }
 
+async function fn(name,body){
+  const r=await fetch(SB_URL+'/functions/v1/'+name,{method:'POST',
+    headers:{'Content-Type':'application/json',Authorization:'Bearer '+SB_KEY},body:JSON.stringify(body)});
+  let j={}; try{ j=await r.json(); }catch(e){}
+  if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+  return j;
+}
+function connectBlock(){
+  return DATA.payout_connected
+    ? '<div style="font-size:12.5px;color:var(--green);margin:8px 0">✓ Payout account connected</div>'
+    : '<div style="margin:10px 0"><button class="acc" id="connectBtn" style="width:100%">🏦 Connect payout account</button>'
+      +'<div style="font-size:12px;color:var(--muted);margin-top:6px">One-time Stripe setup (~2 min) so we can send your money after delivery.</div></div>';
+}
+async function connectOnboard(){
+  const b=$('connectBtn'); if(b){ b.disabled=true; b.textContent='Opening Stripe…'; }
+  try{ const {url}=await fn('connect-onboard',{token:TOKEN}); location.href=url; }
+  catch(e){ if(b){ b.disabled=false; b.textContent='🏦 Connect payout account'; } alert('Couldn’t start payout setup: '+e.message); }
+}
+
 async function load(){
   if(!TOKEN){ $('state').textContent='This link is missing its access token.'; $('state').className='state err'; return; }
+  // returning from Stripe onboarding → refresh connected status
+  if(new URLSearchParams(location.search).get('connected')){ try{ await fn('connect-status',{token:TOKEN}); }catch(e){} }
   try{ DATA=await rpc('seller_view',{p_token:TOKEN}); render(); }
   catch(e){ $('state').textContent=e.message; $('state').className='state err'; }
 }
@@ -103,14 +124,22 @@ function render(){
     else h+=offers.map(o=>offerCard(o,fee)).join('');
   }else if(l.status==='reserved'){
     h+='<div class="card ship"><div style="font-weight:800;color:var(--teal);margin-bottom:4px">✅ Offer accepted</div>'
-      +'<div style="font-size:13.5px;color:#cdd6d1">The buyer is being sent a secure checkout for '+money(l.reserved_price)+'. Once they pay, this page will show their shipping address and USPS tools. You’ll get an email too.</div></div>';
+      +'<div style="font-size:13.5px;color:#cdd6d1">The buyer is being sent a secure checkout for '+money(l.reserved_price)+'. Once they pay, this page will show their shipping address and USPS tools. You’ll get an email too.</div>'
+      +connectBlock()+'</div>';
   }
 
   // ---- sold: shipping panel ----
   if(l.status==='sold'){
     h+='<h2>Ship it 📦</h2><div class="card ship">';
-    h+='<div style="font-size:14px;margin-bottom:4px">Sold for <b style="color:var(--gold)">'+money(l.reserved_price||l.price_usd)+'</b>'
-      +' — you’ll be paid '+money((l.reserved_price||l.price_usd)*(1-fee/100))+' after the '+fee+'% fee once it’s shipped.</div>';
+    const payout=money((l.reserved_price||l.price_usd)*(1-fee/100));
+    let escrow;
+    if(l.payout_released_at) escrow='<span style="color:var(--green)">💸 Payout of '+payout+' released '+ago(l.payout_released_at)+'. Thank you!</span>';
+    else if(l.delivered_at) escrow='<span style="color:var(--teal)">✅ Delivery confirmed — your '+payout+' payout is being released.</span>';
+    else if(l.shipped_at) escrow='<span style="color:var(--amber)">🔒 In transit — your '+payout+' payout releases automatically once tracking confirms delivery.</span>';
+    else escrow='<span style="color:var(--amber)">🔒 Ship the card below. Your '+payout+' payout releases once tracking confirms delivery.</span>';
+    h+='<div style="font-size:14px;margin-bottom:4px">Sold for <b style="color:var(--gold)">'+money(l.reserved_price||l.price_usd)+'</b> — payout '+payout+' after the '+fee+'% fee.</div>'
+      +'<div style="font-size:13px;margin-bottom:4px">'+escrow+'</div>'
+      +(l.payout_released_at?'':connectBlock());
     if(l.ship_addr||l.ship_name){
       h+='<div style="font-size:12px;color:var(--muted);margin-top:10px">Ship to:</div>'
         +'<div class="addr">'+esc([l.ship_name,l.ship_addr].filter(Boolean).join('\n'))+'</div>';
@@ -142,6 +171,7 @@ function render(){
     if(d) d.onclick=()=>decide(o.id,'decline');
   });
   if($('trkSave')) $('trkSave').onclick=saveTracking;
+  if($('connectBtn')) $('connectBtn').onclick=connectOnboard;
 }
 
 function offerCard(o,fee){
@@ -171,9 +201,12 @@ async function decide(offerId,action){
 
 async function saveTracking(){
   const m=$('trkMsg'); m.className='msg';
+  const car=$('trkCar').value, num=$('trkNum').value.trim();
   try{
-    await rpc('seller_set_tracking',{p_token:TOKEN,p_carrier:$('trkCar').value,p_tracking:$('trkNum').value.trim()});
-    m.textContent='Saved — the buyer can now track it. Thanks!'; m.className='msg ok';
+    await rpc('seller_set_tracking',{p_token:TOKEN,p_carrier:car,p_tracking:num});
+    // start EasyPost tracking so the payout auto-releases on delivery (best-effort)
+    if(num){ try{ await fn('register-tracker',{token:TOKEN,carrier:car,tracking:num}); }catch(e){} }
+    m.textContent='Saved — the buyer can track it, and your payout will release automatically on delivery. Thanks!'; m.className='msg ok';
   }catch(e){ m.textContent=e.message; m.className='msg err'; }
 }
 
