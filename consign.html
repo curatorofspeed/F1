@@ -75,7 +75,17 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
         <div class="f req"><label for="name">Your name</label><input id="name" autocomplete="name" required></div>
         <div class="f req"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@email.com" required></div>
       </div>
-      <div class="f"><label for="phone">Phone (optional)</label><input id="phone" type="tel" autocomplete="tel" placeholder="For faster coordination"></div>
+      <div class="f req"><label for="addr1">Mailing address</label><input id="addr1" autocomplete="address-line1" placeholder="Street address" required></div>
+      <div class="f"><input id="addr2" autocomplete="address-line2" placeholder="Apt, suite, unit (optional)"></div>
+      <div class="g2">
+        <div class="f req"><label for="city">City</label><input id="city" autocomplete="address-level2" required></div>
+        <div class="f req"><label for="state">State</label><input id="state" autocomplete="address-level1" required></div>
+      </div>
+      <div class="g2">
+        <div class="f req"><label for="zip">ZIP</label><input id="zip" autocomplete="postal-code" required></div>
+        <div class="f"><label for="country">Country</label><input id="country" autocomplete="country-name" value="United States"></div>
+      </div>
+      <div class="hint">Your ship-from / return address — used on the shipping label and to verify payouts. Buyers only see it if it's on the package.</div>
     </div>
 
     <div class="card">
@@ -85,34 +95,59 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
         <div class="hint">Full name: year, set, driver, parallel/insert, and grade.</div>
       </div>
       <div class="g2">
-        <div class="f"><label for="driver">Driver</label>
-          <input id="driver" list="driverList" placeholder="start typing…">
-          <datalist id="driverList">
-            <option value="verstappen">Max Verstappen</option>
-            <option value="norris">Lando Norris</option>
-            <option value="antonelli">Andrea Kimi Antonelli</option>
-            <option value="hamilton">Lewis Hamilton</option>
-            <option value="leclerc">Charles Leclerc</option>
-            <option value="piastri">Oscar Piastri</option>
-            <option value="russell">George Russell</option>
-            <option value="alonso">Fernando Alonso</option>
-            <option value="sainz">Carlos Sainz</option>
-            <option value="hadjar">Isack Hadjar</option>
-            <option value="bortoleto">Gabriel Bortoleto</option>
-            <option value="bearman">Oliver Bearman</option>
-            <option value="lawson">Liam Lawson</option>
-            <option value="albon">Alex Albon</option>
-            <option value="hulkenberg">Nico Hulkenberg</option>
-            <option value="ocon">Esteban Ocon</option>
-            <option value="stroll">Lance Stroll</option>
-            <option value="colapinto">Franco Colapinto</option>
-            <option value="tsunoda">Yuki Tsunoda</option>
-            <option value="gasly">Pierre Gasly</option>
-            <option value="senna">Ayrton Senna</option>
-            <option value="schumacher">Michael Schumacher</option>
-            <option value="raikkonen">Kimi Raikkonen</option>
-          </datalist>
-          <div class="hint">Helps us route it to the right driver page.</div>
+        <div class="f req"><label for="driver">Driver</label>
+          <select id="driver" required>
+            <option value="">Choose a driver…</option>
+            <optgroup label="2026 F1 grid">
+              <option value="antonelli">Andrea Kimi Antonelli — Mercedes</option>
+              <option value="russell">George Russell — Mercedes</option>
+              <option value="verstappen">Max Verstappen — Red Bull</option>
+              <option value="hadjar">Isack Hadjar — Red Bull</option>
+              <option value="hamilton">Lewis Hamilton — Ferrari</option>
+              <option value="leclerc">Charles Leclerc — Ferrari</option>
+              <option value="norris">Lando Norris — McLaren</option>
+              <option value="piastri">Oscar Piastri — McLaren</option>
+              <option value="alonso">Fernando Alonso — Aston Martin</option>
+              <option value="stroll">Lance Stroll — Aston Martin</option>
+              <option value="sainz">Carlos Sainz — Williams</option>
+              <option value="albon">Alex Albon — Williams</option>
+              <option value="lawson">Liam Lawson — Racing Bulls</option>
+              <option value="lindblad">Arvid Lindblad — Racing Bulls</option>
+              <option value="gasly">Pierre Gasly — Alpine</option>
+              <option value="colapinto">Franco Colapinto — Alpine</option>
+              <option value="ocon">Esteban Ocon — Haas</option>
+              <option value="bearman">Oliver Bearman — Haas</option>
+              <option value="hulkenberg">Nico Hülkenberg — Audi</option>
+              <option value="bortoleto">Gabriel Bortoleto — Audi</option>
+              <option value="perez">Sergio Pérez — Cadillac</option>
+              <option value="bottas">Valtteri Bottas — Cadillac</option>
+            </optgroup>
+            <optgroup label="F2 / F3 prospects">
+              <option value="ugochukwu">Ugo Ugochukwu — Prema F3</option>
+              <option value="camara">Rafael Câmara — Invicta F2</option>
+              <option value="montoya">Sebastián Montoya — Prema F2</option>
+              <option value="mini">Gabriele Minì — F2</option>
+              <option value="fornaroli">Leonardo Fornaroli — F2</option>
+              <option value="dunne">Alexander Dunne — Rodin F2</option>
+              <option value="beganovic">Dino Beganović — DAMS F2</option>
+              <option value="verschoor">Richard Verschoor — F2</option>
+              <option value="crawford">Jak Crawford — F2</option>
+              <option value="martins">Victor Martins — F2</option>
+              <option value="maini">Kush Maini — ART F2</option>
+              <option value="browning">Luke Browning — F2</option>
+              <option value="durksen">Joshua Dürksen — Invicta F2</option>
+            </optgroup>
+            <optgroup label="Legends">
+              <option value="senna">Ayrton Senna</option>
+              <option value="schumacher">Michael Schumacher</option>
+              <option value="raikkonen">Kimi Räikkönen</option>
+              <option value="ricciardo">Daniel Ricciardo</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="other">Not listed / multi-driver card</option>
+            </optgroup>
+          </select>
+          <div class="hint">This puts your card in that driver's shop on the Index.</div>
         </div>
         <div class="f"><label for="grade">Grade</label><input id="grade" placeholder="PSA 10 · BGS 9.5 · Raw"></div>
       </div>
@@ -139,25 +174,12 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 
     <div class="card">
       <h3>How you'll get paid</h3>
-      <div class="g2">
-        <div class="f"><label for="payMethod">Payout method</label>
-          <select id="payMethod">
-            <option value="">Choose…</option>
-            <option>PayPal</option>
-            <option>Venmo</option>
-            <option>Zelle</option>
-            <option>Cash App</option>
-            <option>Bank transfer</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="f"><label for="payHandle">Payout handle / email</label><input id="payHandle" placeholder="@handle, email, or phone"></div>
-      </div>
-      <div class="hint">Optional now — we confirm payout details by email before your card goes live. We only pay out after a sale.</div>
+      <p style="margin:0;font-size:14.5px;line-height:1.65;color:var(--muted)">Payouts run on <b style="color:var(--txt)">Stripe</b> — nothing to set up now. When your card sells, we email you a private link where you connect your bank account directly with Stripe (takes about two minutes). Your money goes straight from Stripe to your bank; we never see or store your banking details.</p>
+      <div class="hint" style="margin-top:10px">🔒 Stripe handles payments for millions of businesses and is PCI Level 1 certified.</div>
     </div>
 
     <div class="terms">
-      <b>How it works:</b> Listing is <b>free</b> — you set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop, and buyers can also send you offers to accept or decline. When it sells, <b>we collect the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them</b> with USPS. Once it's on the way, we pay you out: your price minus our <b id="feePct">7%</b> fee. We never handle or ship the card, and you're never charged up front — the fee only comes out of a completed sale.
+      <b>How it works:</b> Listing is <b>free</b> — you set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop, and buyers can also send you offers to accept or decline. When it sells, <b>we collect and hold the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them</b> with USPS tracking. <b>Your payout is released as soon as tracking confirms delivery</b> — your price minus our <b id="feePct">7%</b> fee. Holding funds until delivery protects both sides: buyers know their money is safe, and you're guaranteed payment once the card arrives. We never handle the card, and you're never charged up front.
     </div>
 
     <button class="submit" id="submit" type="submit">List my card</button>
@@ -167,11 +189,11 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
   <div id="done" class="done" style="display:none">
     <div class="ico">✅</div>
     <h2>Listing submitted!</h2>
-    <p id="doneMsg">Thanks — we've got your card and we'll email you within 1–2 days to confirm details and get it live in the shop. Keep an eye on your inbox (and spam folder).</p>
+    <p id="doneMsg">Thanks — we've got your card and we'll email you within 1–2 days once it's approved and live in the shop. When it sells, you'll get a link to connect your bank through Stripe and the buyer's shipping address. Keep an eye on your inbox (and spam folder).</p>
     <p style="margin-top:18px"><a href="https://www.f1cardindex.com/shop.html">Browse the shop →</a></p>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v4</span></div>
 </div>
 
 <script>
@@ -231,21 +253,28 @@ $('form').addEventListener('submit',async e=>{
   e.preventDefault();
   const m=$('msg'); m.className='msg'; m.textContent='';
   if(!$('name').value.trim()||!$('email').value.trim()||!$('title').value.trim()){ m.textContent='Please fill in your name, email, and the card.'; m.className='msg err'; return; }
+  if(!$('addr1').value.trim()||!$('city').value.trim()||!$('state').value.trim()||!$('zip').value.trim()){ m.textContent='Please fill in your mailing address (street, city, state, ZIP).'; m.className='msg err'; return; }
+  if(!$('driver').value){ m.textContent='Please pick the driver on the card.'; m.className='msg err'; return; }
   const price=Number($('price').value);
   if(!price||price<=0){ m.textContent='Please enter your Buy It Now price.'; m.className='msg err'; return; }
   if(photos.some(p=>p.uploading)){ m.textContent='Hang on — photos are still uploading.'; m.className='msg err'; return; }
   if(!photos.length){ m.textContent='Please add at least one photo of the card.'; m.className='msg err'; return; }
+
+  const address=[$('addr1').value.trim(),$('addr2').value.trim(),
+    $('city').value.trim()+', '+$('state').value.trim()+' '+$('zip').value.trim(),
+    $('country').value.trim()].filter(Boolean).join('\n');
 
   $('submit').disabled=true; m.textContent='Submitting…';
   try{
     const r=await fetch(SB_URL+'/rest/v1/rpc/submit_consignment',{method:'POST',
       headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
       body:JSON.stringify({
-        p_name:$('name').value.trim(), p_email:$('email').value.trim(), p_phone:$('phone').value.trim(),
+        p_name:$('name').value.trim(), p_email:$('email').value.trim(), p_phone:null,
         p_driver:$('driver').value.trim(), p_title:$('title').value.trim(),
         p_grade:$('grade').value.trim(), p_cert:$('cert').value.trim(),
         p_price:price, p_images:photos.map(p=>p.url), p_notes:$('notes').value.trim(),
-        p_payout_method:$('payMethod').value.trim(), p_payout_handle:$('payHandle').value.trim()
+        p_payout_method:'stripe', p_payout_handle:null,
+        p_address:address
       })});
     if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(_){}; throw new Error(t); }
     $('form').style.display='none'; $('done').style.display='block';
