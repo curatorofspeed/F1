@@ -52,6 +52,10 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 .done .ico{font-size:52px}
 .done h2{font-size:24px;margin:12px 0 8px}
 .done p{color:var(--muted);font-size:15px}
+.again{background:linear-gradient(100deg,rgba(217,184,120,.1),var(--panel));border:1px solid #3d3416;border-radius:13px;padding:20px 18px;margin:28px auto 0;max-width:420px}
+.again .q{font-size:17px;font-weight:800;color:var(--gold)}
+.again .s{font-size:13px;color:var(--muted);margin-top:4px}
+.tally{font-size:13px;color:var(--green);margin-top:14px}
 .foot{margin-top:34px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);text-align:center}
 </style>
 </head>
@@ -190,10 +194,18 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     <div class="ico">✅</div>
     <h2>Listing submitted!</h2>
     <p id="doneMsg">Thanks — we've got your card and we'll email you within 1–2 days once it's approved and live in the shop. When it sells, you'll get a link to connect your bank through Stripe and the buyer's shipping address. Keep an eye on your inbox (and spam folder).</p>
-    <p style="margin-top:18px"><a href="https://www.f1cardindex.com/shop.html">Browse the shop →</a></p>
+
+    <div class="again">
+      <div class="q">Got another card to list?</div>
+      <div class="s">We'll keep your details — you'll only need the card and photos.</div>
+      <button type="button" class="submit" id="again" style="margin-top:14px">＋ List another card</button>
+    </div>
+
+    <p style="margin-top:22px"><a href="https://www.f1cardindex.com/shop.html">No thanks — browse the shop →</a></p>
+    <p class="tally" id="tally" style="display:none"></p>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v4</span></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v5</span></div>
 </div>
 
 <script>
@@ -205,6 +217,19 @@ const FEE_PCT=7;   // marketplace fee shown to sellers — charged only when the
 const $=id=>document.getElementById(id);
 $('feePct').textContent=FEE_PCT+'%'; $('feeTxt').textContent=FEE_PCT+'%';
 let photos=[];   // {url, name, uploading}
+let listed=0;    // how many cards this seller has submitted without reloading
+
+/* "List another card" — keeps their name/email/address, clears the card + photos */
+function listAnother(){
+  ['title','driver','grade','cert','price','notes'].forEach(id=>$(id).value='');
+  photos=[]; paintThumbs(); updateNet();
+  $('file').value='';
+  $('msg').textContent=''; $('msg').className='msg';
+  $('submit').disabled=false;
+  $('done').style.display='none'; $('form').style.display='block';
+  window.scrollTo(0,0);
+  $('title').focus();
+}
 
 function updateNet(){
   const p=Number($('price').value);
@@ -212,6 +237,7 @@ function updateNet(){
   else $('net').style.display='none';
 }
 $('price').addEventListener('input',updateNet);
+$('again').addEventListener('click',listAnother);
 
 function paintThumbs(){
   $('thumbs').innerHTML=photos.map((p,i)=>
@@ -277,7 +303,10 @@ $('form').addEventListener('submit',async e=>{
         p_address:address
       })});
     if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(_){}; throw new Error(t); }
+    listed++;
+    if(listed>1){ $('tally').style.display='block'; $('tally').textContent='✅ '+listed+' cards submitted this session.'; }
     $('form').style.display='none'; $('done').style.display='block';
+    $('submit').disabled=false; m.textContent='';
     window.scrollTo(0,0);
   }catch(err){ m.textContent='Couldn’t submit: '+err.message; m.className='msg err'; $('submit').disabled=false; }
 });
