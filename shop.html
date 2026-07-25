@@ -72,6 +72,46 @@ h1 .accent{color:var(--gold)}
 .paybar p{margin:0;font-size:14px;color:var(--muted);line-height:1.6}
 .paybar button{margin-top:12px;background:var(--gold);color:#171204;border:none;border-radius:9px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
 .paybar button:disabled{opacity:.5}
+/* ── search / sort / filter bar ── */
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.tools input,.tools select{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 11px;font-size:13.5px;font-family:inherit}
+.tools input:focus,.tools select:focus{outline:none;border-color:var(--gold)}
+.tools .search{flex:1;min-width:200px}
+.tools .num{width:92px}
+.tools .clear{background:none;border:1px solid var(--line);color:var(--muted);border-radius:9px;padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.tools .clear:hover{border-color:var(--red);color:var(--red)}
+.count{font-size:12.5px;color:var(--muted);margin:0 0 16px;min-height:18px}
+.count b{color:var(--txt)}
+/* ── watch ── */
+.watch{position:absolute;top:9px;right:9px;z-index:2;background:rgba(12,13,14,.74);border:1px solid var(--line);color:var(--muted);border-radius:20px;width:33px;height:33px;font-size:14px;line-height:1;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;padding:0}
+.watch:hover{border-color:var(--gold);color:var(--gold)}
+.watch.on{background:var(--gold);border-color:var(--gold);color:#1a1508}
+.watchdriver{background:none;border:1px dashed var(--line);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.watchdriver:hover{border-color:var(--gold);color:var(--gold)}
+.watchdriver.on{border-style:solid;border-color:var(--gold);color:var(--gold)}
+/* ── seller byline + storefront ── */
+.byline{font-size:11.5px;color:var(--muted);margin-top:-2px}
+.byline a{color:var(--muted);text-decoration:none;border-bottom:1px dotted #3c4148}
+.byline a:hover{color:var(--gold);border-color:var(--gold)}
+.store{display:none;background:linear-gradient(100deg,rgba(217,184,120,.10),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 20px}
+.store h2{margin:0;font-size:22px}
+.store .hnd{font-size:12.5px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+.store .stats{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.store .stats b{color:var(--txt);font-weight:700}
+.store .vf{color:var(--green);font-weight:700}
+.followbtn{margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.followbtn:hover{background:rgba(217,184,120,.12)}
+.followbtn.on{background:var(--gold);color:#1a1508}
+/* ── comments ── */
+.cmtbtn{width:100%;margin-top:7px;background:none;border:none;color:var(--muted);padding:2px 0 0;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left}
+.cmtbtn:hover{color:var(--gold)}
+.cmtlist{max-height:240px;overflow-y:auto;margin:0 0 14px;display:flex;flex-direction:column;gap:10px}
+.cmt{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.cmt .who{font-size:12px;font-weight:700;color:var(--gold)}
+.cmt .when{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
+.cmt .txt{font-size:13.5px;line-height:1.5;margin-top:3px;white-space:pre-wrap;word-break:break-word}
+.cmtempty{color:var(--muted);font-size:13px;text-align:center;padding:10px 0 14px}
+.toast{display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold);color:var(--txt);border-radius:11px;padding:12px 18px;font-size:14px;z-index:80;box-shadow:0 8px 30px rgba(0,0,0,.55);max-width:92vw}
 </style>
 </head>
 <body>
@@ -90,7 +130,25 @@ h1 .accent{color:var(--gold)}
     <button id="payBtn" style="display:none">Complete my purchase</button>
   </div>
 
+  <div class="store" id="store"></div>
+
   <div class="chips" id="chips"></div>
+
+  <div class="tools" id="tools" style="display:none">
+    <input class="search" id="q" type="search" placeholder="Search — driver, set, year, grade, cert…" autocomplete="off">
+    <select id="sort">
+      <option value="new">Newest first</option>
+      <option value="plow">Price: low → high</option>
+      <option value="phigh">Price: high → low</option>
+      <option value="driver">Driver A–Z</option>
+    </select>
+    <select id="fgrade"><option value="">Any grade</option></select>
+    <input class="num" id="pmin" type="number" min="0" step="1" placeholder="Min $">
+    <input class="num" id="pmax" type="number" min="0" step="1" placeholder="Max $">
+    <button class="clear" id="clearBtn">Clear</button>
+  </div>
+  <div class="count" id="count"></div>
+
   <div class="state" id="state">Loading the vault…</div>
   <div class="grid" id="grid"></div>
   <div id="soldWrap" style="display:none">
@@ -99,7 +157,7 @@ h1 .accent{color:var(--gold)}
   </div>
 
   <div class="foot">
-    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v2</span></span>
+    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v4</span></span>
     <span>Questions about a card? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></span>
   </div>
 </div>
@@ -109,6 +167,7 @@ h1 .accent{color:var(--gold)}
     <div id="ofForm">
       <h3 id="ofTitle">Card</h3>
       <div class="ask" id="ofAsk"></div>
+      <input type="hidden" id="ofId">
       <label>Your offer (USD)</label><input id="ofAmount" type="number" min="1" step="0.01" placeholder="e.g. 400">
       <div class="g2"><div><label>Name</label><input id="ofName" placeholder="Optional"></div>
         <div><label>Email</label><input id="ofEmail" type="email" placeholder="you@email.com"></div></div>
@@ -125,6 +184,42 @@ h1 .accent{color:var(--gold)}
   </div>
 </div>
 
+<div class="modal" id="watchModal">
+  <div class="sheet">
+    <div id="wForm">
+      <h3 id="wTitle">Watch this card</h3>
+      <div class="ask" id="wAsk"></div>
+      <label>Your email</label><input id="wEmail" type="email" placeholder="you@email.com">
+      <div class="err" id="wErr"></div>
+      <div class="row"><button class="send" id="wSend">Watch it</button><button class="cancel" id="wCancel">Cancel</button></div>
+      <p style="color:var(--muted);font-size:12px;margin:12px 0 0;line-height:1.5">
+        One email when something happens to this card. No newsletter, no digest — and every
+        message has a one-click stop link.</p>
+    </div>
+    <div id="wDone" class="done" style="display:none">
+      <div class="i">👀</div>
+      <h3>You're watching it</h3>
+      <p style="color:var(--muted);font-size:14px" id="wDoneMsg"></p>
+      <button class="cancel" style="width:100%;margin-top:8px" id="wClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="cmtModal">
+  <div class="sheet">
+    <h3>Comments</h3>
+    <div class="ask" id="cmtCard"></div>
+    <div class="cmtlist" id="cmtList"></div>
+    <div class="g2"><div><label>Name</label><input id="cmtName" maxlength="40" placeholder="Shown with your comment"></div>
+      <div><label>Email <span style="text-transform:none;letter-spacing:0">(never shown)</span></label><input id="cmtEmail" type="email" placeholder="you@email.com"></div></div>
+    <label>Comment</label><textarea id="cmtBody" maxlength="500" placeholder="Ask about the card, talk condition, talk racing…"></textarea>
+    <div class="err" id="cmtErr"></div>
+    <div class="row"><button class="send" id="cmtSend">Post comment</button><button class="cancel" id="cmtCancel">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 /* ── config: same project as the main site ── */
 const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
@@ -137,22 +232,87 @@ const money=v=>v==null?'—':'$'+Math.round(Number(v)).toLocaleString();
 function ago(iso){ if(!iso)return ''; const h=(Date.now()-new Date(iso))/36e5;
   if(h<48)return Math.max(1,Math.round(h))+'h ago'; return Math.round(h/24)+'d ago'; }
 
-let ALL=[], DRIVER=(new URLSearchParams(location.search).get('driver')||'').trim().toLowerCase()||null;
+const QS=new URLSearchParams(location.search);
+let ALL=[], STORE=null,
+    DRIVER=(QS.get('driver')||'').trim().toLowerCase()||null,
+    SELLER=(QS.get('seller')||'').trim().toLowerCase()||null,
+    SEARCH='', SORT='new', GRADE='', PMIN=null, PMAX=null;
+
+/* remembered locally so the ♡ stays filled on return visits and we don't
+   ask for the same email twice. Nothing here is trusted by the server. */
+const LS={
+  get email(){ try{ return localStorage.getItem('f1ci_watch_email')||''; }catch(_){ return ''; } },
+  set email(v){ try{ localStorage.setItem('f1ci_watch_email',v); }catch(_){} },
+  get name(){ try{ return localStorage.getItem('f1ci_name')||''; }catch(_){ return ''; } },
+  set name(v){ try{ localStorage.setItem('f1ci_name',v); }catch(_){} },
+  get set(){ try{ return new Set(JSON.parse(localStorage.getItem('f1ci_watching')||'[]')); }catch(_){ return new Set(); } },
+  save(s){ try{ localStorage.setItem('f1ci_watching',JSON.stringify([...s])); }catch(_){} }
+};
+let WATCHING=LS.set;
+let CMTS={};   // listing_id → visible comment count, fetched once at load
+
+const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.style.display='block';
+  clearTimeout(toast._t); toast._t=setTimeout(()=>{ t.style.display='none'; },4200);
+}
+
+async function rpc(name,body){
+  const r=await fetch(SB_URL+'/rest/v1/rpc/'+name,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body||{})});
+  let j=null; try{ j=await r.json(); }catch(_){}
+  if(!r.ok){ throw new Error((j&&(j.message||j.error))||('HTTP '+r.status)); }
+  return j;
+}
 
 document.addEventListener('DOMContentLoaded',()=>{
   $('ofSend').onclick=sendOffer;
   $('ofCancel').onclick=closeOffer; $('ofClose').onclick=closeOffer;
   $('offerModal').addEventListener('click',e=>{ if(e.target===$('offerModal')) closeOffer(); });
+
+  $('wSend').onclick=sendWatch;
+  $('wCancel').onclick=closeWatch; $('wClose').onclick=closeWatch;
+  $('watchModal').addEventListener('click',e=>{ if(e.target===$('watchModal')) closeWatch(); });
+  $('wEmail').addEventListener('keydown',e=>{ if(e.key==='Enter') sendWatch(); });
+
+  $('cmtSend').onclick=sendComment;
+  $('cmtCancel').onclick=closeComments;
+  $('cmtModal').addEventListener('click',e=>{ if(e.target===$('cmtModal')) closeComments(); });
+
+  const repaint=()=>{ readTools(); paint(); };
+  $('q').addEventListener('input',debounce(repaint,140));
+  $('sort').onchange=repaint; $('fgrade').onchange=repaint;
+  $('pmin').addEventListener('input',debounce(repaint,220));
+  $('pmax').addEventListener('input',debounce(repaint,220));
+  $('clearBtn').onclick=()=>{
+    $('q').value=''; $('sort').value='new'; $('fgrade').value=''; $('pmin').value=''; $('pmax').value='';
+    repaint();
+  };
 });
+
+function readTools(){
+  SEARCH=$('q').value.trim().toLowerCase();
+  SORT=$('sort').value;
+  GRADE=$('fgrade').value;
+  PMIN=$('pmin').value===''?null:Number($('pmin').value);
+  PMAX=$('pmax').value===''?null:Number($('pmax').value);
+}
 
 async function load(){
   try{
-    const r=await fetch(SB_URL+'/rest/v1/rpc/shop_public_listings',{method:'POST',
-      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_driver:null})});   // fetch all; filter client-side so chips stay instant
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    ALL=await r.json();
+    // fetch everything once; every filter below is client-side so typing is instant
+    // comment counts ride along in parallel — and are never allowed to block the shop
+    const [rows,counts]=await Promise.all([
+      rpc('shop_public_listings',{p_driver:null}),
+      rpc('shop_comment_counts',{}).catch(()=>({}))
+    ]);
+    ALL=rows; CMTS=counts||{};
     $('state').style.display='none';
+    $('tools').style.display='flex';
+    buildGradeOptions();
+    if(SELLER) await loadStore(SELLER);
     paint();
   }catch(e){
     $('state').textContent='Couldn’t load the shop right now — try a refresh.';
@@ -160,9 +320,93 @@ async function load(){
   }
 }
 
+/* grade list is built from what's actually in stock, so it never offers
+   a filter that returns nothing */
+function buildGradeOptions(){
+  /* case-insensitive: "raw" and "Raw" are one grade, not two */
+  const m=new Map();
+  ALL.filter(r=>r.status==='available'&&r.grade).forEach(r=>{
+    const raw=String(r.grade).trim(); if(!raw) return;
+    const k=raw.toLowerCase();
+    if(!m.has(k)) m.set(k, /^[a-z]/i.test(raw) ? raw.charAt(0).toUpperCase()+raw.slice(1).toLowerCase() : raw);
+  });
+  const g=[...m.entries()].sort((a,b)=>a[1].localeCompare(b[1],undefined,{numeric:true}));
+  $('fgrade').innerHTML='<option value="">Any grade</option>'
+    +g.map(p=>'<option value="'+esc(p[0])+'">'+esc(p[1])+'</option>').join('');
+}
+
+async function loadStore(handle){
+  try{
+    const j=await rpc('shop_storefront',{p_handle:handle});
+    STORE=(j&&j.ok)?j:null;
+  }catch(_){ STORE=null; }
+}
+
+function paintStore(){
+  const el=$('store');
+  if(!SELLER){ el.style.display='none'; return; }
+  if(!STORE){
+    el.style.display='block';
+    el.innerHTML='<h2>Seller not found</h2><div class="hnd">This storefront doesn’t exist or has been made private.</div>';
+    return;
+  }
+  el.style.display='block';
+  const joined=STORE.joined?new Date(STORE.joined).toLocaleDateString(undefined,{month:'long',year:'numeric'}):null;
+  const following=WATCHING.has('s:'+STORE.handle);
+  el.innerHTML='<h2>'+esc(STORE.name)+'</h2>'
+    +'<div class="hnd">@'+esc(STORE.handle)+'</div>'
+    +'<div class="stats">'
+    +'<span><b>'+STORE.available+'</b> for sale</span>'
+    +'<span><b>'+STORE.sold+'</b> sold</span>'
+    +(joined?'<span>Selling since <b>'+esc(joined)+'</b></span>':'')
+    +(STORE.verified?'<span class="vf">✓ Payouts verified</span>':'')
+    +'</div>'
+    +'<button class="followbtn'+(following?' on':'')+'" id="followBtn">'
+    +(following?'✓ Following':'＋ Follow — email me their new cards')+'</button>';
+  $('followBtn').onclick=()=>{
+    if(WATCHING.has('s:'+STORE.handle)){ toast('You already follow '+STORE.name+' — every email has a one-click stop link.'); return; }
+    openWatch({seller:STORE.handle,sname:STORE.name});
+  };
+}
+
+/* the one place every filter is applied, in a fixed order */
+function visible(){
+  let rows=ALL.slice();
+  if(SELLER) rows=rows.filter(r=>r.seller_handle===SELLER);
+  if(DRIVER) rows=rows.filter(r=>r.driver_id===DRIVER);
+  if(GRADE)  rows=rows.filter(r=>String(r.grade||'').trim().toLowerCase()===GRADE);
+  if(PMIN!=null&&!isNaN(PMIN)) rows=rows.filter(r=>Number(r.price_usd)>=PMIN);
+  if(PMAX!=null&&!isNaN(PMAX)) rows=rows.filter(r=>Number(r.price_usd)<=PMAX);
+  if(SEARCH){
+    const terms=SEARCH.split(/\s+/).filter(Boolean);
+    rows=rows.filter(r=>{
+      const hay=[r.title,r.driver_id,r.grade,r.cert,r.seller_name].join(' ').toLowerCase();
+      return terms.every(t=>hay.includes(t));   // every word must match, so more typing narrows
+    });
+  }
+  return rows;
+}
+
+function sortRows(rows){
+  const by={
+    plow:(a,b)=>Number(a.price_usd||0)-Number(b.price_usd||0),
+    phigh:(a,b)=>Number(b.price_usd||0)-Number(a.price_usd||0),
+    driver:(a,b)=>String(a.driver_id||'').localeCompare(String(b.driver_id||'')),
+    new:(a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)
+  }[SORT]||null;
+  return by?rows.slice().sort(by):rows;
+}
+
 function paint(){
+  paintStore();
+
   // header — per-driver shop gets its own storefront branding
-  if(DRIVER){
+  if(SELLER&&STORE){
+    $('hTitle').innerHTML='<span class="accent">'+esc(STORE.name)+'</span>';
+    $('hSub').textContent='Every card '+STORE.name+' currently has for sale on F1 Card Index.';
+    $('allLink').style.display='inline';
+    document.title=STORE.name+' · F1 Card Index';
+  }else if(DRIVER){
     $('hTitle').innerHTML='<span class="accent">'+esc(cap(DRIVER))+'</span> Shop';
     $('hSub').textContent='Every '+cap(DRIVER)+' card currently for sale on F1 Card Index. Ships insured & tracked — buy instantly via secure checkout.';
     $('allLink').style.display='inline';
@@ -180,40 +424,67 @@ function paint(){
   const drivers=Object.keys(counts).sort();
   $('chips').innerHTML=
     '<button class="'+(DRIVER?'':'on')+'" data-d="">All <span class="n">'+ALL.filter(r=>r.status==='available').length+'</span></button>'
-    +drivers.map(d=>'<button class="'+(DRIVER===d?'on':'')+'" data-d="'+esc(d)+'">'+esc(cap(d))+' <span class="n">'+counts[d]+'</span></button>').join('');
-  $('chips').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    +drivers.map(d=>'<button class="'+(DRIVER===d?'on':'')+'" data-d="'+esc(d)+'">'+esc(cap(d))+' <span class="n">'+counts[d]+'</span></button>').join('')
+    +(DRIVER?'<button class="watchdriver'+(WATCHING.has('d:'+DRIVER)?' on':'')+'" id="wDriverBtn">'
+        +(WATCHING.has('d:'+DRIVER)?'👀 Watching '+esc(cap(DRIVER)):'👀 Alert me on new '+esc(cap(DRIVER))+' cards')+'</button>':'');
+
+  $('chips').querySelectorAll('button[data-d]').forEach(b=>b.onclick=()=>{
     DRIVER=b.dataset.d||null;
     const u=new URL(location.href);
     if(DRIVER)u.searchParams.set('driver',DRIVER); else u.searchParams.delete('driver');
     history.replaceState(null,'',u);
     paint();
   });
+  if($('wDriverBtn')) $('wDriverBtn').onclick=()=>openWatch({driver:DRIVER});
 
-  const mine=DRIVER?ALL.filter(r=>r.driver_id===DRIVER):ALL;
-  const avail=mine.filter(r=>r.status==='available');
-  const sold=mine.filter(r=>r.status==='sold');
+  const rows=sortRows(visible());
+  const avail=rows.filter(r=>r.status==='available');
+  const sold=rows.filter(r=>r.status==='sold');
+
+  // "12 cards · $12–$399" tells you at a glance whether a filter went too far
+  const filtered=!!(SEARCH||GRADE||PMIN!=null||PMAX!=null);
+  if(avail.length){
+    const ps=avail.map(r=>Number(r.price_usd)).filter(n=>!isNaN(n));
+    const lo=ps.length?Math.min(...ps):null, hi=ps.length?Math.max(...ps):null;
+    $('count').innerHTML='<b>'+avail.length+'</b> card'+(avail.length===1?'':'s')
+      +(filtered?' match':' for sale')
+      +(lo!=null?' · '+money(lo)+(hi!==lo?' – '+money(hi):''):'');
+  }else{
+    $('count').innerHTML='';
+  }
 
   $('grid').innerHTML=avail.map(card).join('')
-    ||'<div class="empty" style="grid-column:1/-1">'+(DRIVER
-      ?'No '+esc(cap(DRIVER))+' cards in the shop right now — new inventory drops often, check back soon. 🏁'
+    ||'<div class="empty" style="grid-column:1/-1">'+(
+        filtered?'Nothing matches that. Try clearing a filter — or watch a driver and we’ll email you when one lands. 🏁'
+      : SELLER ?'This seller has nothing listed right now. 🏁'
+      : DRIVER ?'No '+esc(cap(DRIVER))+' cards in the shop right now — new inventory drops often, check back soon. 🏁'
       :'The vault is being restocked — check back soon. 🏁')+'</div>';
 
   $('soldWrap').style.display=sold.length?'block':'none';
   $('soldGrid').innerHTML=sold.map(card).join('');
   wireOffers();
+  wireWatch();
+  wireComments();
 }
 
 function card(r){
   const soldCls=r.status==='sold'?' sold':'';
+  const watched=WATCHING.has('c:'+r.id);
   return '<div class="item'+soldCls+'">'
     +'<div class="ph">'
     +(r.status==='sold'?'<div class="ribbon">SOLD</div>':'')
+    +(r.status!=='sold'
+      ?'<button class="watch'+(watched?' on':'')+'" data-watch="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'" '
+        +'title="'+(watched?'You’re watching this card':'Email me if the price drops')+'" '
+        +'aria-label="'+(watched?'Watching this card':'Watch this card')+'">'+(watched?'★':'☆')+'</button>':'')
     +(r.image_url
       ?'<img src="'+esc(r.image_url)+'" alt="'+esc(r.title||'F1 card')+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">'
       :'<div class="noimg">🃏</div>')
     +'</div><div class="body">'
     +(r.driver_id?'<div class="drv">'+esc(cap(r.driver_id))+'</div>':'')
     +'<div class="ttl">'+esc(r.title||'')+'</div>'
+    +(r.seller_handle&&!SELLER
+      ?'<div class="byline">by <a href="?seller='+encodeURIComponent(r.seller_handle)+'">'+esc(r.seller_name||'a seller')+'</a></div>':'')
     +'<div class="meta">'
     +(r.grade?'<span class="pill grade">'+esc(r.grade)+'</span>':'')
     +(r.cert?'<span class="pill">cert '+esc(r.cert)+'</span>':'')
@@ -225,7 +496,103 @@ function card(r){
     +'</div>'
     +(r.status!=='sold'&&r.allow_offers!==false
       ?'<button class="offerbtn" data-id="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'" data-price="'+esc(r.price_usd)+'">or make an offer</button>':'')
+    +'<button class="cmtbtn" data-cmt="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'">💬 '
+      +(CMTS[r.id]?CMTS[r.id]+' comment'+(CMTS[r.id]===1?'':'s'):'Comment')+'</button>'
     +'</div></div>';
+}
+
+/* ── watchlist ── */
+let WCTX=null;
+function wireWatch(){
+  document.querySelectorAll('.watch').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.watch;
+    if(WATCHING.has('c:'+id)){ toast('You’re already watching this card — use the “stop watching” link in the email to turn it off.'); return; }
+    openWatch({listing:id,title:b.dataset.title});
+  });
+}
+function openWatch(ctx){
+  WCTX=ctx;
+  if(ctx.seller){
+    $('wTitle').textContent='Follow '+ctx.sname;
+    $('wAsk').textContent='We’ll email you whenever '+ctx.sname+' lists a new card. Nothing else.';
+    $('wSend').textContent='Follow';
+  }else if(ctx.driver){
+    $('wTitle').textContent='Alert me on '+cap(ctx.driver)+' cards';
+    $('wAsk').textContent='We’ll email you whenever a new '+cap(ctx.driver)+' card lists, or one drops in price.';
+    $('wSend').textContent='Watch '+cap(ctx.driver);
+  }else{
+    $('wTitle').textContent='Watch this card';
+    $('wAsk').textContent=ctx.title||'';
+    $('wSend').textContent='Watch it';
+  }
+  $('wEmail').value=LS.email;
+  $('wErr').textContent=''; $('wForm').style.display='block'; $('wDone').style.display='none';
+  $('watchModal').style.display='flex';
+  setTimeout(()=>$('wEmail').focus(),40);
+}
+function closeWatch(){ $('watchModal').style.display='none'; }
+async function sendWatch(){
+  const email=$('wEmail').value.trim(), e=$('wErr'); e.textContent='';
+  if(!email||!/.+@.+\..+/.test(email)){ e.textContent='Enter a valid email.'; return; }
+  const btn=$('wSend'), label=btn.textContent;
+  btn.disabled=true; btn.textContent='…';
+  try{
+    const j=await rpc('watch_add',{p_email:email,p_driver:WCTX.driver||null,p_listing:WCTX.listing||null,p_seller:WCTX.seller||null});
+    LS.email=email;
+    WATCHING.add(WCTX.seller?('s:'+WCTX.seller):WCTX.driver?('d:'+WCTX.driver):('c:'+WCTX.listing));
+    LS.save(WATCHING);
+    $('wDoneMsg').textContent='We’ll email '+email+' about '+((j&&j.label)||'it')
+      +'. Every message has a one-click stop link.';
+    $('wForm').style.display='none'; $('wDone').style.display='block';
+    paint();
+  }catch(err){ e.textContent=err.message; }
+  finally{ btn.disabled=false; btn.textContent=label; }
+}
+
+/* ── comments ── */
+let CCTX=null;
+function wireComments(){
+  document.querySelectorAll('.cmtbtn').forEach(b=>b.onclick=()=>openComments(b.dataset.cmt,b.dataset.title));
+}
+function cmtRow(c){
+  const when=c.at?ago(c.at):'';
+  return '<div class="cmt"><span class="who">'+esc(c.name)
+    +'</span><span class="when">'+esc(when)+'</span><div class="txt">'+esc(c.body)+'</div></div>';
+}
+async function openComments(id,title){
+  CCTX=id;
+  $('cmtCard').textContent=title||'';
+  $('cmtName').value=LS.name; $('cmtEmail').value=LS.email; $('cmtBody').value='';
+  $('cmtErr').textContent='';
+  $('cmtList').innerHTML='<div class="cmtempty">Loading…</div>';
+  $('cmtModal').style.display='flex';
+  try{
+    const list=await rpc('comment_list',{p_listing:id});
+    $('cmtList').innerHTML=(list&&list.length)
+      ?list.map(cmtRow).join('')
+      :'<div class="cmtempty">No comments yet — start the conversation.</div>';
+    $('cmtList').scrollTop=$('cmtList').scrollHeight;
+  }catch(_){ $('cmtList').innerHTML='<div class="cmtempty">Couldn’t load comments — try again.</div>'; }
+}
+function closeComments(){ $('cmtModal').style.display='none'; }
+async function sendComment(){
+  const name=$('cmtName').value.trim(), email=$('cmtEmail').value.trim(), body=$('cmtBody').value.trim();
+  const e=$('cmtErr'); e.textContent='';
+  if(name.length<2){ e.textContent='Add a name (it shows with your comment).'; return; }
+  if(!email||!/.+@.+\..+/.test(email)){ e.textContent='Enter a valid email — it’s never shown.'; return; }
+  if(body.length<2){ e.textContent='Write a comment first.'; return; }
+  const btn=$('cmtSend'); btn.disabled=true; btn.textContent='Posting…';
+  try{
+    const j=await rpc('comment_add',{p_listing:CCTX,p_email:email,p_name:name,p_body:body});
+    LS.name=name; LS.email=email;
+    const empty=$('cmtList').querySelector('.cmtempty'); if(empty) $('cmtList').innerHTML='';
+    $('cmtList').insertAdjacentHTML('beforeend',cmtRow((j&&j.comment)||{name:name,body:body,at:new Date().toISOString()}));
+    $('cmtList').scrollTop=$('cmtList').scrollHeight;
+    $('cmtBody').value='';
+    CMTS[CCTX]=(CMTS[CCTX]||0)+1;
+    paint();
+  }catch(err){ e.textContent=err.message; }
+  finally{ btn.disabled=false; btn.textContent='Post comment'; }
 }
 
 /* ── offers ── */
@@ -294,10 +661,37 @@ async function payAcceptedOffer(id){
   }
 }
 
-const PAY=(new URLSearchParams(location.search).get('pay')||'').trim();
+const PAY=(QS.get('pay')||'').trim();
 if(PAY){
   try{ history.replaceState({},'', location.pathname); }catch(_){}
   payAcceptedOffer(PAY);
+}
+
+/* ── one-click stop-watching, from the footer of every alert email ── */
+const UNWATCH=(QS.get('unwatch')||'').trim();
+if(UNWATCH){
+  const u=new URL(location.href); u.searchParams.delete('unwatch');
+  try{ history.replaceState({},'',u); }catch(_){}
+  rpc('watch_remove',{p_token:UNWATCH})
+    .then(j=>{
+      // the server is deliberately vague about unknown tokens, so treat any
+      // success as "you're off the list" — clearing local state either way
+      toast(j&&j.label?('Stopped watching '+j.label+'. No more emails about it.')
+                       :'Stopped watching. No more emails about it.');
+      WATCHING=new Set(); LS.save(WATCHING);
+      if(ALL.length) paint();
+    })
+    .catch(()=>toast('Couldn’t update that watch — email hello@f1cardindex.com and we’ll remove you.'));
+}
+
+/* ── one-click comment removal, from the seller-notification email ── */
+const UNCOMMENT=(QS.get('uncomment')||'').trim();
+if(UNCOMMENT){
+  const u=new URL(location.href); u.searchParams.delete('uncomment');
+  try{ history.replaceState({},'',u); }catch(_){}
+  rpc('comment_remove',{p_token:UNCOMMENT})
+    .then(()=>toast('Comment removed. It’s gone from the card.'))
+    .catch(()=>toast('Couldn’t remove that comment — email hello@f1cardindex.com and we’ll handle it.'));
 }
 
 load();
