@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Seller Dashboard · F1 Card Index</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 90px}
+a{color:var(--gold)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.brand:hover{color:var(--gold)}
+.who{font-size:12.5px;color:var(--muted);text-align:right}
+.who b{display:block;color:var(--txt);font-size:13px}
+.who button{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;padding:0;font-family:inherit}
+.who button:hover{color:var(--red)}
+h1{font-size:27px;margin:0 0 4px;letter-spacing:-.01em}
+h1 .accent{color:var(--gold)}
+.sub{color:var(--muted);font-size:14.5px;margin:0 0 22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+h3{margin:0 0 14px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+input,textarea,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--txt);padding:11px 12px;font-size:15px;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+textarea{resize:vertical;min-height:70px}
+.btn{background:var(--gold);color:#171204;border:none;border-radius:9px;padding:12px 18px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:700}
+.btn.ghost:hover{color:var(--txt);border-color:var(--muted)}
+.btn.green{background:var(--green);color:#04140b}
+.btn.sm{padding:9px 14px;font-size:13.5px}
+.msg{font-size:14px;margin-top:12px;min-height:20px}
+.msg.err{color:var(--red)} .msg.ok{color:var(--green)}
+
+/* ── signed-out ── */
+.gate{max-width:420px;margin:6vh auto 0;text-align:center}
+.gate .ico{font-size:46px}
+.gate h1{margin-top:12px}
+.gate .card{text-align:left;margin-top:22px}
+.gate .fine{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.6}
+
+/* ── stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 12px;text-align:center}
+.stat .n{font-size:20px;font-weight:800;font-family:ui-monospace,monospace}
+.stat .l{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+@media(max-width:560px){.stats{grid-template-columns:1fr 1fr}}
+
+/* ── alert banners ── */
+.alert{border-radius:12px;padding:15px 16px;margin-bottom:16px;font-size:14px;line-height:1.6}
+.alert.warn{background:linear-gradient(100deg,rgba(230,182,92,.12),var(--panel));border:1px solid #4a3c17}
+.alert.hot{background:linear-gradient(100deg,rgba(57,224,138,.12),var(--panel));border:1px solid #1c5638}
+.alert b{color:var(--txt)}
+.alert .btn{margin-top:11px}
+
+/* ── card rows ── */
+.row{display:flex;gap:13px;padding:14px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:none}
+.thumb{width:62px;height:62px;flex:0 0 62px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.body{flex:1;min-width:0}
+.ttl{font-size:15px;font-weight:700;line-height:1.35}
+.meta{font-size:12.5px;color:var(--muted);margin-top:3px}
+.price{font-family:ui-monospace,monospace;color:var(--gold);font-weight:700}
+.chip{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:20px;margin-top:6px}
+.chip.review{background:rgba(130,140,147,.16);color:var(--muted)}
+.chip.live{background:rgba(57,224,138,.15);color:var(--green)}
+.chip.offer{background:rgba(230,182,92,.18);color:var(--amber)}
+.chip.sold{background:rgba(76,201,176,.15);color:var(--teal)}
+.chip.ship{background:rgba(239,106,106,.15);color:var(--red)}
+.chip.paid{background:rgba(57,224,138,.15);color:var(--green)}
+.chip.rej{background:rgba(239,106,106,.15);color:var(--red)}
+.acts{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── offers ── */
+.offer{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-top:9px}
+.offer .amt{font-size:17px;font-weight:800;color:var(--green);font-family:ui-monospace,monospace}
+.offer .from{font-size:12.5px;color:var(--muted)}
+.offer .note{font-size:13px;font-style:italic;color:#c3ccd2;margin-top:7px;padding-left:10px;border-left:2px solid var(--line)}
+.offer .acts{margin-top:11px}
+.net{font-size:12.5px;color:var(--muted);margin-top:4px}
+.net b{color:var(--green);font-family:ui-monospace,monospace}
+
+/* ── ship box ── */
+.ship{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:13px;margin-top:10px}
+.ship .addr{font-family:ui-monospace,monospace;font-size:13px;white-space:pre-line;color:var(--txt);background:var(--bg);border-radius:8px;padding:10px;margin:8px 0 12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.g2{grid-template-columns:1fr}}
+.track{font-size:12.5px;color:var(--muted);margin-top:8px}
+.empty{text-align:center;padding:26px 12px;color:var(--muted);font-size:14.5px}
+.foot{margin-top:34px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);text-align:center}
+.spin{text-align:center;padding:60px 0;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- ══════════ SIGNED OUT ══════════ -->
+<div class="wrap" id="gate" style="display:none">
+  <div class="gate">
+    <div class="ico">🏁</div>
+    <h1>Your <span class="accent">seller</span> dashboard</h1>
+    <p class="sub">Every card you've listed, offers waiting on you, sales and payouts — all in one place.</p>
+
+    <div class="card" id="gateForm">
+      <div style="margin-bottom:12px">
+        <label for="email">Email address</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@email.com">
+      </div>
+      <button class="btn" id="sendLink" style="width:100%">Email me a sign-in link</button>
+      <div class="msg" id="gateMsg"></div>
+      <div class="fine">No password to create or remember. We'll email you a link that signs you straight in and keeps you signed in for 60 days.</div>
+    </div>
+
+    <div class="card" id="gateSent" style="display:none;text-align:center">
+      <div style="font-size:40px">📬</div>
+      <h2 style="font-size:20px;margin:10px 0 6px">Check your inbox</h2>
+      <p style="color:var(--muted);font-size:14.5px;margin:0">We sent a sign-in link to <b id="sentTo" style="color:var(--txt)"></b>. It works once and expires in 30 minutes.</p>
+      <p style="color:var(--muted);font-size:13px;margin:14px 0 0">Nothing after a minute? Check spam, or <button class="btn ghost sm" id="again" style="margin-top:8px">try a different email</button></p>
+    </div>
+
+    <p class="fine">New here? <a href="/consign.html">List your first card →</a></p>
+  </div>
+</div>
+
+<!-- ══════════ LOADING ══════════ -->
+<div class="wrap" id="loading"><div class="spin">Loading your dashboard…</div></div>
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="wrap" id="dash" style="display:none">
+  <div class="top">
+    <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
+    <div class="who"><b id="whoEmail"></b><button id="signout">Sign out</button></div>
+  </div>
+
+  <h1>My <span class="accent">cards</span></h1>
+  <p class="sub" id="dashSub">Everything you've listed on the Index.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="n" id="sLive">—</div><div class="l">Live</div></div>
+    <div class="stat"><div class="n" id="sOffers" style="color:var(--amber)">—</div><div class="l">Offers</div></div>
+    <div class="stat"><div class="n" id="sSold">—</div><div class="l">Sold</div></div>
+    <div class="stat"><div class="n" id="sEarned" style="color:var(--green)">—</div><div class="l">Earned</div></div>
+  </div>
+
+  <div id="alerts"></div>
+
+  <div id="attention"></div>
+
+  <div class="card">
+    <h3>Your cards</h3>
+    <div id="cards"></div>
+  </div>
+
+  <div class="card">
+    <h3>Profile</h3>
+    <div style="margin-bottom:12px">
+      <label for="pName">Name</label>
+      <input id="pName" autocomplete="name" placeholder="Your name">
+    </div>
+    <div style="margin-bottom:12px">
+      <label for="pAddr">Return address</label>
+      <textarea id="pAddr" placeholder="Street&#10;City, ST 12345"></textarea>
+      <div style="font-size:12px;color:var(--muted);margin-top:5px">Used as the ship-from on your labels, and prefilled when you list a new card.</div>
+    </div>
+    <button class="btn ghost sm" id="saveProfile">Save profile</button>
+    <span class="msg" id="profMsg" style="margin-left:10px"></span>
+  </div>
+
+  <div style="text-align:center;margin-top:22px">
+    <a class="btn" href="/consign.html" style="text-decoration:none;display:inline-block">＋ List another card</a>
+  </div>
+
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v1</span></div>
+</div>
+
+<script>
+/* ────────── config ────────── */
+const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
+const KEY='f1ci_seller_session';
+const $=id=>document.getElementById(id);
+let DATA=null, FEE=7;
+
+async function rpc(fn,body){
+  const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body||{})});
+  const t=await r.text(); let j=null; try{ j=JSON.parse(t); }catch(_){}
+  if(!r.ok) throw new Error((j&&(j.message||j.error||j.hint))||t||('HTTP '+r.status));
+  return j;
+}
+const session=()=>{ try{ return localStorage.getItem(KEY); }catch(_){ return null; } };
+const setSession=v=>{ try{ v?localStorage.setItem(KEY,v):localStorage.removeItem(KEY); }catch(_){} };
+const money=n=>(n===null||n===undefined||n==='')?'—':'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function ago(ts){
+  if(!ts) return '';
+  const s=Math.floor((Date.now()-new Date(ts).getTime())/1000);
+  if(s<3600) return Math.max(1,Math.floor(s/60))+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+/* ────────── sign in ────────── */
+function showGate(msg){
+  $('loading').style.display='none'; $('dash').style.display='none'; $('gate').style.display='block';
+  if(msg){ $('gateMsg').textContent=msg; $('gateMsg').className='msg err'; }
+}
+$('sendLink').addEventListener('click',async()=>{
+  const em=$('email').value.trim(); const m=$('gateMsg'); m.className='msg'; m.textContent='';
+  if(!em||em.indexOf('@')<0){ m.textContent='Please enter your email address.'; m.className='msg err'; return; }
+  $('sendLink').disabled=true; m.textContent='Sending…';
+  try{
+    await rpc('seller_request_login',{p_email:em});
+    $('sentTo').textContent=em;
+    $('gateForm').style.display='none'; $('gateSent').style.display='block';
+  }catch(e){ m.textContent=e.message; m.className='msg err'; }
+  $('sendLink').disabled=false;
+});
+$('email').addEventListener('keydown',e=>{ if(e.key==='Enter') $('sendLink').click(); });
+$('again').addEventListener('click',()=>{ $('gateSent').style.display='none'; $('gateForm').style.display='block'; $('gateMsg').textContent=''; });
+$('signout').addEventListener('click',async()=>{
+  const s=session(); setSession(null);
+  try{ if(s) await rpc('seller_signout',{p_session:s}); }catch(_){}
+  location.href='/seller.html';
+});
+
+/* ────────── boot ────────── */
+(async function boot(){
+  const url=new URL(location.href);
+  const login=url.searchParams.get('login');
+  if(login){
+    try{
+      const j=await rpc('seller_exchange_login',{p_token:login});
+      setSession(j.session);
+      history.replaceState({},'','/seller.html');
+    }catch(e){ return showGate(e.message); }
+  }
+  if(!session()) return showGate();
+  try{ await load(); }
+  catch(e){
+    if(/session has expired|invalid/i.test(e.message)){ setSession(null); return showGate('Your session expired — sign in again.'); }
+    $('loading').innerHTML='<div class="spin" style="color:var(--red)">Couldn\'t load your dashboard.<br><span style="font-size:13px">'+esc(e.message)+'</span></div>';
+  }
+})();
+
+async function load(){
+  DATA=await rpc('seller_dashboard',{p_session:session()});
+  FEE=DATA.fee_pct||7;
+  $('loading').style.display='none'; $('gate').style.display='none'; $('dash').style.display='block';
+  render();
+}
+
+/* ────────── render ────────── */
+function render(){
+  const p=DATA.profile||{}, subs=DATA.submissions||[], lst=DATA.listings||[];
+  $('whoEmail').textContent=p.email||'';
+  $('pName').value=p.name||''; $('pAddr').value=p.address||'';
+
+  const live=lst.filter(l=>l.status==='available');
+  const sold=lst.filter(l=>['sold','reserved'].indexOf(l.status)>=0);
+  const offers=lst.reduce((n,l)=>n+((l.offers||[]).length),0);
+  const earned=lst.filter(l=>l.payout_released_at).reduce((n,l)=>n+Number(l.net_payout||0),0);
+
+  $('sLive').textContent=live.length;
+  $('sOffers').textContent=offers;
+  $('sSold').textContent=lst.filter(l=>l.sold_at).length;
+  $('sEarned').textContent=earned?money(earned):'$0';
+  $('dashSub').textContent=(subs.length+lst.length)===0
+    ? "You haven't listed anything yet."
+    : (subs.length+lst.length)+' card'+((subs.length+lst.length)===1?'':'s')+' on the Index.';
+
+  /* alerts */
+  const needsShip=lst.filter(l=>l.sold_at&&!l.shipped_at);
+  const anyToken=(lst[0]||{}).manage_token;
+  let A='';
+  if(!p.payout_connected && (sold.length||live.length) && anyToken){
+    A+='<div class="alert warn"><b>🏦 Connect your payout account.</b> '
+      +(sold.length?'You have money waiting.':'Do this now so payment lands the moment a card sells.')
+      +' Stripe verifies your bank in about two minutes — we never see your details.'
+      +'<br><button class="btn sm" onclick="connectPayout(\''+anyToken+'\',this)">Connect payout account</button></div>';
+  }
+  if(offers) A+='<div class="alert hot"><b>💰 You have '+offers+' offer'+(offers===1?'':'s')+' waiting.</b> Offers expire on buyers\' patience — accept or decline below.</div>';
+  if(needsShip.length) A+='<div class="alert warn"><b>📦 '+needsShip.length+' card'+(needsShip.length===1?'':'s')+' sold and needs shipping.</b> The buyer has already paid; add tracking below to start the payout clock.</div>';
+  $('alerts').innerHTML=A;
+
+  /* action-needed section */
+  const hot=lst.filter(l=>(l.offers||[]).length||(l.sold_at&&!l.shipped_at));
+  $('attention').innerHTML=hot.length
+    ? '<div class="card" style="border-color:#4a3c17"><h3 style="color:var(--amber)">⚡ Needs you</h3>'+hot.map(rowHTML).join('')+'</div>' : '';
+
+  /* everything */
+  const rest=lst.filter(l=>hot.indexOf(l)<0);
+  $('cards').innerHTML=(subs.map(subHTML).join('')+rest.map(rowHTML).join(''))
+    || '<div class="empty">Nothing here yet.<br><a href="/consign.html">List your first card →</a></div>';
+}
+
+function subHTML(s){
+  const rejected=s.status==='rejected';
+  return '<div class="row">'
+    +'<div class="thumb">'+(s.image_url?'<img src="'+esc(s.image_url)+'" alt="">':'🃏')+'</div>'
+    +'<div class="body"><div class="ttl">'+esc(s.title||'Untitled card')+'</div>'
+    +'<div class="meta">'+(s.grade?esc(s.grade)+' · ':'')+'<span class="price">'+money(s.asking_price)+'</span> · submitted '+ago(s.created_at)+'</div>'
+    +'<span class="chip '+(rejected?'rej':'review')+'">'+(rejected?'not approved':'in review')+'</span>'
+    +(s.review_note?'<div class="meta" style="margin-top:7px">'+esc(s.review_note)+'</div>':'')
+    +(rejected?'':'<div class="meta" style="margin-top:6px">We check every card by hand — usually a day or two.</div>')
+    +'</div></div>';
+}
+
+function rowHTML(l){
+  const off=l.offers||[];
+  let chip,label;
+  if(l.payout_released_at){ chip='paid'; label='paid out'; }
+  else if(l.delivered_at){ chip='paid'; label='delivered · payout on the way'; }
+  else if(l.shipped_at){ chip='sold'; label='in transit'; }
+  else if(l.sold_at){ chip='ship'; label='sold — ship it'; }
+  else if(l.status==='reserved'){ chip='sold'; label='offer accepted — awaiting payment'; }
+  else if(off.length){ chip='offer'; label=off.length+' offer'+(off.length===1?'':'s'); }
+  else { chip='live'; label='live in the shop'; }
+
+  let h='<div class="row">'
+    +'<div class="thumb">'+(l.image_url?'<img src="'+esc(l.image_url)+'" alt="">':'🃏')+'</div>'
+    +'<div class="body"><div class="ttl">'+esc(l.title||'Untitled card')+'</div>'
+    +'<div class="meta">'+(l.grade?esc(l.grade)+' · ':'')+'<span class="price">'+money(l.reserved_price||l.price_usd)+'</span>'
+    +(l.sold_at?' · sold '+ago(l.sold_at):'')+'</div>'
+    +'<span class="chip '+chip+'">'+label+'</span>';
+
+  /* offers */
+  off.forEach(o=>{
+    h+='<div class="offer"><div class="amt">'+money(o.amount)+'</div>'
+      +'<div class="from">from '+esc(o.buyer_name||'a buyer')+' · '+ago(o.created_at)+'</div>'
+      +'<div class="net">You\'d net <b>'+money(Number(o.amount)*(1-FEE/100))+'</b> after our '+FEE+'% fee</div>'
+      +(o.message?'<div class="note">'+esc(o.message)+'</div>':'')
+      +'<div class="acts">'
+      +'<button class="btn green sm" onclick="decide(\''+o.id+'\',\'accept\',this)">Accept '+money(o.amount)+'</button>'
+      +'<button class="btn ghost sm" onclick="decide(\''+o.id+'\',\'decline\',this)">Decline</button>'
+      +'</div></div>';
+  });
+
+  /* ship panel */
+  if(l.sold_at&&!l.shipped_at){
+    h+='<div class="ship"><div style="font-size:13px;font-weight:700;color:var(--red)">📦 Ship to</div>'
+      +'<div class="addr">'+esc(l.ship_name||'')+'\n'+esc(l.ship_addr||'address pending')+'</div>'
+      +'<div class="g2"><input id="c_'+l.id+'" placeholder="Carrier (USPS)" value="USPS">'
+      +'<input id="t_'+l.id+'" placeholder="Tracking number"></div>'
+      +'<div class="acts"><button class="btn sm" onclick="saveTracking(\''+l.id+'\',this)">Save tracking</button>'
+      +'<a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://cns.usps.com/">Buy a label</a></div>'
+      +'<div class="track">Your payout of <b style="color:var(--green)">'+money(l.net_payout)+'</b> releases once tracking shows delivered.</div>'
+      +'</div>';
+  } else if(l.tracking_number){
+    h+='<div class="track">📮 '+esc(l.carrier||'USPS')+' '+esc(l.tracking_number)
+      +(l.payout_released_at?' · <b style="color:var(--green)">paid '+money(l.net_payout)+'</b>':' · payout '+money(l.net_payout)+' on delivery')+'</div>';
+  }
+
+  return h+'</div></div>';
+}
+
+/* ────────── actions ────────── */
+window.decide=async function(offerId,action,btn){
+  if(action==='decline'&&!confirm('Decline this offer? The buyer will be emailed.')) return;
+  const all=btn.parentNode.querySelectorAll('button'); all.forEach(b=>b.disabled=true);
+  btn.textContent='Working…';
+  try{ await rpc('seller_decide_offer',{p_session:session(),p_offer:offerId,p_action:action}); await load(); }
+  catch(e){ alert(e.message); all.forEach(b=>b.disabled=false); btn.textContent=action==='accept'?'Accept':'Decline'; }
+};
+
+window.saveTracking=async function(id,btn){
+  const carrier=$('c_'+id).value.trim(), num=$('t_'+id).value.trim();
+  if(!num){ alert('Enter the tracking number.'); return; }
+  btn.disabled=true; btn.textContent='Saving…';
+  try{ await rpc('seller_save_tracking',{p_session:session(),p_listing:id,p_carrier:carrier,p_tracking:num}); await load(); }
+  catch(e){ alert(e.message); btn.disabled=false; btn.textContent='Save tracking'; }
+};
+
+window.connectPayout=async function(token,btn){
+  btn.disabled=true; btn.textContent='Opening Stripe…';
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/connect-onboard',{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+SB_KEY},
+      body:JSON.stringify({token:token})});
+    const j=await r.json();
+    if(!j.url) throw new Error(j.error||'Could not start Stripe onboarding');
+    location.href=j.url;
+  }catch(e){ alert(e.message); btn.disabled=false; btn.textContent='Connect payout account'; }
+};
+
+$('saveProfile').addEventListener('click',async()=>{
+  const m=$('profMsg'); m.className='msg'; m.textContent='Saving…';
+  try{
+    await rpc('seller_update_profile',{p_session:session(),p_name:$('pName').value,p_address:$('pAddr').value});
+    m.textContent='Saved ✓'; m.className='msg ok';
+    setTimeout(()=>{ m.textContent=''; },2500);
+  }catch(e){ m.textContent=e.message; m.className='msg err'; }
+});
+</script>
+</body>
+</html>

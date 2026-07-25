@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Card Index · Admin</title>
+<style>
+:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 16px 90px}
+h1{font-size:22px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-size:14px;font-family:inherit}
+.grid3{display:grid;grid-template-columns:2fr 2fr 1fr;gap:10px;margin-bottom:10px}
+button{background:var(--gold);color:#1a1508;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+button.ghost{background:none;border:1px solid var(--line);color:var(--txt);font-weight:600}
+.msg{font-size:13px;margin-top:8px;color:var(--muted)}
+.msg.err{color:var(--red)}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .n{font-size:26px;font-weight:800;font-family:ui-monospace,Menlo,monospace;line-height:1.1}
+.stat .l{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.stat.warn .n{color:var(--amber)}
+.stat.good .n{color:var(--green)}
+.stat.gold .n{color:var(--gold)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
+h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.r,th.r{text-align:right;white-space:nowrap}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.gold{color:var(--gold)}
+.ok{color:var(--green)}
+.stale{color:var(--red);font-weight:700}
+.pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11px;color:var(--muted)}
+.toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolrow a{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 14px;color:var(--txt);text-decoration:none;font-size:13px;font-weight:600}
+.toolrow a:hover{border-color:var(--gold);color:var(--gold)}
+#dash{display:none}
+.ts{font-size:11px;color:var(--muted);text-align:right;margin-top:-6px;margin-bottom:10px}
+.jump{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;background:var(--bg);padding:8px 0;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.jump a{font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 12px;white-space:nowrap}
+.jump a:hover{color:var(--gold);border-color:var(--gold)}
+#social,#queue,.card,.statgrid{scroll-margin-top:56px}
+.fold>summary{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;list-style:none;padding:2px 0;user-select:none}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸ ";color:var(--gold)}
+.fold[open]>summary::before{content:"▾ "}
+.fold{padding:14px 16px}
+.fold:not([open]){padding:12px 16px}
+.qrow{display:grid;grid-template-columns:24px 52px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.qrow.live{border-left:3px solid var(--amber)}
+.qrow img{width:52px;height:52px;object-fit:cover;border-radius:7px;background:var(--panel2)}
+.qrow .noimg{width:52px;height:52px;border-radius:7px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.qt{font-size:13px;font-weight:600;line-height:1.3}
+.qm{font-size:12px;color:var(--muted);margin-top:1px}
+.qm b{color:var(--gold)}
+.qtag{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:0 5px;margin-left:6px;background:rgba(230,182,92,.15);color:var(--amber);border:1px solid #4a3d1d;vertical-align:1px}
+.qact{display:flex;gap:5px}
+.qact button{padding:5px 10px;font-size:12px}
+.shrow{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.shrow.sold{opacity:.55}
+.shrow img{width:52px;height:52px;object-fit:cover;border-radius:7px;background:var(--panel2)}
+.shrow .noimg{width:52px;height:52px;border-radius:7px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.shst{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:1px 7px;margin-left:6px;border:1px solid var(--line);vertical-align:1px}
+.shform{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px;display:none}
+.shform input{background:var(--panel)}
+.shform .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.shform .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:760px){.shform .g2,.shform .g4{grid-template-columns:1fr 1fr}}
+select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:9px 11px;font-size:14px;font-family:inherit}
+.cnrow{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start;border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
+.cnrow .ph{display:flex;gap:4px;flex-wrap:wrap}
+.cnrow .ph a{width:60px;height:60px;border-radius:7px;overflow:hidden;background:var(--panel2);display:block}
+.cnrow .ph img{width:60px;height:60px;object-fit:cover;display:block}
+.cnrow .noimg{width:60px;height:60px;border-radius:7px;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.cnt{font-size:13px;font-weight:600;line-height:1.3}
+.cnm{font-size:12px;color:var(--muted);margin-top:2px}.cnm b{color:var(--gold)}
+.cnseller{font-size:12px;color:var(--muted);margin-top:3px}.cnseller b{color:var(--txt);font-weight:600}
+.cnseller a{color:var(--teal);text-decoration:none}
+.cnst{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:1px 7px;margin-left:6px;vertical-align:1px;border:1px solid var(--line)}
+.cnact{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.cnact button{padding:6px 11px;font-size:12px;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v2</span></h1>
+  <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop listings, market activity, audience, sends.</p>
+
+  <div class="card" id="credCard">
+    <div class="grid3">
+      <div><label>Supabase URL</label><input id="sbUrl" placeholder="https://xxxx.supabase.co"></div>
+      <div><label>Anon key</label><input id="sbKey" type="password" placeholder="eyJ..."></div>
+      <div><label>Admin secret</label><input id="secret" type="password" placeholder="passphrase"></div>
+    </div>
+    <button id="loadBtn" type="button">Load dashboard</button>
+    <button class="ghost" id="saveBtn" type="button">Save creds</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div id="dash">
+    <div class="ts" id="genAt"></div>
+
+    <div class="toolrow">
+      <a href="#queue">🛡️ Approval Queue</a>
+      <a href="#social">📱 Social studio</a>
+      <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">🗄️ Supabase ↗</a>
+      <a href="https://github.com/curatorofspeed/F1/actions" target="_blank" rel="noopener">⚙️ GitHub Actions ↗</a>
+      <a href="https://resend.com/emails" target="_blank" rel="noopener">✉️ Resend ↗</a>
+      <a href="https://www.f1cardindex.com" target="_blank" rel="noopener">🌐 Live site ↗</a>
+    </div>
+
+    <nav class="jump" id="jumpNav">
+      <a href="#social">📱 Social</a>
+      <a href="#queue">🛡️ Queue</a>
+      <a href="#consign">📦 Consign</a>
+      <a href="#shop">🛍️ Shop</a>
+      <a href="#offers">🤝 Offers</a>
+      <a href="#stats">📊 Stats</a>
+      <a href="#sources">📡 Radar</a>
+      <a href="#topSales">💰 Sales</a>
+      <a href="#active">🔥 Active</a>
+      <a href="#audience">👥 Audience</a>
+    </nav>
+
+    <details class="card fold" id="social" open>
+      <summary>📱 Social studio</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <span style="font-size:12.5px;color:var(--muted)">Post:</span>
+        <button class="ghost" id="ptTop" type="button">🏆 Top Sales</button>
+        <button class="ghost" id="ptEnd" type="button">⏱ Ending Soon</button>
+        <button class="ghost" id="ptDriver" type="button">👤 Driver Spotlight</button>
+        <button class="ghost" id="ptRecap" type="button">📊 Week Recap</button>
+        <button class="ghost" id="ptRecord" type="button">🚨 New Record</button>
+      </div>
+      <div id="driverPick" style="display:none;margin-bottom:10px">
+        <select id="ptDriverSel" style="max-width:260px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
+      </div>
+      <div id="recordPick" style="display:none;margin-bottom:10px">
+        <select id="ptRecordSel" style="max-width:300px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <span style="font-size:12.5px;color:var(--muted)">Format:</span>
+        <button class="ghost" id="fmt916" type="button" style="border-color:var(--gold);color:var(--gold)">9:16 Story/Reel</button>
+        <button class="ghost" id="fmt11" type="button">1:1 Feed</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Count:</span>
+        <button class="ghost" id="cnt5" type="button">Top 5</button>
+        <button class="ghost" id="cnt3" type="button">Top 3</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Style:</span>
+        <button class="ghost" id="styList" type="button">List</button>
+        <button class="ghost" id="styHero" type="button">Hero image</button>
+        <button id="dlCard" type="button" style="margin-left:auto">⬇ Download PNG</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from this week's approved sales. Download the PNG (or screenshot it) and post straight to TikTok / IG. Card art shows when the sale has an image.</div>
+      <div id="socialStage" style="overflow:auto;background:#000;border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;justify-content:center"></div>
+      <div class="msg" id="socMsg"></div>
+    </details>
+
+    <div class="statgrid" id="stats"></div>
+
+    <details class="card fold" id="queue" open>
+      <summary>🛡️ Moderation queue</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <input id="qDriver" placeholder="driver filter (blank = all)" style="max-width:220px">
+        <button class="ghost" id="qLoad" type="button">Load pending</button>
+        <button class="ghost" id="qAll" type="button">Select all</button>
+        <button id="qAppr" type="button" style="background:var(--green);color:#052">✓ Approve selected</button>
+        <button id="qRej" type="button" style="background:var(--red);color:#400">✕ Reject selected</button>
+        <span style="font-size:12.5px;color:var(--muted)" id="qCount"></span>
+      </div>
+      <div class="msg" id="qMsg"></div>
+      <div id="qList"></div>
+    </details>
+
+    <details class="card fold" id="consign" open style="scroll-margin-top:56px">
+      <summary>📦 Seller listings</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="ghost" id="cnLoad" type="button">Load submissions</button>
+        <select id="cnFilter" class="sh" style="max-width:210px">
+          <option value="submitted">Submitted · new</option>
+          <option value="approved">Approved · ready to list</option>
+          <option value="listed">Listed</option>
+          <option value="rejected">Rejected</option>
+          <option value="">All statuses</option>
+        </select>
+        <span style="font-size:12.5px;color:var(--muted)" id="cnCount"></span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Buy-It-Now listings submitted on consign.html. <b>Approve</b> → <b>🚀 Push to shop</b> creates the live listing (then paste its Stripe payment link in the Shop desk). When it sells: email the seller the buyer's shipping address, they ship direct, then pay them out (price − fee) to the payout handle shown below.</div>
+      <div class="msg" id="cnMsg"></div>
+      <div id="cnList"></div>
+    </details>
+
+    <details class="card fold" id="shop" open style="scroll-margin-top:56px">
+      <summary>🛍️ Shop listings</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="ghost" id="shLoad" type="button">Load listings</button>
+        <select id="shFilter" class="sh" style="max-width:170px">
+          <option value="">All statuses</option>
+          <option value="available">Available</option>
+          <option value="sold">Sold</option>
+          <option value="hidden">Hidden</option>
+        </select>
+        <button id="shNew" type="button">＋ New listing</button>
+        <span style="font-size:12.5px;color:var(--muted)" id="shCount"></span>
+      </div>
+      <div class="shform" id="shForm">
+        <div class="g2">
+          <div><label>Title</label><input id="shTitle" placeholder="2020 Topps Chrome Lando Norris RC PSA 10"></div>
+          <div><label>Driver ID</label><input id="shDriver" placeholder="norris"></div>
+        </div>
+        <div class="g4">
+          <div><label>Price USD</label><input id="shPrice" type="number" step="0.01" placeholder="450"></div>
+          <div><label>Grade</label><input id="shGrade" placeholder="PSA 10"></div>
+          <div><label>Cert #</label><input id="shCert" placeholder="87654321"></div>
+          <div><label>Status</label><select id="shStatus" class="sh">
+            <option value="available">available</option>
+            <option value="sold">sold</option>
+            <option value="hidden">hidden</option>
+          </select></div>
+        </div>
+        <div class="g2">
+          <div><label>Image URL</label><input id="shImage" placeholder="https://…/card.jpg"></div>
+          <div><label>Payment link URL</label><input id="shLink" placeholder="https://buy.stripe.com/…"></div>
+        </div>
+        <button id="shSave" type="button">💾 Save listing</button>
+        <button class="ghost" id="shCancel" type="button">Cancel</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:8px" id="shFormTag"></span>
+      </div>
+      <div class="msg" id="shMsg"></div>
+      <div id="shList"></div>
+    </details>
+
+    <details class="card fold" id="offers" open style="scroll-margin-top:56px">
+      <summary>🤝 Offers</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="ghost" id="ofLoad" type="button">Load offers</button>
+        <select id="ofFilter" class="sh" style="max-width:190px">
+          <option value="pending">Pending</option>
+          <option value="accepted">Accepted</option>
+          <option value="declined">Declined</option>
+          <option value="">All</option>
+        </select>
+        <span style="font-size:12.5px;color:var(--muted)" id="ofCount"></span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Buyer offers across all listings. You can accept/decline on the seller's behalf, or copy their private <b>manage link</b> to email them. Accepting reserves the card at the offer price.</div>
+      <div class="msg" id="ofMsg"></div>
+      <div id="ofList"></div>
+    </details>
+
+    <div class="cols">
+      <div class="card"><h2>📡 Radar sources</h2><div id="sources"></div></div>
+      <div class="card"><h2>🏁 Race results freshness</h2><div id="results"></div></div>
+      <div class="card"><h2>💰 Top approved sales · 7d</h2><div id="topSales"></div></div>
+      <div class="card"><h2>🔥 Busiest drivers · 30d</h2><div id="active"></div></div>
+      <div class="card"><h2>👥 Audience</h2><div id="audience"></div></div>
+      <div class="card"><h2>📬 Last newsletter</h2><div id="newsletter"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const CREDS='f1idx-approval-creds';   // shared with the approval console
+(function(){ try{ const c=JSON.parse(localStorage.getItem(CREDS)||'{}');
+  if(c.url)$('sbUrl').value=c.url; if(c.key)$('sbKey').value=c.key; if(c.secret)$('secret').value=c.secret;
+}catch(e){} })();
+$('saveBtn').onclick=()=>{ localStorage.setItem(CREDS,JSON.stringify({url:$('sbUrl').value.trim(),key:$('sbKey').value.trim(),secret:$('secret').value.trim()})); say('Saved.'); };
+function say(t,err){ const m=$('msg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+const money=v=>v==null?'—':'$'+Math.round(Number(v)).toLocaleString();
+const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+function ago(iso){ if(!iso)return '—'; const h=(Date.now()-new Date(iso))/36e5;
+  if(h<1)return Math.round(h*60)+'m ago'; if(h<48)return Math.round(h)+'h ago'; return Math.round(h/24)+'d ago'; }
+
+$('loadBtn').onclick=async()=>{
+  say('Loading…');
+  try{
+    const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+    const r=await fetch(url+'/rest/v1/rpc/admin_stats',{method:'POST',
+      headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},
+      body:JSON.stringify({p_secret:$('secret').value.trim()})});
+    if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(e){}; throw new Error('HTTP '+r.status+' — '+t); }
+    render(await r.json());
+    say('');
+  }catch(e){ say(e.message,true); }
+};
+
+function render(d){
+  $('dash').style.display='block';
+  $('genAt').textContent='snapshot '+new Date(d.generated_at).toLocaleString();
+  SOC.data=d; socWire();
+  const soc=$('social');
+  if(soc && !soc.dataset.wired){ soc.dataset.wired='1'; soc.addEventListener('toggle',()=>{ if(soc.open) socRender(); }); }
+  socRender();
+
+  const q=d.queue||{}, a=d.audience||{};
+  $('stats').innerHTML=
+    stat(q.pending,'pending review',q.pending>50?'warn':'good')+
+    stat(q.pending_live,'live auctions','')+
+    stat(q.approved,'approved comps','gold')+
+    stat(a.subscribers,'subscribers'+(a.subs_7d?' (+'+a.subs_7d+' wk)':''),'good')+
+    stat(a.alert_subs,'alert signups','')+
+    stat(a.giveaway,'giveaway entries','');
+
+  // sources with staleness flag (>48h = stale)
+  $('sources').innerHTML=tbl(['Source','24h','7d','Last pull'],(d.sources||[]).map(s=>{
+    const stale=(Date.now()-new Date(s.last_ingested))/36e5>48;
+    return [esc(s.source),s.rows_24h,s.rows_7d,'<span class="'+(stale?'stale':'ok')+'">'+ago(s.last_ingested)+'</span>'];
+  }),[false,true,true,true]) || '<span class="pill">no ingestion yet</span>';
+
+  $('results').innerHTML=tbl(['Race','Updated'],(d.results||[]).map(r=>{
+    const id=r.race_id??r.id??r.race??r.key??'?';
+    const ts=r.updated_at??r.ingested_at??r.created_at??r.updatedat??null;
+    const stale=ts?((Date.now()-new Date(ts))/36e5>24*8):false;
+    return ['<span class="mono">'+esc(id)+'</span>',ts?'<span class="'+(stale?'stale':'ok')+'">'+ago(ts)+'</span>':'—'];
+  }),[false,true]) || '<span class="pill">no results rows</span>';
+
+  $('topSales').innerHTML=tbl(['Driver','Card','Price'],(d.top_sales_7d||[]).map(t=>
+    [cap(esc(t.driver_id)),esc(String(t.title||'').slice(0,52)),'<span class="gold mono">'+money(t.price_usd)+'</span>']
+  ),[false,false,true]) || '<span class="pill">no approved sales this week — groom the queue</span>';
+
+  $('active').innerHTML=tbl(['Driver','Rows','Top price'],(d.active_drivers_30d||[]).map(x=>
+    [cap(esc(x.driver_id)),x.n,'<span class="mono">'+money(x.top)+'</span>']
+  ),[false,true,true]) || '<span class="pill">quiet month</span>';
+
+  const ad=(a.alert_drivers||[]).map(x=>cap(esc(x.driver_id))+' <span class="pill">'+x.n+'</span>').join(' &nbsp; ');
+  $('audience').innerHTML='<table><tr><td>Newsletter</td><td class="r mono">'+(a.subscribers??'—')+'</td></tr>'
+    +'<tr><td>New this week</td><td class="r mono">+'+(a.subs_7d??0)+'</td></tr>'
+    +'<tr><td>Giveaway entries</td><td class="r mono">'+(a.giveaway??0)+'</td></tr>'
+    +'<tr><td>Alert signups</td><td class="r mono">'+(a.alert_subs??0)+'</td></tr></table>'
+    +(ad?'<div style="margin-top:8px;font-size:12.5px">'+ad+'</div>':'')
+    +(a.alerts_deployed===false?'<div style="margin-top:8px"><span class="pill" style="color:var(--amber)">⚠ alerts-setup.sql not run — driver-page alert signups are failing</span></div>':'');
+
+  const n=d.last_newsletter;
+  $('newsletter').innerHTML=n
+    ? '<table><tr><td>Week</td><td class="r mono">'+esc(n.week_key)+'</td></tr>'
+      +'<tr><td>Recipients</td><td class="r mono">'+(n.recipients??'—')+'</td></tr>'
+      +'<tr><td>Sent</td><td class="r">'+ago(n.sent_at)+'</td></tr></table>'
+    : '<span class="pill">none sent yet</span>';
+}
+/* ---- moderation queue (uses list_pending_sales / moderate_sales RPCs) ---- */
+let qRows=[];
+async function rpc(fn, body){
+  const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+  const r=await fetch(url+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},
+    body:JSON.stringify(body)});
+  const t=await r.text();
+  if(!r.ok){ let m=t; try{m=JSON.parse(t).message||t}catch(e){}; throw new Error('HTTP '+r.status+' — '+m); }
+  return t?JSON.parse(t):null;
+}
+function qSay(t,err){ const m=$('qMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function qLive(r){ const f=r.flags; return Array.isArray(f)?f.includes('live_auction'):String(f||'').includes('live_auction'); }
+$('qLoad').onclick=async()=>{
+  qSay('Loading…');
+  try{
+    qRows=await rpc('list_pending_sales',{p_secret:$('secret').value.trim(),p_driver:($('qDriver').value.trim()||null),p_limit:300});
+    qPaint(); qSay(qRows.length?qRows.length+' pending loaded.':'Queue is empty. 🎉');
+  }catch(e){ qSay(e.message,true); }
+};
+function qPaint(){
+  $('qList').innerHTML=qRows.map((r,i)=>{
+    const live=qLive(r);
+    return '<div class="qrow'+(live?' live':'')+'">'
+      +'<input type="checkbox" class="qck" data-i="'+i+'">'
+      +(r.image_url?'<img src="'+esc(r.image_url)+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">':'<div class="noimg">🃏</div>')
+      +'<div><div class="qt">'+(r.url?'<a href="'+esc(r.url)+'" target="_blank" rel="noopener" style="color:inherit">':'')+esc(r.title||'(no title)')+(r.url?'</a>':'')
+      +(live?'<span class="qtag">LIVE — not a comp</span>':'')+'</div>'
+      +'<div class="qm"><b>'+money(r.price_usd)+'</b> · '+esc(r.driver_id||'no driver')+(r.sale_date?' · '+esc(r.sale_date):'')+' · '+esc(r.source||'')+'</div></div>'
+      +'<div class="qact"><button style="background:var(--green);color:#052" onclick="qMod(['+i+'],\'approved\')"'+(live?' disabled title="live bid, not a settled price"':'')+'>✓</button>'
+      +'<button style="background:var(--red);color:#400" onclick="qMod(['+i+'],\'rejected\')">✕</button></div></div>';
+  }).join('')||'';
+  qUpd();
+  $('qList').querySelectorAll('.qck').forEach(c=>c.onchange=qUpd);
+}
+function qPicked(){ return [...document.querySelectorAll('.qck:checked')].map(c=>Number(c.dataset.i)); }
+function qUpd(){ $('qCount').textContent=qRows.length?qRows.length+' pending · '+qPicked().length+' selected':''; }
+$('qAll').onclick=()=>{ document.querySelectorAll('.qck').forEach(c=>c.checked=true); qUpd(); };
+$('qAppr').onclick=()=>{ const idx=qPicked().filter(i=>!qLive(qRows[i])); const skip=qPicked().length-idx.length;
+  if(!idx.length){ qSay(skip?'Only live auctions selected — those stay pending.':'Nothing selected.',true); return; }
+  qMod(idx,'approved',skip?skip+' live skipped.':''); };
+$('qRej').onclick=()=>{ const idx=qPicked(); if(!idx.length){ qSay('Nothing selected.',true); return; } qMod(idx,'rejected'); };
+async function qMod(idx,action,note){
+  const ids=idx.map(i=>String(qRows[i].id));
+  qSay((action==='approved'?'Approving ':'Rejecting ')+ids.length+'…');
+  try{
+    const n=await rpc('moderate_sales',{p_secret:$('secret').value.trim(),p_ids:ids,p_action:action});
+    const kept=new Set(idx); qRows=qRows.filter((_,i)=>!kept.has(i)); qPaint();
+    qSay(n+' '+action+'.'+(note?' '+note:''));
+  }catch(e){ qSay(e.message,true); }
+}
+window.qMod=qMod;
+
+/* ---- shop listings desk (uses shop_admin_listings / shop_upsert_listing RPCs) ---- */
+let shRows=[], shEditId=null;
+const SH_ST={available:['AVAILABLE','var(--green)'],sold:['SOLD','var(--gold)'],hidden:['HIDDEN','var(--muted)']};
+function shSay(t,err){ const m=$('shMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function shPill(s){ const p=SH_ST[s]||[String(s||'—').toUpperCase(),'var(--muted)'];
+  return '<span class="shst" style="color:'+p[1]+';border-color:'+p[1]+'">'+p[0]+'</span>'; }
+$('shLoad').onclick=async()=>{
+  shSay('Loading…');
+  try{
+    shRows=await rpc('shop_admin_listings',{p_secret:$('secret').value.trim()})||[];
+    shPaint(); shSay(shRows.length?'':'No listings yet — hit ＋ New listing.');
+  }catch(e){ shSay(e.message,true); }
+};
+$('shFilter').onchange=()=>shPaint();
+function shPaint(){
+  const f=$('shFilter').value;
+  const rows=f?shRows.filter(r=>(r.status||'available')===f):shRows;
+  const avail=shRows.filter(r=>(r.status||'available')==='available');
+  const sold=shRows.filter(r=>r.status==='sold');
+  const availVal=avail.reduce((s,r)=>s+Number(r.price_usd||0),0);
+  $('shCount').textContent=shRows.length
+    ? avail.length+' available ('+money(availVal)+') · '+sold.length+' sold'
+    : '';
+  $('shList').innerHTML=rows.map(r=>{
+    const st=r.status||'available', id=esc(String(r.id));
+    return '<div class="shrow'+(st==='sold'?' sold':'')+'">'
+      +(r.image_url?'<img src="'+esc(r.image_url)+'" loading="lazy" onerror="this.outerHTML=\'<div class=noimg>🃏</div>\'">':'<div class="noimg">🃏</div>')
+      +'<div><div class="qt">'+esc(r.title||'(untitled)')+shPill(st)+'</div>'
+      +'<div class="qm"><b>'+money(r.price_usd)+'</b>'
+        +(r.driver_id?' · '+cap(esc(r.driver_id)):'')
+        +(r.grade?' · '+esc(r.grade):'')
+        +(r.cert?' · cert <span class="mono">'+esc(r.cert)+'</span>':'')
+        +(st==='sold'&&r.sold_at?' · sold '+ago(r.sold_at):(r.created_at?' · listed '+ago(r.created_at):''))
+        /* legacy per-listing payment links still render if one exists; buying now
+           goes through Stripe Checkout, so NOT having one is normal — no warning. */
+        +(r.payment_link_url
+          ?' · <a href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener" style="color:var(--teal)">pay link ↗</a>'
+          :'')
+      +'</div>'
+      +(st==='sold'?shEscrow(r):'')
+      +'</div>'
+      +'<div class="qact">'
+      +'<button class="ghost" onclick="shEditRow(\''+id+'\')" title="edit">✎</button>'
+      +(st==='available'?'<button style="background:var(--gold);color:#1a1508" onclick="shQuick(\''+id+'\',\'sold\')">💰 Sold</button>':'')
+      +(st==='sold'&&!r.delivered_at?'<button style="background:var(--teal);color:#052" onclick="shDelivered(\''+id+'\')">📬 Mark delivered</button>':'')
+      +(st==='sold'&&r.delivered_at&&!r.payout_released_at?'<button style="background:var(--green);color:#052" onclick="shRelease(\''+id+'\')">💸 Release payout</button>':'')
+      +(st==='sold'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">↩ Relist</button>':'')
+      +(st==='hidden'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">👁 Show</button>':'')
+      +(st==='available'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'hidden\')" title="hide from shop">🙈</button>':'')
+      +'</div></div>';
+  }).join('')||'<span class="pill">'+(shRows.length?'nothing with this filter':'no listings loaded')+'</span>';
+}
+function shOpenForm(r){
+  shEditId=r?String(r.id):null;
+  $('shForm').style.display='block';
+  $('shFormTag').textContent=r?('editing: '+(r.title||r.id)):'new listing';
+  $('shTitle').value=r?(r.title||''):'';
+  $('shDriver').value=r?(r.driver_id||''):'';
+  $('shPrice').value=r?(r.price_usd??''):'';
+  $('shGrade').value=r?(r.grade||''):'';
+  $('shCert').value=r?(r.cert||''):'';
+  $('shStatus').value=r?(r.status||'available'):'available';
+  $('shImage').value=r?(r.image_url||''):'';
+  $('shLink').value=r?(r.payment_link_url||''):'';
+  $('shTitle').focus();
+}
+window.shEditRow=id=>{ const r=shRows.find(x=>String(x.id)===id); if(r)shOpenForm(r); };
+$('shNew').onclick=()=>shOpenForm(null);
+$('shCancel').onclick=()=>{ $('shForm').style.display='none'; shEditId=null; };
+$('shSave').onclick=async()=>{
+  if(!$('shTitle').value.trim()){ shSay('Title is required.',true); return; }
+  shSay('Saving…');
+  try{
+    await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:shEditId,
+      p_driver:($('shDriver').value.trim().toLowerCase()||null),
+      p_title:$('shTitle').value.trim(),
+      p_grade:($('shGrade').value.trim()||null),
+      p_cert:($('shCert').value.trim()||null),
+      p_price:($('shPrice').value===''?null:Number($('shPrice').value)),
+      p_image:($('shImage').value.trim()||null),
+      p_link:($('shLink').value.trim()||null),
+      p_status:$('shStatus').value});
+    $('shForm').style.display='none'; shEditId=null;
+    shSay('Saved ✅');
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
+};
+window.shQuick=async(id,status)=>{
+  const r=shRows.find(x=>String(x.id)===id); if(!r)return;
+  shSay('Updating…');
+  try{
+    // upsert overwrites every field, so pass the row back verbatim with the new status
+    await rpc('shop_upsert_listing',{p_secret:$('secret').value.trim(),p_id:String(r.id),
+      p_driver:(r.driver_id||null),p_title:(r.title||null),p_grade:(r.grade||null),
+      p_cert:(r.cert||null),p_price:(r.price_usd??null),p_image:(r.image_url||null),
+      p_link:(r.payment_link_url||null),p_status:status});
+    shSay(status==='sold'?'Marked sold 💰':'Updated.');
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
+};
+/* escrow status line under a sold listing */
+function shEscrow(r){
+  const net=r.reserved_price??r.price_usd;
+  const paid=money(net?Number(net)*0.93:null);
+  let stage, color;
+  if(r.payout_released_at){ stage='payout released '+ago(r.payout_released_at); color='var(--green)'; }
+  else if(r.delivered_at){ stage='delivered '+ago(r.delivered_at)+' · payout ready ('+paid+')'; color='var(--teal)'; }
+  else if(r.shipped_at){ stage='shipped '+ago(r.shipped_at)+' · awaiting delivery · funds held'; color='var(--amber)'; }
+  else { stage='sold · awaiting ship + delivery · funds held'; color='var(--amber)'; }
+  return '<div class="qm" style="margin-top:3px;color:'+color+'">🔒 '+stage+'</div>'
+    +(r.ship_addr?'<div class="qm" style="margin-top:2px">📦 ship to: '+esc(String(r.ship_addr).replace(/\n/g,', '))+(r.tracking_number?' · '+esc(r.carrier||'USPS')+' '+esc(r.tracking_number):'')+'</div>':'');
+}
+window.shDelivered=async id=>{
+  shSay('Confirming delivery…');
+  try{ await rpc('admin_mark_delivered',{p_secret:$('secret').value.trim(),p_id:String(id)}); shSay('Delivery confirmed — payout can be released.'); $('shLoad').click(); }
+  catch(e){ shSay(e.message,true); }
+};
+window.shRelease=async id=>{
+  const r=shRows.find(x=>String(x.id)===id);
+  if(!confirm('Release payout to the seller for "'+((r&&r.title)||'this card')+'"? This sends the real Stripe transfer. Do this only after delivery is confirmed and no issue was raised.')) return;
+  shSay('Releasing payout…');
+  try{
+    const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+    const resp=await fetch(url+'/functions/v1/admin-payout',{method:'POST',
+      headers:{'Content-Type':'application/json',apikey:key,Authorization:'Bearer '+key},
+      body:JSON.stringify({secret:$('secret').value.trim(),listing_id:String(id)})});
+    let j={}; try{ j=await resp.json(); }catch(e){}
+    if(!resp.ok||j.error) throw new Error(j.error||('HTTP '+resp.status));
+    shSay(j.already?'Already paid out.':('Payout sent 💸 ($'+(j.amount||'')+' to the seller)'));
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
+};
+
+/* ---- consignment intake desk (list_consignments / moderate_consignment / promote_consignment) ---- */
+let cnRows=[];
+const CN_ST={submitted:['SUBMITTED','var(--amber)'],approved:['APPROVED','var(--teal)'],
+  listed:['LISTED','var(--green)'],rejected:['REJECTED','var(--red)']};
+function cnSay(t,err){ const m=$('cnMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function cnPill(s){ const p=CN_ST[s]||[String(s||'—').toUpperCase(),'var(--muted)'];
+  return '<span class="cnst" style="color:'+p[1]+';border-color:'+p[1]+'">'+p[0]+'</span>'; }
+$('cnLoad').onclick=async()=>{
+  cnSay('Loading…');
+  try{
+    cnRows=await rpc('list_consignments',{p_secret:$('secret').value.trim(),
+      p_status:($('cnFilter').value||null),p_limit:300})||[];
+    cnPaint(); cnSay(cnRows.length?'':'Nothing here. 📭');
+  }catch(e){ cnSay(e.message,true); }
+};
+$('cnFilter').onchange=()=>$('cnLoad').click();
+function cnPhotos(urls){
+  const a=Array.isArray(urls)?urls.filter(Boolean):[];
+  if(!a.length) return '<div class="noimg">🃏</div>';
+  return '<div class="ph">'+a.map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" loading="lazy"></a>').join('')+'</div>';
+}
+function cnActs(r){
+  const s=r.status||'submitted', id=esc(String(r.id));
+  const b=(l,fn,bg,fg)=>'<button style="background:'+bg+';color:'+fg+'" onclick="'+fn+'(\''+id+'\')">'+l+'</button>';
+  if(s==='submitted') return b('✓ Approve','cnApprove','var(--green)','#052')+b('✕ Reject','cnReject','var(--red)','#400');
+  if(s==='approved')  return b('🚀 Push to shop','cnPromote','var(--gold)','#1a1508')+b('✕ Reject','cnReject','var(--red)','#400');
+  if(s==='listed')    return '<span class="pill">✓ in shop</span>';
+  if(s==='rejected')  return b('↩ Reopen','cnReopen','none','var(--txt)');
+  return '';
+}
+function cnPaint(){
+  const sub=cnRows.filter(r=>r.status==='submitted').length;
+  $('cnCount').textContent=cnRows.length?(cnRows.length+' shown'+(sub?' · '+sub+' new':'')):'';
+  $('cnList').innerHTML=cnRows.map(r=>
+    '<div class="cnrow">'
+    +cnPhotos(r.image_urls)
+    +'<div><div class="cnt">'+esc(r.title||'(untitled)')+cnPill(r.status)+'</div>'
+    +'<div class="cnm"><b>'+money(r.asking_price)+'</b> asking'
+      +(r.driver_id?' · '+cap(esc(r.driver_id)):'')
+      +(r.grade?' · '+esc(r.grade):'')
+      +(r.cert?' · cert <span class="mono">'+esc(r.cert)+'</span>':'')
+      +(r.created_at?' · '+ago(r.created_at):'')+'</div>'
+    +'<div class="cnseller">'+esc(r.seller_name||'—')
+      +(r.seller_email?' · <a href="mailto:'+esc(r.seller_email)+'">'+esc(r.seller_email)+'</a>':'')
+      +(r.seller_phone?' · '+esc(r.seller_phone):'')+'</div>'
+    +((r.payout_method||r.payout_handle)?'<div class="cnseller">💵 payout: <b>'+esc(r.payout_method||'—')+'</b>'+(r.payout_handle?' · '+esc(r.payout_handle):'')+'</div>':'')
+    +(r.seller_addr?'<div class="cnseller">🏠 '+esc(String(r.seller_addr).replace(/\n/g,', '))+'</div>':'')
+    +(r.notes?'<div class="cnm" style="margin-top:3px">📝 '+esc(r.notes)+'</div>':'')
+    +(r.review_note?'<div class="cnm" style="margin-top:2px;color:var(--amber)">note: '+esc(r.review_note)+'</div>':'')
+    +'</div>'
+    +'<div class="cnact">'+cnActs(r)+'</div></div>'
+  ).join('')||'<span class="pill">no submissions loaded</span>';
+}
+async function cnDo(id,action,extra){
+  cnSay('Working…');
+  try{
+    await rpc('moderate_consignment',Object.assign({p_secret:$('secret').value.trim(),p_id:String(id),p_action:action},extra||{}));
+    $('cnLoad').click();
+  }catch(e){ cnSay(e.message,true); }
+}
+window.cnApprove=id=>cnDo(id,'approve');
+window.cnReopen =id=>cnDo(id,'reopen');
+window.cnReject =id=>{ const note=prompt('Reason for rejection (optional, emailed to no one — just your record):')||''; cnDo(id,'reject',{p_note:note}); };
+window.cnPromote=async id=>{
+  cnSay('Creating shop listing…');
+  try{
+    await rpc('promote_consignment',{p_secret:$('secret').value.trim(),p_id:String(id)});
+    cnSay('Listed in the shop 🛍️ — add its payment link in the Shop desk.');
+    $('cnLoad').click();
+    if($('shLoad')) $('shLoad').click();   // refresh shop desk if it's been used
+  }catch(e){ cnSay(e.message,true); }
+};
+
+/* ---- offers desk (admin_offers / decide_offer via the listing's manage_token) ---- */
+let ofRows=[];
+const SITE='https://www.f1cardindex.com';
+function ofSay(t,err){ const m=$('ofMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+$('ofLoad').onclick=async()=>{
+  ofSay('Loading…');
+  try{
+    ofRows=await rpc('admin_offers',{p_secret:$('secret').value.trim(),p_status:($('ofFilter').value||null)})||[];
+    ofPaint(); ofSay(ofRows.length?'':'No offers.');
+  }catch(e){ ofSay(e.message,true); }
+};
+$('ofFilter').onchange=()=>$('ofLoad').click();
+function ofPaint(){
+  const pend=ofRows.filter(o=>o.status==='pending').length;
+  $('ofCount').textContent=ofRows.length?(ofRows.length+' shown'+(pend?' · '+pend+' pending':'')):'';
+  $('ofList').innerHTML=ofRows.map(o=>{
+    const mlink=SITE+'/offer.html?token='+encodeURIComponent(o.manage_token);
+    const net=Math.round(o.amount*0.93);
+    return '<div class="cnrow" style="grid-template-columns:1fr auto">'
+      +'<div><div class="cnt">'+money(o.amount)+' offer'
+        +' <span class="cnst" style="color:var(--muted);border-color:var(--line)">'+esc((o.status||'').toUpperCase())+'</span>'
+        +' <span style="font-size:11px;color:var(--muted)">on</span> '+esc(o.title||'(listing)')+'</div>'
+      +'<div class="cnm">ask '+money(o.ask)+' · net ~$'+net.toLocaleString()+' · '+ago(o.created_at)+' · listing: '+esc(o.listing_status||'')+'</div>'
+      +'<div class="cnseller">'+esc(o.buyer_name||'buyer')+(o.buyer_email?' · <a href="mailto:'+esc(o.buyer_email)+'">'+esc(o.buyer_email)+'</a>':'')+'</div>'
+      +(o.message?'<div class="cnm" style="margin-top:2px">“'+esc(o.message)+'”</div>':'')
+      +'<div class="cnm" style="margin-top:3px">seller link: <a href="'+esc(mlink)+'" target="_blank" rel="noopener">offer.html ↗</a> '
+        +'<button class="ghost" style="padding:2px 8px;font-size:11px" onclick="ofCopy(\''+esc(mlink)+'\')">copy</button></div>'
+      +'</div>'
+      +'<div class="cnact">'
+      +(o.status==='pending'
+        ?'<button style="background:var(--green);color:#052" onclick="ofDecide(\''+esc(o.manage_token)+'\',\''+esc(o.id)+'\',\'accept\')">✓ Accept</button>'
+         +'<button style="background:var(--red);color:#400" onclick="ofDecide(\''+esc(o.manage_token)+'\',\''+esc(o.id)+'\',\'decline\')">✕ Decline</button>'
+        :'<span class="pill">—</span>')
+      +'</div></div>';
+  }).join('')||'<span class="pill">no offers loaded</span>';
+}
+window.ofCopy=t=>{ try{navigator.clipboard.writeText(t);ofSay('Manage link copied.');}catch(e){ofSay('Copy: '+t);} };
+window.ofDecide=async(token,offerId,action)=>{
+  ofSay(action==='accept'?'Accepting…':'Declining…');
+  try{
+    await rpc('decide_offer',{p_token:token,p_offer:offerId,p_action:action});
+    ofSay(action==='accept'?'Accepted — card reserved at the offer price.':'Declined.');
+    $('ofLoad').click(); if($('shLoad'))$('shLoad').click();
+  }catch(e){ ofSay(e.message,true); }
+};
+
+/* ---- social studio: Top Sales share card ---- */
+let SOC={data:null, ratio:'916', count:5, style:'hero', post:'top', driver:null, recordIdx:0, imgCache:{}};
+async function socLoadImg(url){
+  if(!url) return null;
+  if(SOC.imgCache[url]!==undefined) return SOC.imgCache[url];
+  try{
+    const r=await fetch(url,{mode:'cors'}); if(!r.ok) throw 0;
+    const blob=await r.blob();
+    const data=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(blob);});
+    SOC.imgCache[url]=data; return data;
+  }catch(e){ SOC.imgCache[url]=null; return null; }   // cache misses too, so we don't retry every render
+}
+function socWire(){
+  const paint=()=>{
+    [['fmt916','916'],['fmt11','11']].forEach(([id,v])=>$(id).style.cssText=(SOC.ratio===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    [['cnt5',5],['cnt3',3]].forEach(([id,v])=>$(id).style.cssText=(SOC.count===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    [['styList','list'],['styHero','hero']].forEach(([id,v])=>$(id).style.cssText=(SOC.style===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    [['ptTop','top'],['ptEnd','ending'],['ptDriver','driver'],['ptRecap','recap'],['ptRecord','record']].forEach(([id,v])=>$(id).style.cssText=(SOC.post===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    $('driverPick').style.display=(SOC.post==='driver')?'block':'none';
+    $('recordPick').style.display=(SOC.post==='record')?'block':'none';
+    const listMode=(SOC.post==='top'||SOC.post==='ending');
+    ['cnt5','cnt3','styList','styHero'].forEach(id=>{ const b=$(id); b.disabled=!listMode; b.style.opacity=listMode?'1':'.4'; b.style.cursor=listMode?'pointer':'not-allowed'; });
+    socRender();
+  };
+  $('fmt916').onclick=()=>{SOC.ratio='916';paint();};
+  $('fmt11').onclick=()=>{SOC.ratio='11';paint();};
+  $('cnt5').onclick=()=>{SOC.count=5;paint();};
+  $('cnt3').onclick=()=>{SOC.count=3;paint();};
+  $('styList').onclick=()=>{SOC.style='list';paint();};
+  $('styHero').onclick=()=>{SOC.style='hero';paint();};
+  $('ptTop').onclick=()=>{SOC.post='top';paint();};
+  $('ptEnd').onclick=()=>{SOC.post='ending';paint();};
+  $('ptDriver').onclick=()=>{SOC.post='driver';paint();};
+  $('ptRecap').onclick=()=>{SOC.post='recap';paint();};
+  $('ptRecord').onclick=()=>{SOC.post='record';paint();};
+  // populate driver picker from per_driver data (re-run each load so new data lands)
+  const pd=(SOC.data&&SOC.data.per_driver||[]);
+  const sel=$('ptDriverSel');
+  if(sel && pd.length){
+    const prev=SOC.driver;
+    sel.innerHTML=pd.map(p=>'<option value="'+esc(p.driver_id)+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
+    SOC.driver=pd.some(p=>p.driver_id===prev)?prev:(pd[0]&&pd[0].driver_id);
+    sel.value=SOC.driver;
+    sel.onchange=()=>{ SOC.driver=sel.value; socRender(); };
+  }
+  const rec=(SOC.data&&SOC.data.new_records||[]);
+  const rsel=$('ptRecordSel');
+  if(rsel && rec.length){
+    rsel.innerHTML=rec.map((p,i)=>'<option value="'+i+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
+    if(SOC.recordIdx>=rec.length)SOC.recordIdx=0;
+    rsel.value=SOC.recordIdx;
+    rsel.onchange=()=>{ SOC.recordIdx=+rsel.value; socRender(); };
+  }
+  $('dlCard').onclick=socDownload;
+  paint();
+}
+let socToken=0;
+async function socRender(){
+  const soc=$('social'); if(soc&&soc.tagName==='DETAILS'&&!soc.open) return;  // collapsed -> skip
+  const stage=$('socialStage'); if(!stage)return;
+  const my=++socToken;
+  const d=SOC.data||{}; const W=1080, H=SOC.ratio==='916'?1920:1080;
+  const empty=m=>{ if($('socialStage')) $('socialStage').innerHTML='<div style="color:#888;padding:40px">'+m+'</div>'; };
+
+  if(SOC.post==='recap'){
+    stage.innerHTML=socRecapSVG(d.week_stats||{}, (d.top_sales_7d||[]).slice(0,3), W,H); return;
+  }
+  if(SOC.post==='ending'){
+    const rows=(d.ending_soon||[]).slice(0,SOC.count);
+    if(!rows.length){ empty('No live auctions ending soon in the data — run the Radar, then reload.'); return; }
+    if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
+      stage.innerHTML=socHeroSVG(rows,W,H,im,{kicker:'⏱ ENDING SOON',sub:'Live on Goldin'}); }
+    else stage.innerHTML=socSVG(rows,W,H,{title:'AUCTIONS ENDING SOON',accentBids:true});
+    return;
+  }
+  if(SOC.post==='driver'){
+    const pd=(d.per_driver||[]); const one=pd.find(p=>p.driver_id===SOC.driver)||pd[0];
+    if(!one){ empty('No per-driver sales yet — approve some, then reload.'); return; }
+    empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
+    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'DRIVER SPOTLIGHT',sub:'Record sale on F1 Card Index',solo:true});
+    return;
+  }
+  if(SOC.post==='record'){
+    const recs=(d.new_records||[]); const one=recs[SOC.recordIdx||0];
+    if(!one){ empty('No new records in the last 30 days — when an approved sale becomes a driver\u2019s all-time #1, it shows here.'); return; }
+    empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
+    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'🚨 NEW RECORD',solo:true,record:one});
+    return;
+  }
+  // default: top sales
+  const rows=(d.top_sales_7d||[]).slice(0,SOC.count);
+  if(!rows.length){ empty('No approved sales this week yet — approve some in the queue, then reload.'); return; }
+  if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
+    stage.innerHTML=socHeroSVG(rows,W,H,im); }
+  else stage.innerHTML=socSVG(rows,W,H);
+}
+function socSVG(rows,W,H,opts){
+  opts=opts||{};
+  const pad=70, gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
+  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const listTop=SOC.ratio==='916'?430:300, rowH=(H-listTop-140)/rows.length;
+  let items='';
+  rows.forEach((r,i)=>{
+    const y=listTop+i*rowH;
+    items+=`<g transform="translate(${pad},${y})">
+      <text x="0" y="${rowH*0.42}" font-family="Arial" font-weight="800" font-size="40" fill="#3a3f45">#${i+1}</text>
+      <text x="90" y="${rowH*0.36}" font-family="Arial" font-weight="700" font-size="38" fill="#fff">${socEsc(cap(r.driver_id))}</text>
+      <text x="90" y="${rowH*0.62}" font-family="Arial" font-size="26" fill="#8a949c">${socEsc(String(r.title||'').slice(0,46))}</text>
+      <text x="${W-pad*2}" y="${rowH*0.5}" text-anchor="end" font-family="Arial" font-weight="800" font-size="46" fill="${gold}">${money(r.price_usd)}${opts.accentBids&&r.bids!=null?`<tspan font-size="26" fill="#8a949c"> ${r.bids} bids</tspan>`:``}</text>
+      ${i<rows.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-pad*2}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
+    </g>`;
+  });
+  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
+    <rect width="${W}" height="${H}" fill="#0a0c0d"/>
+    <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
+    <text x="${pad}" y="${SOC.ratio==='916'?170:120}" font-family="Arial" font-weight="900" font-size="${(opts.title||'TOP F1 CARD SALES').length>18?58:72}" fill="#fff">${opts.title||'TOP F1 CARD SALES'}</text>
+    <text x="${pad}" y="${SOC.ratio==='916'?250:180}" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
+    ${items}
+    <text x="${pad}" y="${H-70}" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
+    <text x="${W-pad}" y="${H-70}" text-anchor="end" font-family="Arial" font-size="30" fill="#8a949c">live market tracker</text>
+  </svg>`;
+}
+function socHeroSVG(rows,W,H,heroData,opts){
+  opts=opts||{};
+  const gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
+  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const hero=rows[0], rest=rows.slice(1);
+  const isV=SOC.ratio==='916';
+  // hero image panel — solo cards fill the frame (no runner-up rows below), so extend the image nearly full-height and drop the caption to the bottom
+  const imgH=opts.solo?(isV?1680:900):(isV?980:620), imgW=W;
+  const imgBlock=heroData
+    ? `<clipPath id="hclip"><rect x="0" y="0" width="${imgW}" height="${imgH}"/></clipPath>
+       <image href="${heroData}" x="0" y="0" width="${imgW}" height="${imgH}" preserveAspectRatio="xMidYMid slice" clip-path="url(#hclip)"/>
+       <rect x="0" y="0" width="${imgW}" height="${imgH}" fill="url(#fade)"/>`
+    : `<rect x="0" y="0" width="${imgW}" height="${imgH}" fill="#12161a"/>
+       <text x="${W/2}" y="${imgH/2}" text-anchor="middle" font-family="Arial" font-size="40" fill="#3a3f45">no image on this sale</text>`;
+  // caption sits lower and roomier on solo cards so the image gets the space
+  const capY=opts.solo?imgH-210:imgH-160;
+  const heroBlock=`
+    <text x="70" y="${capY}" font-family="Arial" font-weight="700" font-size="42" fill="${gold}">${opts.kicker||'#1 SALE OF THE WEEK'}</text>
+    <text x="70" y="${capY+70}" font-family="Arial" font-weight="900" font-size="64" fill="#fff">${socEsc(cap(hero.driver_id))}</text>
+    <text x="70" y="${capY+118}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,opts.solo?60:52))}</text>
+    <text x="${W-70}" y="${capY+40}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>
+    ${opts.record&&opts.record.previous_record?`<text x="${W-70}" y="${capY+80}" text-anchor="end" font-family="Arial" font-size="28" fill="#39e08a">▲ ${opts.record.pct_over!=null?opts.record.pct_over+'% over':''} prev record ${money(opts.record.previous_record)}</text>`:''}`;
+  // runner-up rows below the image
+  let list='';
+  const listTop=imgH+70, rowH=(rest.length&&!opts.solo)?((H-listTop-130)/rest.length):0;
+  if(!opts.solo)
+  rest.forEach((r,i)=>{
+    const y=listTop+i*rowH;
+    list+=`<g transform="translate(70,${y})">
+      <text x="0" y="${rowH*0.5}" font-family="Arial" font-weight="800" font-size="34" fill="#3a3f45">#${i+2}</text>
+      <text x="80" y="${rowH*0.44}" font-family="Arial" font-weight="700" font-size="34" fill="#fff">${socEsc(cap(r.driver_id))}</text>
+      <text x="80" y="${rowH*0.72}" font-family="Arial" font-size="23" fill="#8a949c">${socEsc(String(r.title||'').slice(0,44))}</text>
+      <text x="${W-140}" y="${rowH*0.55}" text-anchor="end" font-family="Arial" font-weight="800" font-size="40" fill="${gold}">${money(r.price_usd)}</text>
+      ${i<rest.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-140}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
+    </g>`;
+  });
+  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
+    <defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0c0d" stop-opacity="0.15"/>
+      <stop offset="0.55" stop-color="#0a0c0d" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0a0c0d" stop-opacity="0.96"/></linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="#0a0c0d"/>
+    ${imgBlock}
+    <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
+    ${heroBlock}
+    ${list}
+    <text x="70" y="${H-55}" font-family="Arial" font-weight="800" font-size="38" fill="#fff">f1cardindex.com</text>
+    <text x="${W-70}" y="${H-55}" text-anchor="end" font-family="Arial" font-size="27" fill="#8a949c">This week &#183; ${wk}</text>
+  </svg>`;
+}
+function socRecapSVG(w,top,W,H){
+  const gold='#d9b878', money=v=>'$'+Math.round(Number(v||0)).toLocaleString();
+  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const isV=H>W;
+  const stats=[
+    [money(w.total_volume), 'tracked in sales this week'],
+    [(w.sales_count||0)+'', 'sales logged'],
+    [(w.live_now||0)+'', 'auctions live right now']
+  ];
+  let block='';
+  const startY=isV?520:360, gap=isV?300:200;
+  stats.forEach((s,i)=>{ const y=startY+i*gap;
+    block+=`<text x="${W/2}" y="${y}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="${i===0?120:96}" fill="${i===0?gold:'#fff'}">${socEsc(s[0])}</text>
+      <text x="${W/2}" y="${y+56}" text-anchor="middle" font-family="Arial" font-size="34" fill="#8a949c">${socEsc(s[1])}</text>`;
+  });
+  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  const topLine=top&&top[0]?`<text x="${W/2}" y="${H-180}" text-anchor="middle" font-family="Arial" font-size="30" fill="#8a949c">Top sale: ${socEsc(cap(top[0].driver_id))} ${money(top[0].price_usd)}</text>`:'';
+  return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
+    <rect width="${W}" height="${H}" fill="#0a0c0d"/>
+    <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
+    <text x="${W/2}" y="${isV?230:150}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="76" fill="#fff">F1 CARD MARKET</text>
+    <text x="${W/2}" y="${isV?300:210}" text-anchor="middle" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
+    ${block}
+    ${topLine}
+    <text x="${W/2}" y="${H-90}" text-anchor="middle" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
+  </svg>`;
+}
+function socEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function socDownload(){
+  const svg=$('socSVG'); if(!svg){ $('socMsg').textContent='Nothing to download yet.'; return; }
+  const xml=new XMLSerializer().serializeToString(svg);
+  const img=new Image(); img.crossOrigin='anonymous'; const W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
+  img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
+    c.getContext('2d').drawImage(img,0,0);
+    c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+      a.download='f1cardindex-'+SOC.post+'-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      $('socMsg').textContent='Downloaded — post it! 🏁'; });
+  };
+  img.onerror=()=>{ $('socMsg').textContent='Export failed — screenshot the card instead.'; };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+}
+
+function stat(n,label,cls){ return '<div class="stat '+(cls||'')+'"><div class="n">'+(n??'—')+'</div><div class="l">'+label+'</div></div>'; }
+function tbl(heads,rows,right){ if(!rows||!rows.length)return '';
+  return '<table><thead><tr>'+heads.map((h,i)=>'<th'+(right&&right[i]?' class="r"':'')+'>'+h+'</th>').join('')+'</tr></thead><tbody>'
+    +rows.map(r=>'<tr>'+r.map((c,i)=>'<td'+(right&&right[i]?' class="r"':'')+'>'+c+'</td>').join('')+'</tr>').join('')+'</tbody></table>'; }
+</script>
+</body>
+</html>

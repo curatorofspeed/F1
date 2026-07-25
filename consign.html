@@ -57,6 +57,16 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 .again .s{font-size:13px;color:var(--muted);margin-top:4px}
 .tally{font-size:13px;color:var(--green);margin-top:14px}
 .foot{margin-top:34px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);text-align:center}
+.acct{display:none;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.35);border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:14px}
+.acct .who{flex:1;min-width:180px;line-height:1.5}
+.acct .who b{color:var(--txt)}
+.acct .dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex:none}
+.acct a{color:var(--gold);text-decoration:none;font-weight:600;white-space:nowrap}
+.acct a:hover{text-decoration:underline}
+.acct .sep{opacity:.35}
+.signin{font-size:13.5px;color:var(--muted);margin:0 0 18px}
+.signin a{color:var(--gold);text-decoration:none;font-weight:600}
+.signin a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -71,6 +81,15 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     <div class="step"><b>3</b>It sells — buyer pays us</div>
     <div class="step"><b>4</b>You ship &amp; get paid</div>
   </div>
+
+  <div class="acct" id="acct">
+    <span class="dot"></span>
+    <div class="who">Signed in as <b id="acctEmail">—</b> — your details are filled in below.</div>
+    <a href="https://www.f1cardindex.com/seller.html">My cards →</a>
+    <span class="sep">·</span>
+    <a href="#" id="signout">Sign out</a>
+  </div>
+  <p class="signin" id="signinRow" style="display:none">Already sold with us? <a href="https://www.f1cardindex.com/seller.html">Sign in to your seller dashboard →</a></p>
 
   <form id="form">
     <div class="card">
@@ -201,11 +220,12 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
       <button type="button" class="submit" id="again" style="margin-top:14px">＋ List another card</button>
     </div>
 
-    <p style="margin-top:22px"><a href="https://www.f1cardindex.com/shop.html">No thanks — browse the shop →</a></p>
+    <p style="margin-top:22px"><a href="https://www.f1cardindex.com/seller.html">Track this card in your seller dashboard →</a></p>
+    <p style="margin-top:8px"><a href="https://www.f1cardindex.com/shop.html">Or browse the shop →</a></p>
     <p class="tally" id="tally" style="display:none"></p>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v5</span></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v6</span></div>
 </div>
 
 <script>
@@ -230,6 +250,58 @@ function listAnother(){
   window.scrollTo(0,0);
   $('title').focus();
 }
+
+/* ── signed-in seller: prefill name / email / address from their profile ── */
+const SESSION_KEY='f1ci_seller_session';
+const sess=()=>{ try{ return localStorage.getItem(SESSION_KEY); }catch(_){ return null; } };
+
+/* the address is stored as one block the way we built it below; unpick it back into fields */
+function fillAddress(a){
+  if(!a) return;
+  const L=a.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!L.length) return;
+  let country='', csz='';
+  if(L.length>1 && !/\d/.test(L[L.length-1]) && L[L.length-1].indexOf(',')<0) country=L.pop();
+  for(let i=L.length-1;i>=0;i--){
+    if(/,/.test(L[i]) && /\d{5}/.test(L[i])){ csz=L.splice(i,1)[0]; break; }
+  }
+  if(L[0]) $('addr1').value=L[0];
+  if(L[1]) $('addr2').value=L[1];
+  if(csz){
+    const m=csz.match(/^(.*),\s*([A-Za-z .]{2,20})\s+([\d-]{5,10})$/);
+    if(m){ $('city').value=m[1].trim(); $('state').value=m[2].trim(); $('zip').value=m[3].trim(); }
+    else $('city').value=csz;
+  }
+  if(country) $('country').value=country;
+}
+
+async function loadProfile(){
+  const s=sess(); if(!s) { $('signinRow').style.display='block'; return; }
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/rpc/seller_dashboard',{method:'POST',
+      headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_session:s})});
+    if(!r.ok) throw new Error('session');
+    const d=await r.json();
+    const p=d&&d.profile;
+    if(!p||!p.email) throw new Error('session');
+    $('acctEmail').textContent=p.email;
+    $('acct').style.display='flex';
+    $('signinRow').style.display='none';
+    $('email').value=p.email;
+    if(p.name) $('name').value=p.name;
+    fillAddress(p.address);
+  }catch(_){
+    try{ localStorage.removeItem(SESSION_KEY); }catch(__){}
+    $('signinRow').style.display='block';
+  }
+}
+$('signout').addEventListener('click',e=>{
+  e.preventDefault();
+  try{ localStorage.removeItem(SESSION_KEY); }catch(_){}
+  $('acct').style.display='none'; $('signinRow').style.display='block';
+});
+loadProfile();
 
 function updateNet(){
   const p=Number($('price').value);

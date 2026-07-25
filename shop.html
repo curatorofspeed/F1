@@ -67,6 +67,11 @@ h1 .accent{color:var(--gold)}
 .sellcta{display:block;margin:0 0 22px;padding:12px 15px;border-radius:11px;text-decoration:none;font-size:14px;color:var(--txt);background:linear-gradient(100deg,rgba(217,184,120,.12),var(--panel));border:1px solid #3d3416}
 .sellcta:hover{border-color:var(--gold)}
 .sellcta b{color:var(--gold)}
+.paybar{display:none;background:linear-gradient(100deg,rgba(217,184,120,.16),var(--panel));border:1px solid var(--gold);border-radius:12px;padding:16px 18px;margin:0 0 22px}
+.paybar h4{margin:0 0 6px;font-size:16px}
+.paybar p{margin:0;font-size:14px;color:var(--muted);line-height:1.6}
+.paybar button{margin-top:12px;background:var(--gold);color:#171204;border:none;border-radius:9px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
+.paybar button:disabled{opacity:.5}
 </style>
 </head>
 <body>
@@ -79,6 +84,12 @@ h1 .accent{color:var(--gold)}
   <p class="sub" id="hSub">Graded F1 cards from the index vault. Every card ships insured &amp; tracked. Buy instantly — the link takes you straight to secure checkout.</p>
   <a class="sellcta" href="consign.html">💰 Got cards? <b>List yours for sale</b> — free to list, 7% when it sells →</a>
 
+  <div class="paybar" id="paybar">
+    <h4 id="payTitle">🎉 Your offer was accepted</h4>
+    <p id="payMsg">Taking you to secure checkout…</p>
+    <button id="payBtn" style="display:none">Complete my purchase</button>
+  </div>
+
   <div class="chips" id="chips"></div>
   <div class="state" id="state">Loading the vault…</div>
   <div class="grid" id="grid"></div>
@@ -88,7 +99,7 @@ h1 .accent{color:var(--gold)}
   </div>
 
   <div class="foot">
-    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a></span>
+    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v2</span></span>
     <span>Questions about a card? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></span>
   </div>
 </div>
@@ -260,6 +271,33 @@ async function buyNow(id,btn){
     if(btn){ btn.disabled=false; btn.textContent=label||'Buy now'; }
     alert('Sorry — checkout couldn’t start: '+e.message);
   }
+}
+
+/* ── accepted-offer checkout: the seller's acceptance email links here as ?pay=<listing_id> ── */
+async function payAcceptedOffer(id){
+  $('paybar').style.display='block';
+  const msg=$('payMsg'), btn=$('payBtn');
+  msg.textContent='Taking you to secure checkout…';
+  btn.style.display='none'; btn.disabled=false;
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/create-checkout',{method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+SB_KEY},
+      body:JSON.stringify({listing_id:id,mode:'offer'})});
+    let j={}; try{ j=await r.json(); }catch(e){}
+    if(!r.ok||!j.url) throw new Error(j.error||('HTTP '+r.status));
+    location.href=j.url;
+  }catch(e){
+    $('payTitle').textContent='We couldn’t open checkout';
+    msg.textContent='Something went wrong starting your payment ('+e.message+'). Try again, or email hello@f1cardindex.com and we’ll sort it out.';
+    btn.style.display='inline-block';
+    btn.onclick=()=>{ btn.disabled=true; payAcceptedOffer(id); };
+  }
+}
+
+const PAY=(new URLSearchParams(location.search).get('pay')||'').trim();
+if(PAY){
+  try{ history.replaceState({},'', location.pathname); }catch(_){}
+  payAcceptedOffer(PAY);
 }
 
 load();
