@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>/* shared theme: follows the choice saved on the index */
+(function(){var t='light';try{var s=JSON.parse(localStorage.getItem('f1CardIndex:v1')||'{}');if(s.theme==='tron')t='tron';}catch(e){}document.documentElement.setAttribute('data-theme',t);})();</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>List a Card for Sale · F1 Card Index</title>
 <meta name="description" content="List your F1 card as Buy It Now on F1 Card Index. Set your price, we handle the sale, you ship straight to the buyer.">
 <style>
-:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+:root{--bg:#eef1f0;--panel:#ffffff;--panel2:#f4f7f6;--line:#dbe2df;--txt:#17201e;--muted:#5a665f;--gold:#a9781f;--green:#15a34a;--red:#dc2626;--amber:#b45309;--teal:#0d9488;--gold-ink:#ffffff;--green-ink:#ffffff;--goldwash:rgba(169,120,31,.08);--goldwash-line:#d9c9a3;--greenwash-line:#b7dcc4;--veil:rgba(255,255,255,.82);--shadow:0 8px 30px rgba(23,32,30,.12)}
+html[data-theme="tron"]{--bg:#000409;--panel:#04121b;--panel2:#071a24;--line:#0c3a44;--txt:#d6faff;--muted:#5f8f99;--gold:#ffd23f;--green:#39e08a;--red:#ff5d5d;--amber:#e6b65c;--teal:#22e9ff;--gold-ink:#021016;--green-ink:#021016;--goldwash:rgba(255,210,63,.07);--goldwash-line:#3d3a14;--greenwash-line:#0f5c3c;--veil:rgba(0,4,9,.74);--shadow:0 8px 30px rgba(0,0,0,.55)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.55}
 .wrap{max-width:640px;margin:0 auto;padding:26px 16px 90px}
@@ -41,10 +44,10 @@ textarea{resize:vertical;min-height:74px}
 .thumb{position:relative;width:78px;height:78px;border-radius:9px;overflow:hidden;border:1px solid var(--line);background:var(--panel2)}
 .thumb img{width:100%;height:100%;object-fit:cover}
 .thumb .x{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;font-size:13px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
-.thumb .up{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-size:11px;color:#fff}
-.terms{background:linear-gradient(100deg,rgba(217,184,120,.1),var(--panel));border:1px solid #3d3416;border-radius:11px;padding:13px 15px;font-size:13px;color:#d7cdb4;margin-bottom:16px}
+.thumb .up{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--shadowc, rgba(0,0,0,.25));font-size:11px;color:#fff}
+.terms{background:linear-gradient(100deg,var(--goldwash),var(--panel));border:1px solid var(--goldwash-line);border-radius:11px;padding:13px 15px;font-size:13px;color:#d7cdb4;margin-bottom:16px}
 .terms b{color:var(--gold)}
-button.submit{width:100%;background:var(--gold);color:#171204;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+button.submit{width:100%;background:var(--gold);color:var(--gold-ink);border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
 button.submit:disabled{opacity:.5;cursor:not-allowed}
 .msg{font-size:14px;margin-top:12px;text-align:center;min-height:20px}
 .msg.err{color:var(--red)}
@@ -52,7 +55,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 .done .ico{font-size:52px}
 .done h2{font-size:24px;margin:12px 0 8px}
 .done p{color:var(--muted);font-size:15px}
-.again{background:linear-gradient(100deg,rgba(217,184,120,.1),var(--panel));border:1px solid #3d3416;border-radius:13px;padding:20px 18px;margin:28px auto 0;max-width:420px}
+.again{background:linear-gradient(100deg,var(--goldwash),var(--panel));border:1px solid var(--goldwash-line);border-radius:13px;padding:20px 18px;margin:28px auto 0;max-width:420px}
 .again .q{font-size:17px;font-weight:800;color:var(--gold)}
 .again .s{font-size:13px;color:var(--muted);margin-top:4px}
 .tally{font-size:13px;color:var(--green);margin-top:14px}
@@ -225,7 +228,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     <p class="tally" id="tally" style="display:none"></p>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v6</span></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v7</span></div>
 </div>
 
 <script>

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>/* shared theme: follows the choice saved on the index */
+(function(){var t='light';try{var s=JSON.parse(localStorage.getItem('f1CardIndex:v1')||'{}');if(s.theme==='tron')t='tron';}catch(e){}document.documentElement.setAttribute('data-theme',t);})();</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shop · F1 Card Index</title>
 <meta name="description" content="Graded F1 cards for sale — direct from the F1 Card Index vault. Buy instantly with a secure payment link.">
 <style>
-:root{--bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--txt:#eef1f3;--muted:#828c93;--gold:#d9b878;--green:#39e08a;--red:#ef6a6a;--amber:#e6b65c;--teal:#4cc9b0}
+:root{--bg:#eef1f0;--panel:#ffffff;--panel2:#f4f7f6;--line:#dbe2df;--txt:#17201e;--muted:#5a665f;--gold:#a9781f;--green:#15a34a;--red:#dc2626;--amber:#b45309;--teal:#0d9488;--gold-ink:#ffffff;--green-ink:#ffffff;--goldwash:rgba(169,120,31,.08);--goldwash-line:#d9c9a3;--greenwash-line:#b7dcc4;--veil:rgba(255,255,255,.82);--shadow:0 8px 30px rgba(23,32,30,.12)}
+html[data-theme="tron"]{--bg:#000409;--panel:#04121b;--panel2:#071a24;--line:#0c3a44;--txt:#d6faff;--muted:#5f8f99;--gold:#ffd23f;--green:#39e08a;--red:#ff5d5d;--amber:#e6b65c;--teal:#22e9ff;--gold-ink:#021016;--green-ink:#021016;--goldwash:rgba(255,210,63,.07);--goldwash-line:#3d3a14;--greenwash-line:#0f5c3c;--veil:rgba(0,4,9,.74);--shadow:0 8px 30px rgba(0,0,0,.55)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5}
 .wrap{max-width:1100px;margin:0 auto;padding:26px 16px 90px}
@@ -19,14 +22,14 @@ h1 .accent{color:var(--gold)}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:22px}
 .chips button{background:var(--panel);border:1px solid var(--line);border-radius:20px;color:var(--muted);padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 .chips button:hover{border-color:var(--gold);color:var(--gold)}
-.chips button.on{background:var(--gold);border-color:var(--gold);color:#1a1508}
+.chips button.on{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
 .chips button .n{opacity:.65;font-weight:400;margin-left:4px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
 .item{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;position:relative;transition:border-color .15s}
-.item:hover{border-color:#3c4148}
+.item:hover{border-color:var(--muted)}
 .ph{position:relative;aspect-ratio:3/4;background:var(--panel2);overflow:hidden}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}
-.ph .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;color:#2c3136}
+.ph .noimg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--line)}
 .item.sold .ph img{filter:grayscale(.7) brightness(.6)}
 .ribbon{position:absolute;top:14px;left:-38px;transform:rotate(-45deg);background:var(--red);color:#fff;font-size:11px;font-weight:800;letter-spacing:.12em;padding:4px 44px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
@@ -34,11 +37,11 @@ h1 .accent{color:var(--gold)}
 .ttl{font-size:14px;font-weight:600;line-height:1.35;min-height:2.6em}
 .meta{display:flex;gap:6px;flex-wrap:wrap}
 .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:11px;color:var(--muted)}
-.pill.grade{color:var(--teal);border-color:#234a42}
+.pill.grade{color:var(--teal);border-color:var(--greenwash-line)}
 .rowb{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px}
 .price{font-family:ui-monospace,Menlo,monospace;font-size:20px;font-weight:800;color:var(--gold)}
 .item.sold .price{color:var(--muted);text-decoration:line-through}
-.buy{background:var(--gold);color:#1a1508;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
+.buy{background:var(--gold);color:var(--gold-ink);border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
 .buy:hover{filter:brightness(1.08)}
 .buy.ask{background:none;border:1px solid var(--line);color:var(--txt);font-weight:600}
 .soldtag{font-size:12px;color:var(--muted)}
@@ -58,19 +61,19 @@ h1 .accent{color:var(--gold)}
 .sheet textarea{min-height:60px;resize:vertical}
 .sheet .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .sheet .row{display:flex;gap:10px;margin-top:4px}
-.sheet .send{flex:1;background:var(--gold);color:#171204;border:none;border-radius:9px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
+.sheet .send{flex:1;background:var(--gold);color:var(--gold-ink);border:none;border-radius:9px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
 .sheet .send:disabled{opacity:.5}
 .sheet .cancel{background:none;border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:13px 16px;font-weight:700;cursor:pointer;font-family:inherit}
 .sheet .err{color:var(--red);font-size:13px;min-height:16px;margin-top:8px}
 .sheet .done{text-align:center;padding:20px 0}
 .sheet .done .i{font-size:44px}
-.sellcta{display:block;margin:0 0 22px;padding:12px 15px;border-radius:11px;text-decoration:none;font-size:14px;color:var(--txt);background:linear-gradient(100deg,rgba(217,184,120,.12),var(--panel));border:1px solid #3d3416}
+.sellcta{display:block;margin:0 0 22px;padding:12px 15px;border-radius:11px;text-decoration:none;font-size:14px;color:var(--txt);background:linear-gradient(100deg,var(--goldwash),var(--panel));border:1px solid var(--goldwash-line)}
 .sellcta:hover{border-color:var(--gold)}
 .sellcta b{color:var(--gold)}
-.paybar{display:none;background:linear-gradient(100deg,rgba(217,184,120,.16),var(--panel));border:1px solid var(--gold);border-radius:12px;padding:16px 18px;margin:0 0 22px}
+.paybar{display:none;background:linear-gradient(100deg,var(--goldwash),var(--panel));border:1px solid var(--gold);border-radius:12px;padding:16px 18px;margin:0 0 22px}
 .paybar h4{margin:0 0 6px;font-size:16px}
 .paybar p{margin:0;font-size:14px;color:var(--muted);line-height:1.6}
-.paybar button{margin-top:12px;background:var(--gold);color:#171204;border:none;border-radius:9px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
+.paybar button{margin-top:12px;background:var(--gold);color:var(--gold-ink);border:none;border-radius:9px;padding:12px 18px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
 .paybar button:disabled{opacity:.5}
 /* ── search / sort / filter bar ── */
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
@@ -83,25 +86,25 @@ h1 .accent{color:var(--gold)}
 .count{font-size:12.5px;color:var(--muted);margin:0 0 16px;min-height:18px}
 .count b{color:var(--txt)}
 /* ── watch ── */
-.watch{position:absolute;top:9px;right:9px;z-index:2;background:rgba(12,13,14,.74);border:1px solid var(--line);color:var(--muted);border-radius:20px;width:33px;height:33px;font-size:14px;line-height:1;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;padding:0}
+.watch{position:absolute;top:9px;right:9px;z-index:2;background:var(--veil);border:1px solid var(--line);color:var(--muted);border-radius:20px;width:33px;height:33px;font-size:14px;line-height:1;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;padding:0}
 .watch:hover{border-color:var(--gold);color:var(--gold)}
-.watch.on{background:var(--gold);border-color:var(--gold);color:#1a1508}
+.watch.on{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
 .watchdriver{background:none;border:1px dashed var(--line);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
 .watchdriver:hover{border-color:var(--gold);color:var(--gold)}
 .watchdriver.on{border-style:solid;border-color:var(--gold);color:var(--gold)}
 /* ── seller byline + storefront ── */
 .byline{font-size:11.5px;color:var(--muted);margin-top:-2px}
-.byline a{color:var(--muted);text-decoration:none;border-bottom:1px dotted #3c4148}
+.byline a{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--line)}
 .byline a:hover{color:var(--gold);border-color:var(--gold)}
-.store{display:none;background:linear-gradient(100deg,rgba(217,184,120,.10),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 20px}
+.store{display:none;background:linear-gradient(100deg,var(--goldwash),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 20px}
 .store h2{margin:0;font-size:22px}
 .store .hnd{font-size:12.5px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
 .store .stats{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
 .store .stats b{color:var(--txt);font-weight:700}
 .store .vf{color:var(--green);font-weight:700}
 .followbtn{margin-top:12px;background:none;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
-.followbtn:hover{background:rgba(217,184,120,.12)}
-.followbtn.on{background:var(--gold);color:#1a1508}
+.followbtn:hover{background:var(--goldwash)}
+.followbtn.on{background:var(--gold);color:var(--gold-ink)}
 /* ── comments ── */
 .cmtbtn{width:100%;margin-top:7px;background:none;border:none;color:var(--muted);padding:2px 0 0;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left}
 .cmtbtn:hover{color:var(--gold)}
@@ -111,7 +114,7 @@ h1 .accent{color:var(--gold)}
 .cmt .when{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
 .cmt .txt{font-size:13.5px;line-height:1.5;margin-top:3px;white-space:pre-wrap;word-break:break-word}
 .cmtempty{color:var(--muted);font-size:13px;text-align:center;padding:10px 0 14px}
-.toast{display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold);color:var(--txt);border-radius:11px;padding:12px 18px;font-size:14px;z-index:80;box-shadow:0 8px 30px rgba(0,0,0,.55);max-width:92vw}
+.toast{display:none;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold);color:var(--txt);border-radius:11px;padding:12px 18px;font-size:14px;z-index:80;box-shadow:0 8px 30px var(--shadowc, rgba(0,0,0,.25));max-width:92vw}
 </style>
 </head>
 <body>
@@ -157,7 +160,7 @@ h1 .accent{color:var(--gold)}
   </div>
 
   <div class="foot">
-    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v4</span></span>
+    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v5</span></span>
     <span>Questions about a card? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></span>
   </div>
 </div>
