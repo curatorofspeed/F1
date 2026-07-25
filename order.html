@@ -27,6 +27,9 @@ h1{font-size:24px;margin:14px 0 14px}
 .steps li.on .t{color:var(--green)}
 .steps li .s{font-size:12.5px;color:var(--muted);margin-top:2px}
 .track{display:block;text-align:center;background:var(--teal);color:#052;text-decoration:none;font-weight:800;border-radius:10px;padding:13px;margin-top:16px}
+.gotit{display:block;width:100%;text-align:center;background:var(--green);color:#05231a;border:none;font-weight:800;font-size:15px;border-radius:10px;padding:13px;margin-top:10px;cursor:pointer;font-family:inherit}
+.gotit:disabled{opacity:.5}
+.gotnote{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
 .foot{margin-top:30px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--muted);text-align:center}
 </style>
 </head>
@@ -36,7 +39,7 @@ h1{font-size:24px;margin:14px 0 14px}
   <h1>Your order</h1>
   <div class="state" id="state">Loading…</div>
   <div id="main" style="display:none"></div>
-  <div class="foot">Need help? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></div>
+  <div class="foot">Need help? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> <span style="opacity:.35">· v2</span></div>
 </div>
 <script>
 const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
@@ -57,7 +60,7 @@ const TOKEN=new URLSearchParams(location.search).get('t');
 })();
 
 function render(o){
-  const shipped=!!o.shipped_at;
+  const shipped=!!o.shipped_at, delivered=!!o.delivered_at;
   const trk=o.tracking_number?encodeURIComponent(o.tracking_number):'';
   const trackUrl=trk?((o.carrier==='UPS')?'https://www.ups.com/track?tracknum='+trk:(o.carrier==='FedEx')?'https://www.fedex.com/fedextrack/?trknbr='+trk:'https://tools.usps.com/go/TrackConfirmAction?tLabels='+trk):'';
   let h='<div class="card"><div class="top">'
@@ -68,11 +71,28 @@ function render(o){
     +'<li class="'+(shipped?'on':'')+'"><div class="dot">'+(shipped?'✓':'2')+'</div><div><div class="t">Shipped</div><div class="s">'
       +(shipped?('Sent '+new Date(o.shipped_at).toLocaleDateString()+(o.carrier?' via '+esc(o.carrier):'')+(o.tracking_number?' · '+esc(o.tracking_number):'')):'The seller is preparing your card. You’ll get tracking here.')
       +'</div></div></li>'
-    +'<li><div class="dot">3</div><div><div class="t">Delivered</div><div class="s">Track the package for the latest status.</div></div></li>'
+    +'<li class="'+(delivered?'on':'')+'"><div class="dot">'+(delivered?'✓':'3')+'</div><div><div class="t">Delivered</div><div class="s">'
+      +(delivered?('Confirmed '+new Date(o.delivered_at).toLocaleDateString()+(o.delivered_source==='buyer'?' — thanks for letting us know!':o.delivered_source==='carrier'?' by the carrier.':'.'))
+                 :'Track the package for the latest status.')
+      +'</div></div></li>'
     +'</ul>'
-    +(trackUrl?'<a class="track" href="'+trackUrl+'" target="_blank" rel="noopener">🔎 Track package</a>':'')
+    +(trackUrl&&!delivered?'<a class="track" href="'+trackUrl+'" target="_blank" rel="noopener">🔎 Track package</a>':'')
+    +(shipped&&!delivered
+      ?'<button class="gotit" id="gotBtn">📬 I received my card</button>'
+       +'<div class="gotnote">One tap confirms delivery and releases the seller’s payout. If you forget, delivery is auto-confirmed 7 days after shipment.</div>':'')
     +'</div>';
   $('state').style.display='none'; $('main').style.display='block'; $('main').innerHTML=h;
+  const gb=$('gotBtn');
+  if(gb) gb.onclick=async()=>{
+    gb.disabled=true; gb.textContent='Confirming…';
+    try{
+      const r=await fetch(SB_URL+'/rest/v1/rpc/order_confirm_received',{method:'POST',
+        headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify({p_token:TOKEN})});
+      if(!r.ok){ let t=await r.text(); try{t=JSON.parse(t).message||t}catch(_){}; throw new Error(t); }
+      render(Object.assign({},o,{delivered_at:new Date().toISOString(),delivered_source:'buyer'}));
+    }catch(e){ gb.disabled=false; gb.textContent='📬 I received my card'; alert('Couldn’t confirm: '+e.message); }
+  };
 }
 </script>
 </body>

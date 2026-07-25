@@ -89,7 +89,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
 </head>
 <body>
 <div class="wrap">
-  <h1>🎛️ F1 Card Index — Admin</h1>
+  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v4</span></h1>
   <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop listings, market activity, audience, sends.</p>
 
   <div class="card" id="credCard">
@@ -137,9 +137,8 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
         <button class="ghost" id="ptDriver" type="button">👤 Driver Spotlight</button>
         <button class="ghost" id="ptRecap" type="button">📊 Week Recap</button>
         <button class="ghost" id="ptRecord" type="button">🚨 New Record</button>
-      </div>
-      <div id="driverPick" style="display:none;margin-bottom:10px">
-        <select id="ptDriverSel" style="max-width:260px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:10px">Driver:</span>
+        <select id="ptDriverSel" style="max-width:240px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
       </div>
       <div id="recordPick" style="display:none;margin-bottom:10px">
         <select id="ptRecordSel" style="max-width:300px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
@@ -429,9 +428,11 @@ function shPaint(){
         +(r.grade?' · '+esc(r.grade):'')
         +(r.cert?' · cert <span class="mono">'+esc(r.cert)+'</span>':'')
         +(st==='sold'&&r.sold_at?' · sold '+ago(r.sold_at):(r.created_at?' · listed '+ago(r.created_at):''))
+        /* legacy per-listing payment links still render if one exists; buying now
+           goes through Stripe Checkout, so NOT having one is normal — no warning. */
         +(r.payment_link_url
           ?' · <a href="'+esc(r.payment_link_url)+'" target="_blank" rel="noopener" style="color:var(--teal)">pay link ↗</a>'
-          :' · <span style="color:var(--amber)">⚠ no pay link</span>')
+          :'')
       +'</div>'
       +(st==='sold'?shEscrow(r):'')
       +'</div>'
@@ -440,6 +441,10 @@ function shPaint(){
       +(st==='available'?'<button style="background:var(--gold);color:#1a1508" onclick="shQuick(\''+id+'\',\'sold\')">💰 Sold</button>':'')
       +(st==='sold'&&!r.delivered_at?'<button style="background:var(--teal);color:#052" onclick="shDelivered(\''+id+'\')">📬 Mark delivered</button>':'')
       +(st==='sold'&&r.delivered_at&&!r.payout_released_at?'<button style="background:var(--green);color:#052" onclick="shRelease(\''+id+'\')">💸 Release payout</button>':'')
+      +(st==='sold'&&!r.payout_released_at
+        ?(r.payout_hold
+          ?'<button style="background:var(--amber);color:#3a2a05" onclick="shHold(\''+id+'\',false)">▶ Lift hold</button>'
+          :'<button class="ghost" onclick="shHold(\''+id+'\',true)" title="stop the autopilot from paying this out">⏸ Hold payout</button>'):'')
       +(st==='sold'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">↩ Relist</button>':'')
       +(st==='hidden'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'available\')">👁 Show</button>':'')
       +(st==='available'?'<button class="ghost" onclick="shQuick(\''+id+'\',\'hidden\')" title="hide from shop">🙈</button>':'')
@@ -498,14 +503,24 @@ window.shQuick=async(id,status)=>{
 function shEscrow(r){
   const net=r.reserved_price??r.price_usd;
   const paid=money(net?Number(net)*0.93:null);
+  const src={buyer:'buyer confirmed',carrier:'carrier confirmed',timer:'auto-confirmed (7-day timer)'}[r.delivered_source]||'';
   let stage, color;
   if(r.payout_released_at){ stage='payout released '+ago(r.payout_released_at); color='var(--green)'; }
-  else if(r.delivered_at){ stage='delivered '+ago(r.delivered_at)+' · payout ready ('+paid+')'; color='var(--teal)'; }
-  else if(r.shipped_at){ stage='shipped '+ago(r.shipped_at)+' · awaiting delivery · funds held'; color='var(--amber)'; }
+  else if(r.payout_hold){ stage='⏸ PAYOUT ON HOLD — autopilot will not release this'; color='var(--red)'; }
+  else if(r.delivered_at){ stage='delivered '+ago(r.delivered_at)+(src?' · '+src:'')+' · autopilot releases '+paid+' within 6h'; color='var(--teal)'; }
+  else if(r.shipped_at){ stage='shipped '+ago(r.shipped_at)+' · auto-confirms 7 days after ship · funds held'; color='var(--amber)'; }
   else { stage='sold · awaiting ship + delivery · funds held'; color='var(--amber)'; }
   return '<div class="qm" style="margin-top:3px;color:'+color+'">🔒 '+stage+'</div>'
     +(r.ship_addr?'<div class="qm" style="margin-top:2px">📦 ship to: '+esc(String(r.ship_addr).replace(/\n/g,', '))+(r.tracking_number?' · '+esc(r.carrier||'USPS')+' '+esc(r.tracking_number):'')+'</div>':'');
 }
+window.shHold=async(id,hold)=>{
+  shSay(hold?'Putting payout on hold…':'Releasing the hold…');
+  try{
+    await rpc('admin_set_hold',{p_secret:$('secret').value.trim(),p_id:String(id),p_hold:hold});
+    shSay(hold?'On hold — nothing pays out until you lift it.':'Hold lifted — the autopilot takes it from here.');
+    $('shLoad').click();
+  }catch(e){ shSay(e.message,true); }
+};
 window.shDelivered=async id=>{
   shSay('Confirming delivery…');
   try{ await rpc('admin_mark_delivered',{p_secret:$('secret').value.trim(),p_id:String(id)}); shSay('Delivery confirmed — payout can be released.'); $('shLoad').click(); }
@@ -664,8 +679,11 @@ function socWire(){
     [['cnt5',5],['cnt3',3]].forEach(([id,v])=>$(id).style.cssText=(SOC.count===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['styList','list'],['styHero','hero']].forEach(([id,v])=>$(id).style.cssText=(SOC.style===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['ptTop','top'],['ptEnd','ending'],['ptDriver','driver'],['ptRecap','recap'],['ptRecord','record']].forEach(([id,v])=>$(id).style.cssText=(SOC.post===v)?'border-color:var(--gold);color:var(--gold)':'' );
-    $('driverPick').style.display=(SOC.post==='driver')?'block':'none';
-    $('recordPick').style.display=(SOC.post==='record')?'block':'none';
+    // the record dropdown only matters on "All drivers" — a chosen driver IS the pick
+    $('recordPick').style.display=(SOC.post==='record'&&!SOC.driver)?'block':'none';
+    // recap is the one market-wide post; the driver select sits it out
+    const dsel=$('ptDriverSel');
+    if(dsel){ const off=(SOC.post==='recap'); dsel.disabled=off; dsel.style.opacity=off?'.4':'1'; }
     const listMode=(SOC.post==='top'||SOC.post==='ending');
     ['cnt5','cnt3','styList','styHero'].forEach(id=>{ const b=$(id); b.disabled=!listMode; b.style.opacity=listMode?'1':'.4'; b.style.cursor=listMode?'pointer':'not-allowed'; });
     socRender();
@@ -681,26 +699,36 @@ function socWire(){
   $('ptDriver').onclick=()=>{SOC.post='driver';paint();};
   $('ptRecap').onclick=()=>{SOC.post='recap';paint();};
   $('ptRecord').onclick=()=>{SOC.post='record';paint();};
-  // populate driver picker from per_driver data (re-run each load so new data lands)
-  const pd=(SOC.data&&SOC.data.per_driver||[]);
+  // the driver picker is global now: every post type honors it.
+  // 'drivers' comes from admin_stats; fall back to per_driver for older data.
+  const dl=(SOC.data&&SOC.data.drivers)||((SOC.data&&SOC.data.per_driver||[]).map(p=>p.driver_id));
   const sel=$('ptDriverSel');
-  if(sel && pd.length){
+  if(sel){
     const prev=SOC.driver;
-    sel.innerHTML=pd.map(p=>'<option value="'+esc(p.driver_id)+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
-    SOC.driver=pd.some(p=>p.driver_id===prev)?prev:(pd[0]&&pd[0].driver_id);
-    sel.value=SOC.driver;
-    sel.onchange=()=>{ SOC.driver=sel.value; socRender(); };
+    sel.innerHTML='<option value="">🌍 All drivers</option>'
+      +dl.map(d=>'<option value="'+esc(d)+'">'+esc(cap(d))+'</option>').join('');
+    SOC.driver=dl.includes(prev)?prev:null;
+    sel.value=SOC.driver||'';
+    sel.onchange=()=>{ SOC.driver=sel.value||null; paint(); };
   }
   const rec=(SOC.data&&SOC.data.new_records||[]);
   const rsel=$('ptRecordSel');
   if(rsel && rec.length){
-    rsel.innerHTML=rec.map((p,i)=>'<option value="'+i+'">'+esc(p.driver_id.charAt(0).toUpperCase()+p.driver_id.slice(1))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
+    rsel.innerHTML=rec.map((p,i)=>'<option value="'+i+'">'+esc(cap(p.driver_id))+' — '+('$'+Math.round(p.price_usd).toLocaleString())+'</option>').join('');
     if(SOC.recordIdx>=rec.length)SOC.recordIdx=0;
     rsel.value=SOC.recordIdx;
     rsel.onchange=()=>{ SOC.recordIdx=+rsel.value; socRender(); };
   }
   $('dlCard').onclick=socDownload;
   paint();
+}
+/* dates on cards: "Jul 10", with the year added once it isn't this year */
+function socDate(d){
+  if(!d) return '';
+  const dt=new Date(d); if(isNaN(dt)) return '';
+  const opts={month:'short',day:'numeric'};
+  if(dt.getFullYear()!==new Date().getFullYear()) opts.year='numeric';
+  return dt.toLocaleDateString(undefined,opts);
 }
 let socToken=0;
 async function socRender(){
@@ -713,34 +741,47 @@ async function socRender(){
   if(SOC.post==='recap'){
     stage.innerHTML=socRecapSVG(d.week_stats||{}, (d.top_sales_7d||[]).slice(0,3), W,H); return;
   }
+  const drv=SOC.driver, DRV=drv?cap(drv):null;
   if(SOC.post==='ending'){
-    const rows=(d.ending_soon||[]).slice(0,SOC.count);
-    if(!rows.length){ empty('No live auctions ending soon in the data — run the Radar, then reload.'); return; }
+    let rows=(d.ending_soon||[]);
+    if(drv) rows=rows.filter(r=>r.driver_id===drv);
+    rows=rows.slice(0,SOC.count);
+    if(!rows.length){ empty(drv?'No live '+DRV+' auctions ending soon — pick another driver or 🌍 All.':'No live auctions ending soon in the data — run the Radar, then reload.'); return; }
     if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
-      stage.innerHTML=socHeroSVG(rows,W,H,im,{kicker:'⏱ ENDING SOON',sub:'Live on Goldin'}); }
-    else stage.innerHTML=socSVG(rows,W,H,{title:'AUCTIONS ENDING SOON',accentBids:true});
+      stage.innerHTML=socHeroSVG(rows,W,H,im,{kicker:'⏱ '+(DRV?DRV.toUpperCase()+' — ':'')+'ENDING SOON',sub:'Live on Goldin',showDate:true,dateLabel:'ends '}); }
+    else stage.innerHTML=socSVG(rows,W,H,{title:(DRV?DRV.toUpperCase()+' — ':'')+'ENDING SOON',accentBids:true,showDate:true,dateLabel:'ends '});
     return;
   }
   if(SOC.post==='driver'){
-    const pd=(d.per_driver||[]); const one=pd.find(p=>p.driver_id===SOC.driver)||pd[0];
-    if(!one){ empty('No per-driver sales yet — approve some, then reload.'); return; }
+    const pd=(d.per_driver||[]); const one=drv?pd.find(p=>p.driver_id===drv):pd[0];
+    if(!one){ empty(drv?'No approved '+DRV+' sales yet — approve some, then reload.':'No per-driver sales yet — approve some, then reload.'); return; }
     empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
-    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'DRIVER SPOTLIGHT',sub:'Record sale on F1 Card Index',solo:true});
+    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'DRIVER SPOTLIGHT',sub:'Record sale on F1 Card Index',solo:true,showDate:true});
     return;
   }
   if(SOC.post==='record'){
-    const recs=(d.new_records||[]); const one=recs[SOC.recordIdx||0];
-    if(!one){ empty('No new records in the last 30 days — when an approved sale becomes a driver\u2019s all-time #1, it shows here.'); return; }
+    const recs=(d.new_records||[]);
+    const one=drv?recs.find(r=>r.driver_id===drv):recs[SOC.recordIdx||0];
+    if(!one){ empty(drv?'No new '+DRV+' record in the last 30 days — their all-time #1 hasn\u2019t moved.':'No new records in the last 30 days — when an approved sale becomes a driver\u2019s all-time #1, it shows here.'); return; }
     empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
-    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'🚨 NEW RECORD',solo:true,record:one});
+    stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'🚨 NEW '+cap(one.driver_id).toUpperCase()+' RECORD',solo:true,record:one,showDate:true});
     return;
   }
-  // default: top sales
-  const rows=(d.top_sales_7d||[]).slice(0,SOC.count);
-  if(!rows.length){ empty('No approved sales this week yet — approve some in the queue, then reload.'); return; }
+  // top sales — a chosen driver gets their all-time record book, with dates;
+  // 🌍 All keeps the classic this-week post
+  let rows,opts;
+  if(drv){
+    rows=((d.driver_top||{})[drv]||[]).slice(0,SOC.count);
+    if(!rows.length){ empty('No approved '+DRV+' sales yet — approve some in the queue, then reload.'); return; }
+    opts={title:'TOP '+DRV.toUpperCase()+' SALES',stamp:'All-time',showDate:true};
+  }else{
+    rows=(d.top_sales_7d||[]).slice(0,SOC.count);
+    if(!rows.length){ empty('No approved sales this week yet — approve some in the queue, then reload.'); return; }
+    opts={showDate:true};
+  }
   if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
-    stage.innerHTML=socHeroSVG(rows,W,H,im); }
-  else stage.innerHTML=socSVG(rows,W,H);
+    stage.innerHTML=socHeroSVG(rows,W,H,im,drv?{kicker:'#1 '+DRV.toUpperCase()+' SALE',sub:'All-time record book',stamp:'All-time',showDate:true}:{showDate:true}); }
+  else stage.innerHTML=socSVG(rows,W,H,opts);
 }
 function socSVG(rows,W,H,opts){
   opts=opts||{};
@@ -750,20 +791,22 @@ function socSVG(rows,W,H,opts){
   let items='';
   rows.forEach((r,i)=>{
     const y=listTop+i*rowH;
+    const dt=opts.showDate?socDate(r.sale_date):'';
     items+=`<g transform="translate(${pad},${y})">
       <text x="0" y="${rowH*0.42}" font-family="Arial" font-weight="800" font-size="40" fill="#3a3f45">#${i+1}</text>
       <text x="90" y="${rowH*0.36}" font-family="Arial" font-weight="700" font-size="38" fill="#fff">${socEsc(cap(r.driver_id))}</text>
       <text x="90" y="${rowH*0.62}" font-family="Arial" font-size="26" fill="#8a949c">${socEsc(String(r.title||'').slice(0,46))}</text>
-      <text x="${W-pad*2}" y="${rowH*0.5}" text-anchor="end" font-family="Arial" font-weight="800" font-size="46" fill="${gold}">${money(r.price_usd)}${opts.accentBids&&r.bids!=null?`<tspan font-size="26" fill="#8a949c"> ${r.bids} bids</tspan>`:``}</text>
+      <text x="${W-pad*2}" y="${rowH*0.42}" text-anchor="end" font-family="Arial" font-weight="800" font-size="46" fill="${gold}">${money(r.price_usd)}${opts.accentBids&&r.bids!=null?`<tspan font-size="26" fill="#8a949c"> ${r.bids} bids</tspan>`:``}</text>
+      ${dt?`<text x="${W-pad*2}" y="${rowH*0.42+34}" text-anchor="end" font-family="Arial" font-size="23" fill="#8a949c">${opts.dateLabel||''}${socEsc(dt)}</text>`:''}
       ${i<rows.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-pad*2}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
     </g>`;
   });
-  const wk=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  const wk=(opts.stamp?opts.stamp+' &#183; ':'This week &#183; ')+new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
   return `<svg id="socSVG" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0a0c0d">
     <rect width="${W}" height="${H}" fill="#0a0c0d"/>
     <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
     <text x="${pad}" y="${SOC.ratio==='916'?170:120}" font-family="Arial" font-weight="900" font-size="${(opts.title||'TOP F1 CARD SALES').length>18?58:72}" fill="#fff">${opts.title||'TOP F1 CARD SALES'}</text>
-    <text x="${pad}" y="${SOC.ratio==='916'?250:180}" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
+    <text x="${pad}" y="${SOC.ratio==='916'?250:180}" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">${wk}</text>
     ${items}
     <text x="${pad}" y="${H-70}" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
     <text x="${W-pad}" y="${H-70}" text-anchor="end" font-family="Arial" font-size="30" fill="#8a949c">live market tracker</text>
@@ -785,22 +828,24 @@ function socHeroSVG(rows,W,H,heroData,opts){
        <text x="${W/2}" y="${imgH/2}" text-anchor="middle" font-family="Arial" font-size="40" fill="#3a3f45">no image on this sale</text>`;
   // caption sits lower and roomier on solo cards so the image gets the space
   const capY=opts.solo?imgH-210:imgH-160;
+  const heroDate=opts.showDate?socDate(hero.sale_date):'';
   const heroBlock=`
     <text x="70" y="${capY}" font-family="Arial" font-weight="700" font-size="42" fill="${gold}">${opts.kicker||'#1 SALE OF THE WEEK'}</text>
     <text x="70" y="${capY+70}" font-family="Arial" font-weight="900" font-size="64" fill="#fff">${socEsc(cap(hero.driver_id))}</text>
-    <text x="70" y="${capY+118}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,opts.solo?60:52))}</text>
+    <text x="70" y="${capY+118}" font-family="Arial" font-size="30" fill="#cdd6d1">${socEsc(String(hero.title||'').slice(0,opts.solo?60:52))}${heroDate?`<tspan fill="#8a949c">  &#183;  ${opts.dateLabel||''}${socEsc(heroDate)}</tspan>`:``}</text>
     <text x="${W-70}" y="${capY+40}" text-anchor="end" font-family="Arial" font-weight="900" font-size="90" fill="${gold}">${money(hero.price_usd)}</text>
-    ${opts.record&&opts.record.previous_record?`<text x="${W-70}" y="${capY+80}" text-anchor="end" font-family="Arial" font-size="28" fill="#39e08a">▲ ${opts.record.pct_over!=null?opts.record.pct_over+'% over':''} prev record ${money(opts.record.previous_record)}</text>`:''}`;
+    ${opts.record&&opts.record.previous_record?`<text x="${W-70}" y="${capY+80}" text-anchor="end" font-family="Arial" font-size="28" fill="#39e08a">▲ ${opts.record.pct_over!=null?opts.record.pct_over+'% over':''} prev record ${money(opts.record.previous_record)}${opts.record.previous_date?` (${socEsc(socDate(opts.record.previous_date))})`:``}</text>`:''}`;
   // runner-up rows below the image
   let list='';
   const listTop=imgH+70, rowH=(rest.length&&!opts.solo)?((H-listTop-130)/rest.length):0;
   if(!opts.solo)
   rest.forEach((r,i)=>{
     const y=listTop+i*rowH;
+    const dt=opts.showDate?socDate(r.sale_date):'';
     list+=`<g transform="translate(70,${y})">
       <text x="0" y="${rowH*0.5}" font-family="Arial" font-weight="800" font-size="34" fill="#3a3f45">#${i+2}</text>
       <text x="80" y="${rowH*0.44}" font-family="Arial" font-weight="700" font-size="34" fill="#fff">${socEsc(cap(r.driver_id))}</text>
-      <text x="80" y="${rowH*0.72}" font-family="Arial" font-size="23" fill="#8a949c">${socEsc(String(r.title||'').slice(0,44))}</text>
+      <text x="80" y="${rowH*0.72}" font-family="Arial" font-size="23" fill="#8a949c">${socEsc(String(r.title||'').slice(0,44))}${dt?` &#183; ${opts.dateLabel||''}${socEsc(dt)}`:``}</text>
       <text x="${W-140}" y="${rowH*0.55}" text-anchor="end" font-family="Arial" font-weight="800" font-size="40" fill="${gold}">${money(r.price_usd)}</text>
       ${i<rest.length-1?`<line x1="0" y1="${rowH-1}" x2="${W-140}" y2="${rowH-1}" stroke="#1e2227"/>`:''}
     </g>`;
@@ -817,7 +862,7 @@ function socHeroSVG(rows,W,H,heroData,opts){
     ${heroBlock}
     ${list}
     <text x="70" y="${H-55}" font-family="Arial" font-weight="800" font-size="38" fill="#fff">f1cardindex.com</text>
-    <text x="${W-70}" y="${H-55}" text-anchor="end" font-family="Arial" font-size="27" fill="#8a949c">This week &#183; ${wk}</text>
+    <text x="${W-70}" y="${H-55}" text-anchor="end" font-family="Arial" font-size="27" fill="#8a949c">${opts.stamp||'This week'} &#183; ${wk}</text>
   </svg>`;
 }
 function socRecapSVG(w,top,W,H){
@@ -855,7 +900,7 @@ function socDownload(){
   img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
     c.getContext('2d').drawImage(img,0,0);
     c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b);
-      a.download='f1cardindex-'+SOC.post+'-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
+      a.download='f1cardindex-'+SOC.post+(SOC.driver?'-'+SOC.driver:'')+'-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
       $('socMsg').textContent='Downloaded — post it! 🏁'; });
   };
   img.onerror=()=>{ $('socMsg').textContent='Export failed — screenshot the card instead.'; };
