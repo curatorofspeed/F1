@@ -173,7 +173,7 @@ textarea{resize:vertical;min-height:70px}
     <a class="btn" href="/consign.html" style="text-decoration:none;display:inline-block">＋ List another card</a>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v1</span></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v2</span></div>
 </div>
 
 <script>
@@ -284,7 +284,7 @@ function render(){
       +'<br><button class="btn sm" onclick="connectPayout(\''+anyToken+'\',this)">Connect payout account</button></div>';
   }
   if(offers) A+='<div class="alert hot"><b>💰 You have '+offers+' offer'+(offers===1?'':'s')+' waiting.</b> Offers expire on buyers\' patience — accept or decline below.</div>';
-  if(needsShip.length) A+='<div class="alert warn"><b>📦 '+needsShip.length+' card'+(needsShip.length===1?'':'s')+' sold and needs shipping.</b> The buyer has already paid; add tracking below to start the payout clock.</div>';
+  if(needsShip.length) A+='<div class="alert warn"><b>📦 '+needsShip.length+' card'+(needsShip.length===1?'':'s')+' sold and needs shipping.</b> The buyer has already paid — please ship within <b>3 business days</b>. Add tracking below to start the payout clock.</div>';
   $('alerts').innerHTML=A;
 
   /* action-needed section */
@@ -342,13 +342,15 @@ function rowHTML(l){
 
   /* ship panel */
   if(l.sold_at&&!l.shipped_at){
-    h+='<div class="ship"><div style="font-size:13px;font-weight:700;color:var(--red)">📦 Ship to</div>'
+    h+='<div class="ship"><div style="font-size:13px;font-weight:700;color:var(--red)">📦 Ship to — within 3 business days</div>'
       +'<div class="addr">'+esc(l.ship_name||'')+'\n'+esc(l.ship_addr||'address pending')+'</div>'
       +'<div class="g2"><input id="c_'+l.id+'" placeholder="Carrier (USPS)" value="USPS">'
       +'<input id="t_'+l.id+'" placeholder="Tracking number"></div>'
       +'<div class="acts"><button class="btn sm" onclick="saveTracking(\''+l.id+'\',this)">Save tracking</button>'
-      +'<a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://cns.usps.com/">Buy a label</a></div>'
-      +'<div class="track">Your payout of <b style="color:var(--green)">'+money(l.net_payout)+'</b> releases once tracking shows delivered.</div>'
+      +'<a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.pirateship.com/">Buy a label (Pirate Ship)</a>'
+      +'<a class="btn ghost sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://cns.usps.com/">USPS</a></div>'
+      +'<div class="track">Your payout of <b style="color:var(--green)">'+money(l.net_payout)+'</b> releases once tracking shows delivered. '
+      +'Same buyer bought more than one of your cards? Ship them in <b>one package</b> and paste the <b>same tracking number</b> on each card — every payout still releases on its own.</div>'
       +'</div>';
   } else if(l.tracking_number){
     h+='<div class="track">📮 '+esc(l.carrier||'USPS')+' '+esc(l.tracking_number)
