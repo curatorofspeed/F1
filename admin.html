@@ -89,7 +89,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
 </head>
 <body>
 <div class="wrap">
-  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v4</span></h1>
+  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v5</span></h1>
   <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop listings, market activity, audience, sends.</p>
 
   <div class="card" id="credCard">
@@ -137,7 +137,8 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
         <button class="ghost" id="ptDriver" type="button">👤 Driver Spotlight</button>
         <button class="ghost" id="ptRecap" type="button">📊 Week Recap</button>
         <button class="ghost" id="ptRecord" type="button">🚨 New Record</button>
-        <span style="font-size:12.5px;color:var(--muted);margin-left:10px">Driver:</span>
+        <button class="ghost" id="ptProspect" type="button">🌱 Prospect Watch</button>
+        <span style="font-size:12.5px;color:var(--muted);margin-left:10px" id="ptDriverLbl">Driver:</span>
         <select id="ptDriverSel" style="max-width:240px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px 10px;font-size:13px"></select>
       </div>
       <div id="recordPick" style="display:none;margin-bottom:10px">
@@ -153,9 +154,10 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
         <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Style:</span>
         <button class="ghost" id="styList" type="button">List</button>
         <button class="ghost" id="styHero" type="button">Hero image</button>
-        <button id="dlCard" type="button" style="margin-left:auto">⬇ Download PNG</button>
+        <button id="weekPack" type="button" style="margin-left:auto">🎁 Generate week pack</button>
+        <button id="dlCard" type="button">⬇ Download PNG</button>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from this week's approved sales. Download the PNG (or screenshot it) and post straight to TikTok / IG. Card art shows when the sale has an image.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from recent approved sales — the last <b>30 days</b> market-wide, <b>90 days</b> for a single driver, so nothing posts as news that isn't. Download the PNG (or screenshot it) and post straight to TikTok / IG. <b>Week pack</b> renders every post at once and saves them as a zip with ready-to-paste captions.</div>
       <div id="socialStage" style="overflow:auto;background:#000;border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;justify-content:center"></div>
       <div class="msg" id="socMsg"></div>
     </details>
@@ -272,7 +274,7 @@ $('saveBtn').onclick=()=>{ localStorage.setItem(CREDS,JSON.stringify({url:$('sbU
 function say(t,err){ const m=$('msg'); m.textContent=t; m.className='msg'+(err?' err':''); }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 const money=v=>v==null?'—':'$'+Math.round(Number(v)).toLocaleString();
-const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+const cap=s=>String(s||'').replace(/(^|[\s\-_])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 function ago(iso){ if(!iso)return '—'; const h=(Date.now()-new Date(iso))/36e5;
   if(h<1)return Math.round(h*60)+'m ago'; if(h<48)return Math.round(h)+'h ago'; return Math.round(h/24)+'d ago'; }
 
@@ -662,7 +664,48 @@ window.ofDecide=async(token,offerId,action)=>{
 };
 
 /* ---- social studio: Top Sales share card ---- */
-let SOC={data:null, ratio:'916', count:5, style:'hero', post:'top', driver:null, recordIdx:0, imgCache:{}};
+/* F2/F3 juniors don't live in f1_sales — their record sales were pulled off
+   130point and seeded into the index. Carried here so Prospect Watch renders
+   from the same numbers the public driver pages show. Sorted by price. */
+const SOC_PROSPECTS=[
+  {id:'tsolov',n:'Nikola Tsolov',t:'Campos F2',c:'#FFB800',ttl:'2024 Chrome Sapphire Padparadscha 1/1 PSA 10',p:3552.06,d:'2026-07-13',img:'https://i.ebayimg.com/images/g/NoEAAeSwvLpqQOu~/s-l500.jpg'},
+  {id:'beganovic',n:'Dino Beganović',t:'DAMS F2',c:'#E80020',ttl:'2025 LogoFractor Red & Black Auto 1/1',p:2500,d:'2026-02-28',img:'https://i.ebayimg.com/images/g/biQAAeSwKshpoh27/s-l500.jpg'},
+  {id:'durksen',n:'Joshua Dürksen',t:'Invicta F2',c:'#b06cf0',ttl:'2025 Chrome Futuro Red Auto /5',p:1999.99,d:'2026-02-05',img:'https://i.ebayimg.com/images/g/LGMAAeSwdP5pgZwk/s-l500.jpg'},
+  {id:'browning',n:'Luke Browning',t:'F2',c:'#64C4FF',ttl:'2025 Chrome Auto Red Refractor /5',p:1925,d:'2026-06-04',img:'https://i.ebayimg.com/images/g/RvsAAeSw60JqGzh2/s-l500.jpg'},
+  {id:'ugochukwu',n:'Ugo Ugochukwu',t:'Prema F3',c:'#FF8000',ttl:'2025 Chrome Diamond Anniversary Relic 1/1',p:1732,d:'2026-06-07',img:'https://i.ebayimg.com/images/g/rL0AAeSwYtFqHwMd/s-l500.jpg'},
+  {id:'camara',n:'Rafael Câmara',t:'Invicta F2',c:'#0066CC',ttl:'2025 Chrome 1st Black Refractor /10 RC',p:1500,d:'2026-03-19',img:'https://i.ebayimg.com/images/g/X44AAeSwMMVputuj/s-l500.jpg'},
+  {id:'xie',n:'Gerrard Xie',t:'DAMS F3',c:'#E80020',ttl:'2025 Chrome 1st Auto SuperFractor 1/1',p:1500,d:'2026-02-24',img:'https://i.ebayimg.com/images/g/pmsAAeSwCylpg3nG/s-l500.jpg'},
+  {id:'crawford',n:'Jak Crawford',t:'F2',c:'#229971',ttl:'2025 Chrome Sapphire Padparadscha Auto 1/1',p:1100,d:'2026-05-01',img:'https://i.ebayimg.com/images/g/CnEAAeSwe5lp45Gb/s-l500.jpg'},
+  {id:'inthraphuvasak',n:'Tasanapol Inthraphuvasak',t:'ART F2',c:'#0093CC',ttl:'2024 Chrome SuperFractor 1/1 PSA 10',p:1000,d:'2025-11-06',img:'https://i.ebayimg.com/images/g/O1IAAeSwQ3dowhqd/s-l500.jpg'},
+  {id:'fornaroli',n:'Leonardo Fornaroli',t:'F2',c:'#C0A062',ttl:'2025 Chrome LogoFractor Auto 1/1',p:911.22,d:'2026-06-15',img:'https://i.ebayimg.com/images/g/mmcAAeSwnn9qLtEb/s-l500.jpg'},
+  {id:'bennett',n:'John Bennett',t:'Trident F2',c:'#1E9BD7',ttl:'2025 Chrome Auto SuperFractor 1/1',p:900,d:'2026-02-08',img:'https://i.ebayimg.com/images/g/EcgAAeSwEeZpgk8w/s-l500.jpg'},
+  {id:'verschoor',n:'Richard Verschoor',t:'F2',c:'#6692FF',ttl:'2024 Sapphire Padparadscha Auto 1/1 PSA 10',p:895,d:'2026-07-21',img:'https://i.ebayimg.com/images/g/RaYAAeSwP19qXFsG/s-l500.jpg'},
+  {id:'bilinski',n:'Roman Bilinski',t:'DAMS F2',c:'#E80020',ttl:'2025 Chrome 1st Auto Red Raywave /5',p:750,d:'2026-01-21',img:'https://i.ebayimg.com/images/g/~~sAAeSwBWdpbu4i/s-l500.jpg'},
+  {id:'miyata',n:'Ritomo Miyata',t:'Hitech F2',c:'#B0B7BC',ttl:'2025 Chrome Auto SuperFractor 1/1',p:748,d:'2026-04-11',img:'https://i.ebayimg.com/images/g/VXwAAeSwQCpp0yaY/s-l500.jpg'},
+  {id:'ho',n:'Christian Ho',t:'Rodin F3',c:'#FF8000',ttl:'2025 Chrome Diamond Relic 1/1',p:699,d:'2026-06-02',img:'https://i.ebayimg.com/images/g/bl8AAeSwO2Bphqk-/s-l500.jpg'},
+  {id:'dunne',n:'Alexander Dunne',t:'Rodin F2',c:'#FF8000',ttl:'2024 Chrome SuperFractor 1/1 SSP',p:698.99,d:'2024-12-28',img:'https://i.ebayimg.com/images/g/MYkAAOSw9uZnTpD2/s-l500.jpg'},
+  {id:'delpino',n:'Bruno del Pino',t:'VAR F3',c:'#00A19C',ttl:'2025 Chrome Auto SuperFractor 1/1',p:670,d:'2026-05-17',img:'https://i.ebayimg.com/images/g/l5oAAeSwv5dqA10K/s-l500.jpg'},
+  {id:'wharton',n:'James Wharton',t:'Prema F3',c:'#3671C6',ttl:'2025 Chrome SuperFractor 1/1',p:610,d:'2026-03-15',img:'https://i.ebayimg.com/images/g/JXYAAeSwc0RpsOdt/s-l500.jpg'},
+  {id:'martins',n:'Victor Martins',t:'F2',c:'#0093CC',ttl:'2025 Chrome Auto SuperFractor 1/1',p:600,d:'2026-07-23',img:'https://i.ebayimg.com/images/g/IS0AAeSwAzZqVVnC/s-l500.jpg'},
+  {id:'stenshorne',n:'Martinius Stenshorne',t:'Rodin F2',c:'#FF8000',ttl:'2025 Chrome Diamond Anniversary Relic 1/1',p:599,d:'2026-04-29',img:'https://i.ebayimg.com/images/g/3gUAAeSwMc9p5YT7/s-l500.jpg'},
+  {id:'montoya',n:'Sebastián Montoya',t:'Prema F2',c:'#3671C6',ttl:'2026 Lights Out Auto 1/1',p:568.85,d:'2026-07-24',img:'https://i.ebayimg.com/images/g/OYkAAeSwhINqYMDX/s-l500.jpg'},
+  {id:'nael',n:'Théophile Naël',t:'Campos F3',c:'#FFB800',ttl:'2025 Sapphire Padparadscha Auto 1/1',p:550,d:'2026-05-12',img:'https://i.ebayimg.com/images/g/1TMAAeSwIkpqAyr6/s-l500.jpg'},
+  {id:'vanhoepen',n:'Laurens van Hoepen',t:'Trident F2',c:'#1E9BD7',ttl:'2024 Sapphire Padparadscha 1/1',p:537.84,d:'2025-10-01',img:'https://i.ebayimg.com/images/g/6YEAAeSwwaRowqj6/s-l500.jpg'},
+  {id:'stromsted',n:'Noah Strømsted',t:'Trident F3',c:'#1E9BD7',ttl:'2025 Sapphire Padparadscha 1/1',p:500,d:'2026-03-06',img:'https://i.ebayimg.com/images/g/qqcAAeSwDBBpq3~N/s-l500.jpg'},
+  {id:'giusti',n:'Alessandro Giusti',t:'MP F3',c:'#F05A28',ttl:'2025 Sapphire Padparadscha 1st Auto 1/1',p:372,d:'2026-05-08',img:'https://i.ebayimg.com/images/g/-jwAAeSwVNVp8BnD/s-l500.jpg'},
+  {id:'shields',n:'Cian Shields',t:'AIX F2',c:'#7A5FBE',ttl:'2025 Chrome Diamond Anniversary Relic 1/1',p:310,d:'2026-04-11',img:'https://i.ebayimg.com/images/g/90QAAeSwTmlpzbP4/s-l500.jpg'},
+  {id:'boya',n:'Mari Boya',t:'Prema F2',c:'#3671C6',ttl:'2024 Chrome F3 SuperFractor 1/1',p:230,d:'2025-08-08',img:'https://i.ebayimg.com/images/g/SxsAAeSwCZpokCyn/s-l500.jpg'},
+  {id:'sharp',n:'Louis Sharp',t:'Prema F3',c:'#3671C6',ttl:'2025 Chrome 1st Auto Red RayWave /5',p:217.5,d:'2026-02-06',img:'https://i.ebayimg.com/images/g/TWUAAeSwhdFpgCvm/s-l500.jpg'},
+  {id:'taponen',n:'Tuukka Taponen',t:'MP F3',c:'#F05A28',ttl:'2025 Chrome Auto Black Refractor /10',p:200,d:'2026-01-27',img:'https://i.ebayimg.com/images/g/6yEAAeSwdRZpcouq/s-l500.jpg'},
+  {id:'mini',n:'Gabriele Minì',t:'F2',c:'#b06cf0',ttl:'2024 Finest SuperFractor 1/1 RC',p:184.5,d:'2025-10-04',img:'https://i.ebayimg.com/images/g/spkAAeSwu9xo2I2h/s-l500.jpg'},
+  {id:'maini',n:'Kush Maini',t:'ART F2',c:'#0093CC',ttl:'2025 Chrome SuperFractor 1/1',p:160.55,d:'2026-02-01',img:'https://i.ebayimg.com/images/g/dFUAAeSw-vppemFY/s-l500.jpg'},
+  {id:'lacorte',n:'Nicola Lacorte',t:'DAMS F3',c:'#E80020',ttl:'2025 Chrome 1st Auto Red Refractor /5',p:150,d:'2026-02-26',img:'https://i.ebayimg.com/images/g/uTIAAeSwX7RpoLO5/s-l500.jpg'},
+  {id:'villagomez',n:'Rafael Villagómez',t:'VAR F2',c:'#00A19C',ttl:'2024 Chrome SuperFractor Future Stars 1/1',p:103.5,d:'2025-10-18',img:'https://i.ebayimg.com/images/g/SxAAAeSwRqVo7SG5/s-l500.jpg'},
+  {id:'leon',n:'Noel León',t:'Campos F2',c:'#FFB800',ttl:'2024 Chrome Future Stars Red Checker Flag /5',p:99.99,d:'2025-10-17',img:'https://i.ebayimg.com/images/g/vEMAAeSwzVFoyZWi/s-l500.jpg'},
+  {id:'goethe',n:'Oliver Goethe',t:'MP F2',c:'#F05A28',ttl:'2024 Chrome Red Refractor /5 PSA 10',p:99.99,d:'2025-12-21',img:'https://i.ebayimg.com/images/g/EYAAAeSw0lVo9tJh/s-l500.jpg'},
+  {id:'badoer',n:'Brando Badoer',t:'Rodin F3',c:'#FF8000',ttl:'2025 Chrome 1st Auto Orange /25',p:69,d:'2026-02-14',img:'https://i.ebayimg.com/images/g/Pb8AAeSwqixpgf5x/s-l500.jpg'}
+];
+let SOC={data:null, ratio:'916', count:5, style:'hero', post:'top', driver:null, prospect:null, recordIdx:0, imgCache:{}};
 async function socLoadImg(url){
   if(!url) return null;
   if(SOC.imgCache[url]!==undefined) return SOC.imgCache[url];
@@ -673,18 +716,45 @@ async function socLoadImg(url){
     SOC.imgCache[url]=data; return data;
   }catch(e){ SOC.imgCache[url]=null; return null; }   // cache misses too, so we don't retry every render
 }
+let socPaint=()=>{};
+/* One <select>, two rosters: F1 drivers come from the DB, prospects from the
+   seeded 130point board. Only rebuilt when the roster actually changes, so a
+   re-paint doesn't wipe the selection. */
+function socFillPicker(){
+  const sel=$('ptDriverSel'); if(!sel) return;
+  const mode=(SOC.post==='prospect')?'prospect':'driver';
+  const lbl=$('ptDriverLbl'); if(lbl) lbl.textContent=(mode==='prospect')?'Prospect:':'Driver:';
+  if(sel.dataset.mode!==mode){
+    sel.dataset.mode=mode;
+    if(mode==='prospect'){
+      sel.innerHTML='<option value="">🌱 All prospects</option>'
+        +SOC_PROSPECTS.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+' — '+esc(p.t)+'</option>').join('');
+      sel.value=SOC.prospect||'';
+      sel.onchange=()=>{ SOC.prospect=sel.value||null; socPaint(); };
+    }else{
+      // 'drivers' comes from admin_stats; fall back to per_driver for older data.
+      const dl=(SOC.data&&SOC.data.drivers)||((SOC.data&&SOC.data.per_driver||[]).map(p=>p.driver_id));
+      sel.innerHTML='<option value="">🌍 All drivers</option>'
+        +dl.map(d=>'<option value="'+esc(d)+'">'+esc(cap(d))+'</option>').join('');
+      SOC.driver=dl.includes(SOC.driver)?SOC.driver:null;
+      sel.value=SOC.driver||'';
+      sel.onchange=()=>{ SOC.driver=sel.value||null; socPaint(); };
+    }
+  }
+}
 function socWire(){
   const paint=()=>{
     [['fmt916','916'],['fmt11','11']].forEach(([id,v])=>$(id).style.cssText=(SOC.ratio===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['cnt5',5],['cnt3',3]].forEach(([id,v])=>$(id).style.cssText=(SOC.count===v)?'border-color:var(--gold);color:var(--gold)':'' );
     [['styList','list'],['styHero','hero']].forEach(([id,v])=>$(id).style.cssText=(SOC.style===v)?'border-color:var(--gold);color:var(--gold)':'' );
-    [['ptTop','top'],['ptEnd','ending'],['ptDriver','driver'],['ptRecap','recap'],['ptRecord','record']].forEach(([id,v])=>$(id).style.cssText=(SOC.post===v)?'border-color:var(--gold);color:var(--gold)':'' );
+    [['ptTop','top'],['ptEnd','ending'],['ptDriver','driver'],['ptRecap','recap'],['ptRecord','record'],['ptProspect','prospect']].forEach(([id,v])=>$(id).style.cssText=(SOC.post===v)?'border-color:var(--gold);color:var(--gold)':'' );
     // the record dropdown only matters on "All drivers" — a chosen driver IS the pick
     $('recordPick').style.display=(SOC.post==='record'&&!SOC.driver)?'block':'none';
     // recap is the one market-wide post; the driver select sits it out
     const dsel=$('ptDriverSel');
     if(dsel){ const off=(SOC.post==='recap'); dsel.disabled=off; dsel.style.opacity=off?'.4':'1'; }
-    const listMode=(SOC.post==='top'||SOC.post==='ending');
+    socFillPicker();
+    const listMode=(SOC.post==='top'||SOC.post==='ending'||SOC.post==='prospect');
     ['cnt5','cnt3','styList','styHero'].forEach(id=>{ const b=$(id); b.disabled=!listMode; b.style.opacity=listMode?'1':'.4'; b.style.cursor=listMode?'pointer':'not-allowed'; });
     socRender();
   };
@@ -699,18 +769,9 @@ function socWire(){
   $('ptDriver').onclick=()=>{SOC.post='driver';paint();};
   $('ptRecap').onclick=()=>{SOC.post='recap';paint();};
   $('ptRecord').onclick=()=>{SOC.post='record';paint();};
-  // the driver picker is global now: every post type honors it.
-  // 'drivers' comes from admin_stats; fall back to per_driver for older data.
-  const dl=(SOC.data&&SOC.data.drivers)||((SOC.data&&SOC.data.per_driver||[]).map(p=>p.driver_id));
-  const sel=$('ptDriverSel');
-  if(sel){
-    const prev=SOC.driver;
-    sel.innerHTML='<option value="">🌍 All drivers</option>'
-      +dl.map(d=>'<option value="'+esc(d)+'">'+esc(cap(d))+'</option>').join('');
-    SOC.driver=dl.includes(prev)?prev:null;
-    sel.value=SOC.driver||'';
-    sel.onchange=()=>{ SOC.driver=sel.value||null; paint(); };
-  }
+  $('ptProspect').onclick=()=>{SOC.post='prospect';paint();};
+  if($('weekPack')) $('weekPack').onclick=socWeekPack;
+  socPaint=paint;
   const rec=(SOC.data&&SOC.data.new_records||[]);
   const rsel=$('ptRecordSel');
   if(rsel && rec.length){
@@ -738,9 +799,13 @@ async function socRender(){
   const d=SOC.data||{}; const W=1080, H=SOC.ratio==='916'?1920:1080;
   const empty=m=>{ if($('socialStage')) $('socialStage').innerHTML='<div style="color:#888;padding:40px">'+m+'</div>'; };
 
+  const win=d.windows||{}, TOPD=win.top_days||30, DRVD=win.driver_days||90, RECD=win.record_days||90;
+  const TOPSTAMP='Last '+TOPD+' days';
+
   if(SOC.post==='recap'){
-    stage.innerHTML=socRecapSVG(d.week_stats||{}, (d.top_sales_7d||[]).slice(0,3), W,H); return;
+    stage.innerHTML=socRecapSVG(d.week_stats||{}, socRecent(d).slice(0,3), W,H); return;
   }
+  if(SOC.post==='prospect'){ return socRenderProspect(stage,W,H,empty,my); }
   const drv=SOC.driver, DRV=drv?cap(drv):null;
   if(SOC.post==='ending'){
     let rows=(d.ending_soon||[]);
@@ -762,31 +827,68 @@ async function socRender(){
   if(SOC.post==='record'){
     const recs=(d.new_records||[]);
     const one=drv?recs.find(r=>r.driver_id===drv):recs[SOC.recordIdx||0];
-    if(!one){ empty(drv?'No new '+DRV+' record in the last 30 days — their all-time #1 hasn\u2019t moved.':'No new records in the last 30 days — when an approved sale becomes a driver\u2019s all-time #1, it shows here.'); return; }
+    if(!one){ empty(drv?'No new '+DRV+' record in the last '+RECD+' days — their all-time #1 hasn\u2019t moved.':'No new records in the last '+RECD+' days — when a sale from that window becomes a driver\u2019s all-time #1, it shows here.'); return; }
     empty('Rendering…'); const im=await socLoadImg(one.image_url); if(my!==socToken)return;
     stage.innerHTML=socHeroSVG([one],W,H,im,{kicker:'🚨 NEW '+cap(one.driver_id).toUpperCase()+' RECORD',solo:true,record:one,showDate:true});
     return;
   }
-  // top sales — a chosen driver gets their all-time record book, with dates;
-  // 🌍 All keeps the classic this-week post
-  let rows,opts;
+  // top sales — recent by default. A driver with nothing in the window falls
+  // back to their all-time board, but the card says so rather than implying news.
+  let rows,opts,stamp,fell=false;
   if(drv){
     rows=((d.driver_top||{})[drv]||[]).slice(0,SOC.count);
+    if(!rows.length){
+      rows=((d.driver_top_all||{})[drv]||[]).slice(0,SOC.count);
+      fell=rows.length>0;
+    }
     if(!rows.length){ empty('No approved '+DRV+' sales yet — approve some in the queue, then reload.'); return; }
-    opts={title:'TOP '+DRV.toUpperCase()+' SALES',stamp:'All-time',showDate:true};
+    stamp=fell?'All-time':'Last '+DRVD+' days';
+    opts={title:'TOP '+DRV.toUpperCase()+' SALES',stamp:stamp,showDate:true};
   }else{
-    rows=(d.top_sales_7d||[]).slice(0,SOC.count);
-    if(!rows.length){ empty('No approved sales this week yet — approve some in the queue, then reload.'); return; }
-    opts={showDate:true};
+    rows=socRecent(d).slice(0,SOC.count);
+    if(!rows.length){ empty('No sales in the last '+TOPD+' days — run the Radar and approve some, then reload.'); return; }
+    stamp=TOPSTAMP;
+    opts={stamp:stamp,showDate:true};
   }
   if(SOC.style==='hero'){ empty('Rendering…'); const im=await socLoadImg(rows[0]&&rows[0].image_url); if(my!==socToken)return;
-    stage.innerHTML=socHeroSVG(rows,W,H,im,drv?{kicker:'#1 '+DRV.toUpperCase()+' SALE',sub:'All-time record book',stamp:'All-time',showDate:true}:{showDate:true}); }
+    stage.innerHTML=socHeroSVG(rows,W,H,im,drv?{kicker:'#1 '+DRV.toUpperCase()+' SALE',stamp:stamp,showDate:true}:{stamp:stamp,showDate:true}); }
   else stage.innerHTML=socSVG(rows,W,H,opts);
+}
+
+/* the studio always wants sales that actually happened recently; top_sales_7d
+   is an ingest-time ops list and only stands in for older admin_stats builds */
+function socRecent(d){
+  const r=(d&&d.top_sales_recent)||[];
+  return r.length?r:((d&&d.top_sales_7d)||[]);
+}
+/* prospects reuse the sale-shaped renderers, so reshape rather than duplicate */
+function socProspectRow(p){
+  return {driver_id:p.n, title:p.ttl, price_usd:p.p, sale_date:p.d, image_url:p.img||null, team:p.t};
+}
+async function socRenderProspect(stage,W,H,empty,my){
+  const pid=SOC.prospect;
+  if(pid){
+    const p=SOC_PROSPECTS.find(x=>x.id===pid);
+    if(!p){ empty('That prospect isn’t on the board yet.'); return; }
+    empty('Rendering…'); const im=await socLoadImg(p.img); if(my!==socToken)return;
+    stage.innerHTML=socHeroSVG([socProspectRow(p)],W,H,im,{
+      kicker:'🌱 PROSPECT WATCH · '+String(p.t||'').toUpperCase(),
+      solo:true, showDate:true, stamp:'Record sale'});
+    return;
+  }
+  const rows=SOC_PROSPECTS.slice(0,SOC.count).map(socProspectRow);
+  if(!rows.length){ empty('No prospects on the board yet.'); return; }
+  if(SOC.style==='hero'){
+    empty('Rendering…'); const im=await socLoadImg(rows[0].image_url); if(my!==socToken)return;
+    stage.innerHTML=socHeroSVG(rows,W,H,im,{kicker:'🌱 PROSPECT WATCH',stamp:'F2 / F3 record sales',showDate:true});
+  }else{
+    stage.innerHTML=socSVG(rows,W,H,{title:'PROSPECT WATCH',stamp:'F2 / F3 record sales',showDate:true});
+  }
 }
 function socSVG(rows,W,H,opts){
   opts=opts||{};
   const pad=70, gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
-  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const cap=s=>String(s||'').replace(/(^|[\s\-_])(\S)/g,(m,a,b)=>a+b.toUpperCase());
   const listTop=SOC.ratio==='916'?430:300, rowH=(H-listTop-140)/rows.length;
   let items='';
   rows.forEach((r,i)=>{
@@ -815,7 +917,7 @@ function socSVG(rows,W,H,opts){
 function socHeroSVG(rows,W,H,heroData,opts){
   opts=opts||{};
   const gold='#d9b878', money=v=>'$'+Math.round(Number(v)).toLocaleString();
-  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const cap=s=>String(s||'').replace(/(^|[\s\-_])(\S)/g,(m,a,b)=>a+b.toUpperCase());
   const hero=rows[0], rest=rows.slice(1);
   const isV=SOC.ratio==='916';
   // hero image panel — solo cards fill the frame (no runner-up rows below), so extend the image nearly full-height and drop the caption to the bottom
@@ -867,11 +969,18 @@ function socHeroSVG(rows,W,H,heroData,opts){
 }
 function socRecapSVG(w,top,W,H){
   const gold='#d9b878', money=v=>'$'+Math.round(Number(v||0)).toLocaleString();
-  const cap=s=>String(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+  const cap=s=>String(s||'').replace(/(^|[\s\-_])(\S)/g,(m,a,b)=>a+b.toUpperCase());
   const isV=H>W;
+  // quote sales that HAPPENED, not rows we happened to log. A quiet week falls
+  // back to the 30-day view and relabels itself rather than printing a backfill.
+  const has7=(w.sold_7d!=null||w.sold_vol_7d!=null);
+  const quiet=has7&&!(w.sold_7d>0);
+  const period=!has7?'this week':(quiet?'in the last 30 days':'this week');
+  const vol=!has7?w.total_volume:(quiet?w.sold_vol_30d:w.sold_vol_7d);
+  const cnt=!has7?w.sales_count:(quiet?w.sold_30d:w.sold_7d);
   const stats=[
-    [money(w.total_volume), 'tracked in sales this week'],
-    [(w.sales_count||0)+'', 'sales logged'],
+    [money(vol), 'tracked in sales '+period],
+    [(cnt||0)+'', 'sales logged'],
     [(w.live_now||0)+'', 'auctions live right now']
   ];
   let block='';
@@ -886,25 +995,138 @@ function socRecapSVG(w,top,W,H){
     <rect width="${W}" height="${H}" fill="#0a0c0d"/>
     <rect x="0" y="0" width="${W}" height="10" fill="${gold}"/>
     <text x="${W/2}" y="${isV?230:150}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="76" fill="#fff">F1 CARD MARKET</text>
-    <text x="${W/2}" y="${isV?300:210}" text-anchor="middle" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">This week &#183; ${wk}</text>
+    <text x="${W/2}" y="${isV?300:210}" text-anchor="middle" font-family="Arial" font-weight="700" font-size="40" fill="${gold}">${quiet?'Last 30 days':'This week'} &#183; ${wk}</text>
     ${block}
     ${topLine}
     <text x="${W/2}" y="${H-90}" text-anchor="middle" font-family="Arial" font-weight="800" font-size="40" fill="#fff">f1cardindex.com</text>
   </svg>`;
 }
 function socEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function socSvgPngBlob(svg){
+  return new Promise((res,rej)=>{
+    const xml=new XMLSerializer().serializeToString(svg);
+    const W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
+    const img=new Image(); img.crossOrigin='anonymous';
+    img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
+      c.getContext('2d').drawImage(img,0,0);
+      c.toBlob(b=>b?res(b):rej(new Error('canvas encode failed'))); };
+    img.onerror=()=>rej(new Error('SVG render failed'));
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+  });
+}
 function socDownload(){
   const svg=$('socSVG'); if(!svg){ $('socMsg').textContent='Nothing to download yet.'; return; }
-  const xml=new XMLSerializer().serializeToString(svg);
-  const img=new Image(); img.crossOrigin='anonymous'; const W=+svg.getAttribute('width'), H=+svg.getAttribute('height');
-  img.onload=()=>{ const c=document.createElement('canvas'); c.width=W; c.height=H;
-    c.getContext('2d').drawImage(img,0,0);
-    c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b);
-      a.download='f1cardindex-'+SOC.post+(SOC.driver?'-'+SOC.driver:'')+'-'+SOC.ratio+'.png'; a.click(); URL.revokeObjectURL(a.href);
-      $('socMsg').textContent='Downloaded — post it! 🏁'; });
-  };
-  img.onerror=()=>{ $('socMsg').textContent='Export failed — screenshot the card instead.'; };
-  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+  socSvgPngBlob(svg).then(b=>{
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+    a.download='f1cardindex-'+SOC.post+(SOC.driver?'-'+SOC.driver:'')+(SOC.prospect?'-'+SOC.prospect:'')+'-'+SOC.ratio+'.png';
+    a.click(); URL.revokeObjectURL(a.href);
+    $('socMsg').textContent='Downloaded — post it! 🏁';
+  }).catch(()=>{ $('socMsg').textContent='Export failed — screenshot the card instead.'; });
+}
+
+/* ---- week pack: every post rendered once, zipped ----
+   Store-only ZIP written by hand. PNGs are already deflated, so there is
+   nothing to gain from compression and this keeps the dashboard dependency-free
+   (no CDN, works offline, nothing new to trust). */
+const SOC_CRC=(function(){const t=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+function socCrc32(u8){ let c=0xFFFFFFFF;
+  for(let i=0;i<u8.length;i++) c=SOC_CRC[(c^u8[i])&255]^(c>>>8);
+  return (c^0xFFFFFFFF)>>>0; }
+function socZip(files){
+  const enc=new TextEncoder(), local=[], central=[]; let off=0;
+  files.forEach(f=>{
+    const nb=enc.encode(f.name), crc=socCrc32(f.data), sz=f.data.length;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true);
+    lh.setUint32(14,crc,true); lh.setUint32(18,sz,true); lh.setUint32(22,sz,true);
+    lh.setUint16(26,nb.length,true);
+    local.push(new Uint8Array(lh.buffer),nb,f.data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true);
+    ch.setUint16(8,0x0800,true);
+    ch.setUint32(16,crc,true); ch.setUint32(20,sz,true); ch.setUint32(24,sz,true);
+    ch.setUint16(28,nb.length,true); ch.setUint32(42,off,true);
+    central.push(new Uint8Array(ch.buffer),nb);
+    off+=30+nb.length+sz;
+  });
+  const cdSize=central.reduce((a,b)=>a+b.length,0);
+  const eo=new DataView(new ArrayBuffer(22));
+  eo.setUint32(0,0x06054b50,true); eo.setUint16(8,files.length,true); eo.setUint16(10,files.length,true);
+  eo.setUint32(12,cdSize,true); eo.setUint32(16,off,true);
+  return new Blob(local.concat(central,[new Uint8Array(eo.buffer)]),{type:'application/zip'});
+}
+function socMoney(v){ return '$'+Math.round(Number(v||0)).toLocaleString(); }
+/* what goes in the pack, in posting order — anything with no data renders
+   nothing and is skipped, so a quiet week just yields a smaller zip */
+function socPackSpecs(){
+  const d=SOC.data||{}, recent=socRecent(d), recs=(d.new_records||[]),
+        end=(d.ending_soon||[]), pd=(d.per_driver||[]), w=(d.week_stats||{}),
+        win=(d.windows||{}), TOPD=win.top_days||30;
+  const one=recent[0], rec=recs[0], best=pd.slice().sort((a,b)=>b.price_usd-a.price_usd)[0], pro=SOC_PROSPECTS[0];
+  const tag='\n\n#F1 #F1Cards #TradingCards #ToppsF1 #f1cardindex';
+  const L=[];
+  L.push({file:'recap-916',name:'Week recap (story)',state:{post:'recap',ratio:'916'},
+    caption:'The F1 card market this week: '+socMoney(w.sold_vol_7d!=null?(w.sold_7d>0?w.sold_vol_7d:w.sold_vol_30d):w.total_volume)+' tracked across '+((w.sold_7d>0?w.sold_7d:w.sold_30d)||w.sales_count||0)+' sales, with '+(w.live_now||0)+' auctions live right now. Full board at f1cardindex.com'+tag});
+  L.push({file:'recap-11',name:'Week recap (feed)',state:{post:'recap',ratio:'11'},caption:'Same recap, 1:1 for the feed.'+tag});
+  if(recent.length){
+    L.push({file:'top5-list-916',name:'Top 5 sales (list, story)',state:{post:'top',ratio:'916',style:'list',count:5,driver:null},
+      caption:'Top 5 F1 card sales of the last '+TOPD+' days'+(one?' — '+cap(one.driver_id)+' leads at '+socMoney(one.price_usd):'')+'. Which one would you have bought?'+tag});
+    L.push({file:'top1-hero-916',name:'#1 sale (hero, story)',state:{post:'top',ratio:'916',style:'hero',count:5,driver:null},
+      caption:one?(cap(one.driver_id)+' — '+String(one.title||'').slice(0,80).trim()+' → '+socMoney(one.price_usd)+'. Biggest tracked sale of the last '+TOPD+' days.'+tag):'Top sale of the window.'+tag});
+    L.push({file:'top5-list-11',name:'Top 5 sales (list, feed)',state:{post:'top',ratio:'11',style:'list',count:5,driver:null},caption:'Top 5, 1:1 for the feed.'+tag});
+  }
+  if(rec) L.push({file:'record-916',name:'New record',state:{post:'record',ratio:'916',driver:null,recordIdx:0},
+    caption:'🚨 NEW RECORD — '+cap(rec.driver_id)+' '+String(rec.title||'').slice(0,70).trim()+' sold for '+socMoney(rec.price_usd)+(rec.previous_record?', past the old mark of '+socMoney(rec.previous_record):'')+'.'+tag});
+  if(end.length) L.push({file:'ending-916',name:'Ending soon',state:{post:'ending',ratio:'916',style:'list',count:5,driver:null},
+    caption:'⏱ Auctions closing next — '+(w.live_now||end.length)+' live lots on the board. Bid or watch at f1cardindex.com'+tag});
+  if(best) L.push({file:'driver-'+best.driver_id+'-916',name:'Driver spotlight — '+cap(best.driver_id),state:{post:'driver',ratio:'916',driver:best.driver_id},
+    caption:cap(best.driver_id)+'’s record sale: '+String(best.title||'').slice(0,80).trim()+' at '+socMoney(best.price_usd)+'.'+tag});
+  L.push({file:'prospects-list-916',name:'Prospect watch (list)',state:{post:'prospect',ratio:'916',style:'list',count:5,prospect:null},
+    caption:'🌱 PROSPECT WATCH — the biggest F2/F3 card sales on record. Today’s junior is tomorrow’s rookie card.'+tag+' #F2 #F3'});
+  if(pro) L.push({file:'prospect-'+pro.id+'-916',name:'Prospect spotlight — '+pro.n,state:{post:'prospect',ratio:'916',prospect:pro.id},
+    caption:'🌱 '+pro.n+' ('+pro.t+') — '+pro.ttl+' sold for '+socMoney(pro.p)+', his record to date.'+tag+' #F2 #F3'});
+  return L;
+}
+async function socWeekPack(){
+  const btn=$('weekPack'), msg=$('socMsg'), soc=$('social');
+  const saved={post:SOC.post,ratio:SOC.ratio,style:SOC.style,count:SOC.count,driver:SOC.driver,prospect:SOC.prospect,recordIdx:SOC.recordIdx};
+  const wasOpen=soc?soc.open:true; if(soc) soc.open=true;   // socRender no-ops while collapsed
+  const specs=socPackSpecs(), files=[], caps=[], skipped=[];
+  btn.disabled=true; const label=btn.textContent;
+  try{
+    for(let i=0;i<specs.length;i++){
+      const sp=specs[i];
+      msg.textContent='Rendering '+(i+1)+' of '+specs.length+' — '+sp.name+'…';
+      Object.assign(SOC,{post:'top',ratio:'916',style:'hero',count:5,driver:null,prospect:null,recordIdx:0},sp.state);
+      await socRender();
+      const svg=$('socSVG');
+      if(!svg){ skipped.push(sp.name); continue; }
+      let buf;
+      try{ buf=new Uint8Array(await (await socSvgPngBlob(svg)).arrayBuffer()); }
+      catch(e){ skipped.push(sp.name+' (render failed)'); continue; }
+      const fname=String(files.length+1).padStart(2,'0')+'-'+sp.file+'.png';
+      files.push({name:fname,data:buf});
+      caps.push(fname+'\n'+sp.caption+'\n');
+    }
+    if(!files.length){ msg.textContent='Nothing to pack — no sales data to render yet.'; return; }
+    const stamp=new Date().toISOString().slice(0,10);
+    const head='F1 Card Index — week pack '+stamp+'\n'+files.length+' image'+(files.length===1?'':'s')
+      +(skipped.length?'\nSkipped (no data): '+skipped.join(', '):'')+'\n\n';
+    files.push({name:'captions.txt',data:new TextEncoder().encode(head+caps.join('\n'))});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(socZip(files));
+    a.download='f1cardindex-week-pack-'+stamp+'.zip'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    msg.textContent='Week pack ready — '+(files.length-1)+' images + captions.txt'
+      +(skipped.length?' ('+skipped.length+' skipped for lack of data)':'')+' 🏁';
+  }catch(e){
+    msg.textContent='Week pack failed: '+(e&&e.message?e.message:e);
+  }finally{
+    btn.disabled=false; btn.textContent=label;
+    Object.assign(SOC,saved); if(soc) soc.open=wasOpen;
+    socPaint();
+  }
 }
 
 function stat(n,label,cls){ return '<div class="stat '+(cls||'')+'"><div class="n">'+(n??'—')+'</div><div class="l">'+label+'</div></div>'; }
