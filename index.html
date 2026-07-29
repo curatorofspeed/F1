@@ -724,6 +724,14 @@
 .kit-hot{border-color:#e5484d!important;animation:kitPulse 2.6s ease-in-out infinite}
 .kit-hot .mff-go{color:#e5484d}
 @keyframes kitPulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}50%{box-shadow:0 0 12px 1px rgba(229,72,77,.35)}}
+/* product cards. The thumb slot holds a real photo when img_url is set and an
+   icon tile when it isn't, so the grid keeps its rhythm either way — turning
+   photos on later is a data change, not a layout change. */
+.amz-prod{gap:11px}
+.amz-thumb{flex:0 0 46px;width:46px;height:46px;border-radius:9px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:21px;line-height:1}
+.amz-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.amz-body{flex:1 1 auto;min-width:0}
+.amz-price{display:inline-block;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--gold);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
 /* ===== index shop teaser ===== */
 #shopTeaser{display:none;margin:14px 0 4px}
 .shoprow{display:grid;grid-auto-flow:column;grid-auto-columns:150px;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
@@ -1111,7 +1119,7 @@
       <a href="/drivers/ricciardo">Ricciardo cards</a>
     </nav>
     <!-- DRIVER-PAGES-NAV-END -->
-    F1 Card Index surfaces the live Formula 1 trading-card market — auctions ending soon, recent sales, and what's moving around race weekends. Sold and live data come straight from Goldin and eBay in real time; we don't store a price database. Verify comps at <a href="https://www.sportscardinvestor.com" target="_blank" rel="noopener">Sports Card Investor</a> and <a id="footEbay" data-base="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" href="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">eBay sold</a>. Some links are affiliate links — if you buy through them we may earn a commission, at no extra cost to you.
+    F1 Card Index surfaces the live Formula 1 trading-card market — auctions ending soon, recent sales, and what's moving around race weekends. Sold and live data come straight from Goldin and eBay in real time; we don't store a price database. Verify comps at <a href="https://www.sportscardinvestor.com" target="_blank" rel="noopener">Sports Card Investor</a> and <a id="footEbay" data-base="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" href="https://www.ebay.com/sch/i.html?_nkw=formula+1+card&LH_Sold=1&LH_Complete=1" target="_blank" rel="noopener">eBay sold</a>. Some links are affiliate links — if you buy through them we may earn a commission, at no extra cost to you. As an Amazon Associate I earn from qualifying purchases.
     <div class="tools admin-only">
       <button class="btn ghost" id="affBtn">💰 Affiliate Settings</button>
       <button class="btn ghost" id="exportBtn">Export JSON</button>
@@ -1438,7 +1446,7 @@ function seedData(){
     ]},
     {id:'raikkonen',name:'Kimi Räikkönen',abbr:'RAI',team:'Legend',number:7,color:'#e6b65c',tier:'legend',rookieYear:null,record:{txt:'2020 Chrome F1 Auto SuperFractor #KR · 1/1',price:'$10,800',date:'Aug 2022',src:'Goldin'},top10:[{card:'2020 Chrome F1 Auto SuperFractor #KR · 1/1',grade:'PSA Auth',price:10800,date:'2022-08-06',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1a-kr-kimi-raikkonen-f1-autograph-gold-refractor-ca8yf9y',img:'/images/raikkonen-1.jpg'},{card:'2021 Chrome F1 Auto SuperFractor #CA-KR · 1/1',grade:'PSA 9',price:6240,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2021-topps-chrome-formula-1-ca-kr-kimi-raikkonen-signed-card-1-1r5gub',img:'/images/raikkonen-2.jpg'},{card:'2020 Dynasty F1 Auto Suit Nameplate #AFP-KR · 4/4',grade:'Raw',price:5700,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-afp-kr-kimi-raikkonen-rookie-patch-autograph-4-4rrjld',img:'/images/raikkonen-3.jpg'},{card:'2020 Dynasty F1 Auto Patch Gold #DAP-KR · 1/1',grade:'Raw',price:5490,date:'2024-09-02',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-autographed-patch-gold-dap-kr-kimi-raikkonen-sigqdn0s',img:'/images/raikkonen-4.jpg'},{card:'2025 Dynasty F1 Legendary Patch Auto Gold #LPA-KRAI · 1/1',grade:'Raw',price:3794.2,date:'2026-04-02',source:'Goldin',url:'https://goldin.co/item/2025-topps-dynasty-f1-legendary-patch-autographs-gold-lpa-krai-kimi-rauif5s',img:'/images/raikkonen-5.jpg'},{card:'2020 Dynasty F1 Suit Zipper Relic Auto · 4/4',grade:'Raw',price:3400,date:'2026-05-03',source:'eBay',url:'https://ebay.com/itm/377148247671',img:'/images/raikkonen-6.jpg'},{card:'2020 Dynasty F1 Suit Zipper Relic Auto · 4/4',grade:'Raw',price:3187.76,date:'2026-06-05',source:'eBay',url:'https://ebay.com/itm/377224954624',img:'/images/raikkonen-7.jpg'},{card:'2020 Chrome F1 Red Wave Refractor #15 · 3/5',grade:'PSA 8',price:3056.1,date:'2024-11-21',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1-red-wave-refractor-15-kimi-raikkonen-3-5-psa-nm-mt8axk',img:'/images/raikkonen-8.jpg'},{card:'2021 Topps Now F1 Gold #087 · 1/1',grade:'PSA 10',price:3000,date:'2026-03-26',source:'eBay',url:'https://ebay.com/itm/116801801039',img:'/images/raikkonen-9.jpg'},{card:'2020 Dynasty F1 Red Patch Auto #KR · 4/5',grade:'PSA 9',price:2600,date:'2026-06-01',source:'eBay',url:'https://ebay.com/itm/206108294424',img:'/images/raikkonen-10.jpg'},{card:'2020 Dynasty F1 Suit Zipper Auto · 3/4',grade:'Raw',price:2499.99,date:'2025-09-25',source:'eBay',url:'https://ebay.com/itm/385149569577',img:'/images/raikkonen-11.jpg'}],cards:[]},
   {id:'ricciardo',name:'Daniel Ricciardo',abbr:'RIC',team:'Legend',number:3,color:'#e6b65c',tier:'legend',rookieYear:null,record:{txt:'2020 Dynasty F1 Glove Jumbo Patch #AFP-DR · 1/1',price:'$5,100',date:'Jul 2022',src:'Goldin'},top10:[{card:'2020 Dynasty F1 Auto Racing Glove Jumbo Patch #AFP-DR · 1/1',grade:'Raw',price:5100,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-afp-dr-daniel-ricciardo-rookie-jumbo-glove-patch2sheg',img:'/images/ricciardo-1.jpg'},{card:'2020 Dynasty F1 Constructor Team Auto · Ricciardo/Ocon · 4/10',grade:'Raw',price:3720,date:'2022-05-01',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-formula-1-dynasty-constructor-team-autograph-memorabxv3l',img:'/images/ricciardo-2.jpg'},{card:'2020 Chrome F1 Auto Red Refractor #F1A-DR',grade:'PSA 7',price:3300,date:'2022-07-16',source:'Goldin',url:'https://goldin.co/item/2020-topps-chrome-f1a-dr-daniel-ricciardo-f1-autograph-red-refractor-cle9vf',img:'/images/ricciardo-3.jpg'},{card:'2020 Chrome F1 Track Tags Gold #7 · 31/50',grade:'PSA 10',price:2500,date:'2025-09-30',source:'eBay',url:'https://ebay.com/itm/397107527579',img:'/images/ricciardo-4.jpg'},{card:'2020 Dynasty F1 Constructor Team Dual Relic Auto Red · 1/5',grade:'PSA 10',price:2400,date:'2022-09-10',source:'Goldin',url:'https://goldin.co/item/2020-topps-dynasty-f1-constructor-team-dual-relic-autograph-cdar-ro-da1cc2e',img:'/images/ricciardo-5.jpg'},{card:'2020 Dynasty F1 Single Driver Triple Relic Auto Red #TRA-IDR · 1/5',grade:'PSA 10',price:2220,date:'2022-06-05',source:'Goldin',url:'https://goldin.co/item/2020-topps-f1-dynasty-tra-idr-daniel-ricciardo-triple-relic-autograph45qy9',img:'/images/ricciardo-6.jpg'},{card:'2020 Dynasty F1 Patch Auto #IIDR · 10/10',grade:'PSA 9',price:2100,date:'2026-01-18',source:'eBay',url:'https://ebay.com/itm/127621912083',img:'/images/ricciardo-7.jpg'},{card:'2020 Dynasty F1 Patch Auto #DR · 07/10',grade:'PSA 9',price:2100,date:'2026-06-02',source:'Fanatics',url:'https://www.fanaticscollect.com/weekly/2d9d0b60-4f0f-11f1-be18-0276b502c831',img:'/images/ricciardo-8.jpg'},{card:'2020 Dynasty F1 Auto Glove Patch · 03/10',grade:'Raw',price:2075,date:'2026-05-19',source:'eBay',url:'https://ebay.com/itm/127864954941',img:'/images/ricciardo-9.jpg'},{card:'2020 Dynasty F1 Single Driver Dual Relic Auto Red · 4/5',grade:'PSA 10',price:2000,date:'2025-08-12',source:'eBay',url:'https://ebay.com/itm/356025215380',img:'/images/ricciardo-10.jpg'},{card:'2020 Dynasty F1 Constructor Team Dual Relic Auto · Ricciardo/Ocon',grade:'Raw',price:1680,date:'2022-06-05',source:'Goldin',img:'/images/ricciardo-11.jpg'},{card:'2020 Dynasty F1 Auto Memorabilia Patch #DAP-IDR',grade:'Raw',price:1560,date:'2022-05-01',source:'Goldin',img:'/images/ricciardo-12.jpg'}],cards:[]}
-  ];var _ln=state.drivers.find(function(d){return d.id==='norris';});console.log('%cF1CI build 2026-07-25f · +junior records (130point)','color:#16a34a;font-weight:bold','| Norris Top10 entries:',(_ln&&_ln.top10)?_ln.top10.length:0);
+  ];var _ln=state.drivers.find(function(d){return d.id==='norris';});console.log('%cF1CI build 2026-07-29a · gear catalog (amazon_gear)','color:#16a34a;font-weight:bold','| Norris Top10 entries:',(_ln&&_ln.top10)?_ln.top10.length:0);
   // Strip placeholder estimates — only verified comps stay
   state.drivers.filter(d=>d.id!=='antonelli').forEach(d=>
     d.cards.forEach(c=>{if((c.source||'').includes('est'))c.hist=[];})
@@ -2618,10 +2626,12 @@ window.showRacePage=function(id){
         +'<div><div class="mff-label">'+esc(it.label)+'</div><div class="mff-sub">'+esc(it.sub)+'</div></div>'
         +'<span class="mff-go">↗</span></a>').join('');
   }).filter(Boolean).join('');
-  const guideBlock=guideHTML
+  // gear for the teams on track this weekend, appended to the travel/ticket guide
+  const raceGear=(typeof amzRaceGroups==='function')?amzRaceGroups(race):'';
+  const guideBlock=(guideHTML||raceGear)
     ? '<div class="sec-h"><h2>🏁 Race Weekend Guide</h2></div>'
       +'<div class="mff-note">Audience-matched picks for '+esc(race.city)+' race weekend — affiliate links, we may earn a commission.</div>'
-      +'<div class="mff-grid">'+guideHTML+'</div>'
+      +'<div class="mff-grid">'+guideHTML+raceGear+'</div>'
     : '';
   $('racePageContent').innerHTML=
     '<div class="race-pg-flag">'+race.flag+'</div>'
@@ -2670,6 +2680,90 @@ const AMZ_DRIVER={
 };
 const AMZ_GENERIC=['https://amzn.to/4emsq3J','https://amzn.to/4enZtnZ','https://amzn.to/4uTqHYK','https://amzn.to/4eRQewx','https://amzn.to/4oEkXRb'];
 function amzPick(d,arr){const i=(String(d.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%arr.length;return arr[i];}
+
+/* ---------- Gear catalog ----------
+   The arrays above are the shipped fallback: if Supabase is unreachable the
+   section renders exactly what it rendered before this change, rather than
+   going blank. amazon_gear() replaces them on load when it answers.
+
+   A row is a real product card once it has a name. Unnamed rows stay as the
+   old compact numbered chips — that's the honest degrade, and naming one in
+   the admin editor is what promotes it. */
+let AMZ_DB=null;
+function amzRows(cat){
+  if(!AMZ_DB)return null;
+  return AMZ_DB.filter(p=>p.category===cat);
+}
+function amzFallback(cat,team,drv){
+  const mk=u=>({url:u});
+  if(cat==='supplies')return AMZ_GEAR.map(g=>{
+    const m=AMZ_KIT_META[g.label]||['🛒',g.label,'',''];
+    return {url:g.url,name:m[1],blurb:m[2],icon:m[0],badge:m[3]||null};
+  });
+  if(cat==='sealed')return AMZ_SEALED.map(mk);
+  if(cat==='team')return (AMZ_TEAM[team]||[]).map(mk);
+  if(cat==='driver')return (AMZ_DRIVER[drv]||[]).map(mk);
+  if(cat==='generic')return AMZ_GENERIC.map(mk);
+  return [];
+}
+function amzGet(cat,opt){
+  opt=opt||{};
+  const db=amzRows(cat);
+  if(db){
+    let r=db;
+    if(opt.team)r=r.filter(p=>p.team===opt.team);
+    if(opt.driver)r=r.filter(p=>p.driver_id===opt.driver);
+    if(opt.set)r=r.filter(p=>p.set_slug===opt.set);
+    return r;
+  }
+  return amzFallback(cat,opt.team,opt.driver);
+}
+function amzCard(p,fallbackIcon){
+  const icon=p.icon||fallbackIcon||'🛒';
+  const rib=p.badge?'<span class="kit-rib">'+esc(p.badge)+'</span>':'';
+  const thumb=p.img_url
+    ? '<span class="amz-thumb"><img src="'+esc(p.img_url)+'" alt="" loading="lazy"></span>'
+    : '<span class="amz-thumb">'+icon+'</span>';
+  const price=p.price_band?'<div><span class="amz-price">'+esc(p.price_band)+'</span></div>':'';
+  return '<a class="mff-card amz-prod'+(p.badge?' kit-hot':'')+'" href="'+esc(p.url)+'" target="_blank" rel="noopener sponsored">'+rib
+    +thumb
+    +'<div class="amz-body"><div class="mff-label">'+esc(p.name)+'</div>'
+    +(p.blurb?'<div class="mff-sub">'+esc(p.blurb)+'</div>':'')+price+'</div>'
+    +'<span class="mff-go">↗</span></a>';
+}
+function amzChips(rows){
+  return '<div class="amz-gear">'+rows.map((p,i)=>
+    '<a class="amz-btn amz-num" href="'+esc(p.url)+'" target="_blank" rel="noopener sponsored">'+(i+1)+'</a>'
+  ).join('')+'</div>';
+}
+/* named rows become cards, the rest stay chips underneath — a half-named
+   category doesn't have to wait for the other half to look right */
+function amzGroup(rows,header,icon){
+  if(!rows||!rows.length)return '';
+  const named=rows.filter(p=>p.name), bare=rows.filter(p=>!p.name);
+  let body='';
+  if(named.length)body+='<div class="amz-kit">'+named.map(p=>amzCard(p,icon)).join('')+'</div>';
+  if(bare.length)body+=amzChips(bare);
+  return '<div class="mff-group"><div class="mff-cat">'+header+'</div>'+body+'</div>';
+}
+async function loadAmzGear(){
+  if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return;
+  try{
+    const r=await fetch(SUPABASE_URL.replace(/\/+$/,'')+'/rest/v1/rpc/amazon_gear',{
+      method:'POST',
+      headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+      body:'{}'});
+    if(!r.ok)return;
+    const rows=await r.json();
+    if(!Array.isArray(rows)||!rows.length)return;   // empty catalog → keep the shipped fallback
+    AMZ_DB=rows;
+    const hg=$('homeGear'); if(hg)hg.innerHTML=amzGearRow();
+    try{ if(currentDriverId&&$('moreForFans')&&$('moreForFans').innerHTML){
+      const d=state.drivers.find(x=>x.id===currentDriverId); if(d)renderMoreForFans(d);
+    } }catch(e){}
+  }catch(e){}
+}
+
 const AMZ_KIT_META={
   'Sleeves':              ['🧤','Mail-day sleeves','First touch for every raw pull — penny sleeves by the hundred',''],
   'Toploaders + Sleeves': ['🛡️','Grade-ready protection','Toploaders + sleeves — keep it mint until it ships to PSA','🔥 ON SALE'],
@@ -2678,26 +2772,37 @@ const AMZ_KIT_META={
   'Card Storage':         ['📦','Bulk & base storage','Sort the box breaks, protect the commons','']
 };
 function amzGearRow(d){
-  let b=AMZ_GEAR.map(g=>{
-    const m=AMZ_KIT_META[g.label]||['🛒',g.label,'',''];
-    const rib=m[3]?'<span class="kit-rib">'+esc(m[3])+'</span>':'';
-    return '<a class="mff-card'+(m[3]?' kit-hot':'')+'" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+rib+
-      '<div><div class="mff-label">'+m[0]+' '+esc(m[1])+'</div><div class="mff-sub">'+esc(m[2])+'</div></div>'+
-      '<span class="mff-go">↗</span></a>';
-  }).join('');
-  const sealed=d?amzPick(d,AMZ_SEALED):AMZ_SEALED[0];
-  b+='<a class="mff-card" href="'+esc(sealed)+'" target="_blank" rel="noopener sponsored">'+
-    '<div><div class="mff-label">🎁 Rip something</div><div class="mff-sub">Sealed F1 boxes &amp; packs — today\u2019s lottery ticket</div></div>'+
-    '<span class="mff-go">↗</span></a>';
-  return '<div class="amz-kit">'+b+'</div>';
+  const supplies=amzGet('supplies');
+  let b=supplies.filter(p=>p.name).map(p=>amzCard(p,'🛒')).join('');
+  const sealedRows=amzGet('sealed');
+  if(sealedRows.length){
+    // one sealed pick, stable per driver so a board doesn't reshuffle on re-render
+    const s=d?amzPick(d,sealedRows):sealedRows[0];
+    b+=amzCard({url:s.url,img_url:s.img_url,icon:s.icon||'🎁',badge:s.badge,
+      name:s.name||'Rip something',
+      blurb:s.blurb||'Sealed F1 boxes & packs — today\u2019s lottery ticket',
+      price_band:s.price_band},'🎁');
+  }
+  const bare=supplies.filter(p=>!p.name);
+  return '<div class="amz-kit">'+b+'</div>'+(bare.length?amzChips(bare):'');
 }
 function amzFanGroups(d){
-  const mk=(links,header)=>'<div class="mff-group"><div class="mff-cat">'+header+'</div><div class="amz-gear">'+
-    links.map((u,i)=>'<a class="amz-btn amz-num" href="'+esc(u)+'" target="_blank" rel="noopener sponsored">'+(i+1)+'</a>').join('')+'</div></div>';
   let out='';
-  const tl=AMZ_TEAM[d.team];if(tl&&tl.length)out+=mk(tl,'🏎️ '+esc(d.team)+' Fan Gear · Amazon');
-  const dl=AMZ_DRIVER[d.id];if(dl&&dl.length)out+=mk(dl,'⭐ '+esc(lastName(d.name))+' Picks · Amazon');
-  if(!out)out=mk(AMZ_GENERIC,'🏁 F1 Fan Gear · Amazon');
+  out+=amzGroup(amzGet('team',{team:d.team}),   '🏎️ '+esc(d.team)+' Fan Gear · Amazon','🏎️');
+  out+=amzGroup(amzGet('driver',{driver:d.id}), '⭐ '+esc(lastName(d.name))+' Picks · Amazon','⭐');
+  if(!out)out=amzGroup(amzGet('generic'),'🏁 F1 Fan Gear · Amazon','🏁');
+  return out;
+}
+/* Race weekend: gear for the teams actually on track that weekend, deduped —
+   two watch drivers from the same team shouldn't print the row twice. */
+function amzRaceGroups(race){
+  const seen={}, teams=[];
+  (race.watch||[]).forEach(wid=>{
+    const d=(state.drivers||[]).find(x=>x.id===wid);
+    if(d&&d.team&&!seen[d.team]){seen[d.team]=1;teams.push(d.team);}
+  });
+  let out='';
+  teams.forEach(t=>{ out+=amzGroup(amzGet('team',{team:t}),'🏎️ '+esc(t)+' Fan Gear · Amazon','🏎️'); });
   return out;
 }
 /* ---------- More for fans: audience-matched non-card affiliate partners ---------- */
@@ -3587,7 +3692,7 @@ async function loadSupabaseSales(){
   applyTheme(state.theme||'light');wireThemes();wireViewToggle();wireNavSearch();
   const h=(location.hash||'').replace(/^#/,'').toLowerCase();
   if(h&&h!=='admin'&&h!=='lock'&&getDriver(h)){showDriver(h,true);}else{showIndex(true);}
-  loadLiveResults();applyAdmin();checkAdminHash();loadSupabaseSales();loadRecordTicker();initAdsense();initSignup();
+  loadLiveResults();applyAdmin();checkAdminHash();loadSupabaseSales();loadRecordTicker();loadAmzGear();initAdsense();initSignup();
   window.addEventListener('hashchange',routeHash);
 })();
 </script>

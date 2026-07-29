@@ -89,7 +89,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
 </head>
 <body>
 <div class="wrap">
-  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v5</span></h1>
+  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v6</span></h1>
   <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop listings, market activity, audience, sends.</p>
 
   <div class="card" id="credCard">
@@ -121,6 +121,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
       <a href="#consign">📦 Consign</a>
       <a href="#shop">🛍️ Shop</a>
       <a href="#offers">🤝 Offers</a>
+      <a href="#gear">🛒 Gear</a>
       <a href="#stats">📊 Stats</a>
       <a href="#sources">📡 Radar</a>
       <a href="#topSales">💰 Sales</a>
@@ -251,6 +252,65 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Buyer offers across all listings. You can accept/decline on the seller's behalf, or copy their private <b>manage link</b> to email them. Accepting reserves the card at the offer price.</div>
       <div class="msg" id="ofMsg"></div>
       <div id="ofList"></div>
+    </details>
+
+    <details class="card fold" id="gear" open style="scroll-margin-top:56px">
+      <summary>🛒 Amazon Gear</summary>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+        <button class="ghost" id="gzLoad" type="button">Load catalog</button>
+        <button class="ghost" id="gzNew" type="button">＋ New product</button>
+        <select id="gzFilter" class="sh" style="max-width:180px">
+          <option value="">All categories</option>
+          <option value="needs">⚠️ Needs a name</option>
+          <option value="supplies">Supplies</option>
+          <option value="sealed">Sealed</option>
+          <option value="team">Team gear</option>
+          <option value="driver">Driver picks</option>
+          <option value="generic">Generic</option>
+          <option value="set">Set checklist</option>
+        </select>
+        <span style="font-size:12.5px;color:var(--muted)" id="gzCount"></span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">A product only renders as a real card once it has a <b>name</b> — unnamed ones stay as the old numbered chips, so filling these in is what upgrades the page. Paste a full Amazon URL and the ASIN is pulled out automatically; add your Associates tag once and new links get built as <span class="mono">/dp/ASIN?tag=…</span> so each placement is trackable. <b>Photos</b> stay empty until your Associates account clears the Creators API bar (~10 qualifying sales in 30 days) — the image slot is already wired, so it's a data change when you get there.</div>
+
+      <div class="shform" id="gzForm">
+        <div class="g4">
+          <div><label>Slug (unique)</label><input id="gzSlug" placeholder="team-ferrari-3"></div>
+          <div><label>Category</label><select id="gzCat" class="sh">
+            <option value="supplies">supplies</option><option value="sealed">sealed</option>
+            <option value="team">team</option><option value="driver">driver</option>
+            <option value="generic">generic</option><option value="set">set</option></select></div>
+          <div><label>Sort</label><input id="gzSort" type="number" placeholder="100"></div>
+          <div><label>Active</label><select id="gzActive" class="sh"><option value="true">yes</option><option value="false">no</option></select></div>
+        </div>
+        <div class="g4">
+          <div><label>Team <span class="pill">category=team</span></label><input id="gzTeam" placeholder="Ferrari"></div>
+          <div><label>Driver id <span class="pill">category=driver</span></label><input id="gzDrv" placeholder="hamilton"></div>
+          <div><label>Set slug <span class="pill">category=set</span></label><input id="gzSet" placeholder="2025-topps-lights-out-f1"></div>
+          <div><label>ASIN</label><input id="gzAsin" placeholder="B08XXXXXXX"></div>
+        </div>
+        <div style="margin-bottom:10px"><label>Amazon URL</label><input id="gzUrl" placeholder="https://www.amazon.com/dp/B08XXXXXXX?tag=yourtag-20 — or an amzn.to short link"></div>
+        <div class="g2">
+          <div><label>Name <span class="pill">this is what makes it a card</span></label><input id="gzName" placeholder="Grade-ready protection"></div>
+          <div><label>Blurb</label><input id="gzBlurb" placeholder="Toploaders + sleeves — keep it mint until it ships to PSA"></div>
+        </div>
+        <div class="g4">
+          <div><label>Icon</label><input id="gzIcon" placeholder="🛡️"></div>
+          <div><label>Price band</label><input id="gzPrice" placeholder="$12–18"></div>
+          <div><label>Badge</label><input id="gzBadge" placeholder="🔥 ON SALE"></div>
+          <div><label>Image URL <span class="pill">Creators API only</span></label><input id="gzImg" placeholder="leave empty"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <button id="gzSave" type="button">Save product</button>
+          <button class="ghost" id="gzCancel" type="button">Cancel</button>
+          <button class="ghost" id="gzDel" type="button" style="color:var(--red);border-color:var(--red)">Delete</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--muted)">Associates tag</span>
+          <input id="gzTag" placeholder="yourtag-20" style="max-width:150px;width:auto">
+        </div>
+      </div>
+
+      <div class="msg" id="gzMsg"></div>
+      <div id="gzList"></div>
     </details>
 
     <div class="cols">
@@ -662,6 +722,115 @@ window.ofDecide=async(token,offerId,action)=>{
     $('ofLoad').click(); if($('shLoad'))$('shLoad').click();
   }catch(e){ ofSay(e.message,true); }
 };
+
+/* ---- Amazon gear catalog (amazon_products via admin_amz_* RPCs) ----
+   The public page treats `name` as the promotion flag: a row with a name renders
+   as a real product card, a row without one falls back to the old numbered chip.
+   So the counter below leads with how many still need a name — that number is the
+   whole job, and it's the only thing standing between 43 links and 43 cards. */
+let gzRows=[], gzEditSlug=null, gzArmed=false;
+function gzSay(t,err){ const m=$('gzMsg'); m.textContent=t; m.className='msg'+(err?' err':''); }
+function gzTag(){ return ($('gzTag').value||'').trim(); }
+function gzAsinOf(u){ const m=String(u||'').match(/(?:\/dp\/|\/gp\/product\/|\/product\/|[?&]asin=)([A-Z0-9]{10})/i); return m?m[1].toUpperCase():''; }
+/* A canonical /dp/ASIN?tag= link is what makes per-placement tracking possible —
+   amzn.to short links hide the ASIN, so they can't be re-tagged or photographed. */
+function gzCanon(url,asin,tag){ return (asin&&tag)?('https://www.amazon.com/dp/'+asin+'?tag='+encodeURIComponent(tag)):url; }
+$('gzLoad').onclick=async()=>{
+  gzSay('Loading…');
+  try{
+    gzRows=await rpc('admin_amz_list',{p_secret:$('secret').value.trim()})||[];
+    gzPaint(); gzSay(gzRows.length?'':'Catalog is empty — add a product.');
+  }catch(e){ gzSay(e.message,true); }
+};
+$('gzFilter').onchange=()=>gzPaint();
+function gzPaint(){
+  const named=gzRows.filter(p=>p.name&&String(p.name).trim()).length, bare=gzRows.length-named;
+  $('gzCount').textContent=gzRows.length
+    ? gzRows.length+' products · '+named+' named · '+bare+' need a name'
+    : '';
+  const f=$('gzFilter').value;
+  const view=gzRows.filter(p=> !f ? true : (f==='needs' ? !(p.name&&String(p.name).trim()) : p.category===f));
+  $('gzList').innerHTML=view.map(p=>{
+    const has=!!(p.name&&String(p.name).trim());
+    const scope=[p.team,p.driver_id,p.set_slug].filter(Boolean).join(' · ');
+    const thumb=p.img_url
+      ? '<img src="'+esc(p.img_url)+'" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:8px">'
+      : '<span style="font-size:22px">'+esc(p.icon||'🛒')+'</span>';
+    return '<div class="cnrow"'+(p.active===false?' style="opacity:.55"':'')+'>'
+      +'<div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;overflow:hidden">'+thumb+'</div>'
+      +'<div><div class="cnt">'+(has?esc(p.name):'<span style="color:var(--amber)">⚠️ needs a name</span>')
+        +' <span class="cnst" style="color:var(--muted);border-color:var(--line)">'+esc(p.category)+'</span>'
+        +(p.badge?' <span class="cnst" style="color:var(--gold);border-color:var(--line)">'+esc(p.badge)+'</span>':'')
+        +(p.active===false?' <span class="pill">hidden</span>':'')+'</div>'
+      +'<div class="cnm">'+esc(p.slug)+(scope?' · '+esc(scope):'')+(p.price_band?' · '+esc(p.price_band):'')+' · sort '+(p.sort==null?'—':p.sort)+'</div>'
+      +(p.blurb?'<div class="cnm" style="margin-top:2px">'+esc(p.blurb)+'</div>':'')
+      +'<div class="cnm" style="margin-top:3px">'+(p.asin?'<span class="mono">'+esc(p.asin)+'</span> · ':'<span style="color:var(--amber)">no ASIN</span> · ')
+        +'<a href="'+esc(p.url)+'" target="_blank" rel="noopener nofollow">open ↗</a></div>'
+      +'</div>'
+      +'<div class="cnact"><button class="ghost" onclick="gzEdit(\''+esc(p.slug)+'\')" title="edit">✎</button></div>'
+      +'</div>';
+  }).join('')||'<span class="pill">'+(gzRows.length?'nothing with this filter':'catalog not loaded')+'</span>';
+}
+function gzOpen(p){
+  gzEditSlug=p?p.slug:null; gzArmed=false; $('gzDel').textContent='Delete';
+  $('gzForm').style.display='block';
+  $('gzSlug').value=p?p.slug:'';
+  $('gzCat').value=p?p.category:'supplies';
+  $('gzSort').value=p&&p.sort!=null?p.sort:100;
+  $('gzActive').value=p?String(p.active!==false):'true';
+  $('gzTeam').value=(p&&p.team)||''; $('gzDrv').value=(p&&p.driver_id)||'';
+  $('gzSet').value=(p&&p.set_slug)||''; $('gzAsin').value=(p&&p.asin)||'';
+  $('gzUrl').value=(p&&p.url)||'';
+  $('gzName').value=(p&&p.name)||''; $('gzBlurb').value=(p&&p.blurb)||'';
+  $('gzIcon').value=(p&&p.icon)||''; $('gzPrice').value=(p&&p.price_band)||'';
+  $('gzBadge').value=(p&&p.badge)||''; $('gzImg').value=(p&&p.img_url)||'';
+  $('gzDel').style.display=p?'':'none';
+  gzSay(p?('Editing '+p.slug+(p.name?'':' — give it a name and it becomes a card.')):'New product.');
+  try{ $('gzForm').scrollIntoView({block:'nearest'}); }catch(e){}
+}
+window.gzEdit=slug=>{ const p=gzRows.find(x=>x.slug===slug); if(p)gzOpen(p); };
+$('gzNew').onclick=()=>gzOpen(null);
+$('gzCancel').onclick=()=>{ $('gzForm').style.display='none'; gzEditSlug=null; gzArmed=false; $('gzDel').textContent='Delete'; gzSay(''); };
+/* paste a full Amazon URL → the ASIN fills itself in; a short link leaves it blank
+   on purpose rather than guessing, because a wrong ASIN points at the wrong item */
+$('gzUrl').oninput=()=>{ const a=gzAsinOf($('gzUrl').value); if(a&&!$('gzAsin').value.trim())$('gzAsin').value=a; };
+$('gzTag').oninput=()=>{ try{ localStorage.setItem('f1ci:amzTag',gzTag()); }catch(e){} };
+$('gzSave').onclick=async()=>{
+  const slug=$('gzSlug').value.trim(), url=$('gzUrl').value.trim();
+  if(!slug){ gzSay('Slug is required — it is what the upsert keys on.',true); return; }
+  if(!url){ gzSay('Amazon URL is required.',true); return; }
+  const asin=($('gzAsin').value.trim()||gzAsinOf(url)).toUpperCase();
+  const row={slug:slug,category:$('gzCat').value,
+    team:$('gzTeam').value.trim()||null, driver_id:$('gzDrv').value.trim()||null,
+    set_slug:$('gzSet').value.trim()||null, asin:asin||null,
+    url:gzCanon(url,asin,gzTag()),
+    name:$('gzName').value.trim()||null, blurb:$('gzBlurb').value.trim()||null,
+    icon:$('gzIcon').value.trim()||null, price_band:$('gzPrice').value.trim()||null,
+    badge:$('gzBadge').value.trim()||null, img_url:$('gzImg').value.trim()||null,
+    sort:Number($('gzSort').value||100), active:$('gzActive').value==='true'};
+  gzSay('Saving…');
+  try{
+    await rpc('admin_amz_upsert',{p_secret:$('secret').value.trim(),p_row:row});
+    $('gzForm').style.display='none'; gzEditSlug=null;
+    await $('gzLoad').onclick();
+    gzSay('Saved '+slug+'.');
+  }catch(e){ gzSay(e.message,true); }
+};
+/* two clicks to delete rather than a modal — a browser confirm() here would block
+   the page, and this panel is the only place a product can be recovered from */
+$('gzDel').onclick=async()=>{
+  if(!gzEditSlug)return;
+  if(!gzArmed){ gzArmed=true; $('gzDel').textContent='Really delete?'; gzSay('Click delete again to remove '+gzEditSlug+'. Setting Active=no just hides it instead.'); return; }
+  const slug=gzEditSlug;
+  gzSay('Deleting…');
+  try{
+    await rpc('admin_amz_delete',{p_secret:$('secret').value.trim(),p_slug:slug});
+    $('gzForm').style.display='none'; gzEditSlug=null; gzArmed=false; $('gzDel').textContent='Delete';
+    await $('gzLoad').onclick();
+    gzSay('Deleted '+slug+'.');
+  }catch(e){ gzSay(e.message,true); gzArmed=false; $('gzDel').textContent='Delete'; }
+};
+try{ const t=localStorage.getItem('f1ci:amzTag'); if(t)$('gzTag').value=t; }catch(e){}
 
 /* ---- social studio: Top Sales share card ---- */
 /* F2/F3 juniors don't live in f1_sales — their record sales were pulled off
