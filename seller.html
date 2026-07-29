@@ -176,7 +176,7 @@ textarea{resize:vertical;min-height:70px}
     <a class="btn" href="/consign.html" style="text-decoration:none;display:inline-block">＋ List another card</a>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v3</span></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v4</span></div>
 </div>
 
 <script>
@@ -185,7 +185,7 @@ const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
 const KEY='f1ci_seller_session';
 const $=id=>document.getElementById(id);
-let DATA=null, FEE=7;
+let DATA=null, FEE=10;   // overwritten by seller_dashboard.fee_pct (app_settings.fee_pct) on load
 
 async function rpc(fn,body){
   const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',
@@ -252,7 +252,7 @@ $('signout').addEventListener('click',async()=>{
 
 async function load(){
   DATA=await rpc('seller_dashboard',{p_session:session()});
-  FEE=DATA.fee_pct||7;
+  FEE=Number(DATA.fee_pct)||10;
   $('loading').style.display='none'; $('gate').style.display='none'; $('dash').style.display='block';
   render();
 }

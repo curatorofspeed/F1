@@ -125,7 +125,8 @@ h1 .accent{color:var(--gold)}
   </div>
   <h1 id="hTitle">The <span class="accent">Shop</span></h1>
   <p class="sub" id="hSub">Graded F1 cards from the index vault. Every card ships insured &amp; tracked. Buy instantly — the link takes you straight to secure checkout.</p>
-  <a class="sellcta" href="consign.html">💰 Got cards? <b>List yours for sale</b> — free to list, 7% when it sells →</a>
+  <p class="sub" id="hFee" style="display:none;opacity:.72;font-size:.86rem;margin-top:-.35rem"></p>
+  <a class="sellcta" href="consign.html">💰 Got cards? <b>List yours for sale</b> — free to list, <span id="hSellFee">10%</span> when it sells →</a>
 
   <div class="paybar" id="paybar">
     <h4 id="payTitle">🎉 Your offer was accepted</h4>
@@ -160,7 +161,7 @@ h1 .accent{color:var(--gold)}
   </div>
 
   <div class="foot">
-    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v5</span></span>
+    <span>© F1 Card Index · <a href="https://www.f1cardindex.com">f1cardindex.com</a> <span style="opacity:.35">· v6</span></span>
     <span>Questions about a card? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a></span>
   </div>
 </div>
@@ -254,6 +255,19 @@ const LS={
 let WATCHING=LS.set;
 let CMTS={};   // listing_id → visible comment count, fetched once at load
 
+/* Buyer handling fee — the real value is app_settings.handling_fee, read at load via public_fees().
+   It's a separate Checkout line item, so it must be disclosed here BEFORE the Buy click, not
+   discovered on the Stripe page. This initial value is only what shows until that call returns. */
+let HANDLING=0.50;
+const feeTxt=v=>'$'+Number(v).toFixed(2);
+function paintHandlingNote(){
+  const el=$('hFee'); if(!el) return;
+  el.textContent=HANDLING>0
+    ? 'Prices below are for the card. A '+feeTxt(HANDLING)+' handling fee is added at checkout — there is no shipping charge.'
+    : 'No handling or shipping charges — the price you see is the price you pay.';
+  el.style.display='block';
+}
+
 const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
 
 function toast(msg){
@@ -307,11 +321,15 @@ async function load(){
   try{
     // fetch everything once; every filter below is client-side so typing is instant
     // comment counts ride along in parallel — and are never allowed to block the shop
-    const [rows,counts]=await Promise.all([
+    const [rows,counts,fees]=await Promise.all([
       rpc('shop_public_listings',{p_driver:null}),
-      rpc('shop_comment_counts',{}).catch(()=>({}))
+      rpc('shop_comment_counts',{}).catch(()=>({})),
+      rpc('public_fees',{}).catch(()=>null)          // fees come from the DB, never hardcoded here
     ]);
     ALL=rows; CMTS=counts||{};
+    if(fees&&isFinite(Number(fees.handling_fee))) HANDLING=Number(fees.handling_fee);
+    if(fees&&isFinite(Number(fees.fee_pct))&&$('hSellFee')) $('hSellFee').textContent=Number(fees.fee_pct)+'%';
+    paintHandlingNote();
     $('state').style.display='none';
     $('tools').style.display='flex';
     buildGradeOptions();
@@ -497,6 +515,9 @@ function card(r){
       ?'<span class="soldtag">sold '+ago(r.sold_at)+'</span>'
       :'<button class="buy" onclick="buyNow(\''+esc(r.id)+'\',this)">Buy now</button>')
     +'</div>'
+    /* the handling fee is a separate Stripe line item — say so before they click, not after */
+    +(r.status!=='sold'&&HANDLING>0
+      ?'<div style="font-size:.74rem;opacity:.6;margin:-.15rem 0 .3rem">+ '+feeTxt(HANDLING)+' handling at checkout</div>':'')
     +(r.status!=='sold'&&r.allow_offers!==false
       ?'<button class="offerbtn" data-id="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'" data-price="'+esc(r.price_usd)+'">or make an offer</button>':'')
     +'<button class="cmtbtn" data-cmt="'+esc(r.id)+'" data-title="'+esc(r.title||'')+'">💬 '

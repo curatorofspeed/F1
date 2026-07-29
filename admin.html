@@ -89,7 +89,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
 </head>
 <body>
 <div class="wrap">
-  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v6</span></h1>
+  <h1>🎛️ F1 Card Index — Admin <span style="opacity:.35;font-size:.5em;font-weight:400">· v7</span></h1>
   <p class="sub">Operational snapshot: Radar pipeline, moderation queue, shop listings, market activity, audience, sends.</p>
 
   <div class="card" id="credCard">
@@ -193,6 +193,7 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
         <span style="font-size:12.5px;color:var(--muted)" id="cnCount"></span>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Buy-It-Now listings submitted on consign.html. <b>Approve</b> → <b>🚀 Push to shop</b> creates the live listing (then paste its Stripe payment link in the Shop desk). When it sells: email the seller the buyer's shipping address, they ship direct, then pay them out (price − fee) to the payout handle shown below.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="feeNote">Live fees: 10% marketplace · $0.50 buyer handling.</div>
       <div class="msg" id="cnMsg"></div>
       <div id="cnList"></div>
     </details>
@@ -338,10 +339,32 @@ const cap=s=>String(s||'').replace(/(^|[\s\-_])(\S)/g,(m,a,b)=>a+b.toUpperCase()
 function ago(iso){ if(!iso)return '—'; const h=(Date.now()-new Date(iso))/36e5;
   if(h<1)return Math.round(h*60)+'m ago'; if(h<48)return Math.round(h)+'h ago'; return Math.round(h/24)+'d ago'; }
 
+/* Fees live in app_settings (fee_pct, handling_fee) and are read through public_fees() so admin
+   never disagrees with the seller emails or consign.html. FEE_PCT is what payouts are net of;
+   HANDLING is buyer-paid and deliberately NOT part of any payout math. Values below are only
+   what shows before the fetch lands. */
+let FEE_PCT=10, HANDLING=0.50;
+const netOf=v=>v==null?null:Number(v)*(1-FEE_PCT/100);
+async function loadFees(){
+  try{
+    const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+    if(!url||!key) return;
+    const r=await fetch(url+'/rest/v1/rpc/public_fees',{method:'POST',
+      headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},body:'{}'});
+    if(!r.ok) return;
+    const d=await r.json();
+    if(isFinite(Number(d&&d.fee_pct))) FEE_PCT=Number(d.fee_pct);
+    if(isFinite(Number(d&&d.handling_fee))) HANDLING=Number(d.handling_fee);
+    const el=$('feeNote');
+    if(el) el.textContent='Live fees: '+FEE_PCT+'% marketplace (out of the seller payout) · $'+HANDLING.toFixed(2)+' buyer handling (not part of the payout).';
+  }catch(_){}
+}
+
 $('loadBtn').onclick=async()=>{
   say('Loading…');
   try{
     const url=$('sbUrl').value.trim().replace(/\/+$/,''), key=$('sbKey').value.trim();
+    await loadFees();
     const r=await fetch(url+'/rest/v1/rpc/admin_stats',{method:'POST',
       headers:{apikey:key,Authorization:'Bearer '+key,'Content-Type':'application/json'},
       body:JSON.stringify({p_secret:$('secret').value.trim()})});
@@ -564,11 +587,14 @@ window.shQuick=async(id,status)=>{
 /* escrow status line under a sold listing */
 function shEscrow(r){
   const net=r.reserved_price??r.price_usd;
-  const paid=money(net?Number(net)*0.93:null);
+  const paid=money(net?netOf(net):null);
   const src={buyer:'buyer confirmed',carrier:'carrier confirmed',timer:'auto-confirmed (7-day timer)'}[r.delivered_source]||'';
   let stage, color;
   if(r.payout_released_at){ stage='payout released '+ago(r.payout_released_at); color='var(--green)'; }
   else if(r.payout_hold){ stage='⏸ PAYOUT ON HOLD — autopilot will not release this'; color='var(--red)'; }
+  /* the autopilot now requires shipped_at as well as delivered_at, so a card marked delivered
+     without ever being marked shipped will NOT auto-release — say so instead of promising a payout */
+  else if(r.delivered_at&&!r.shipped_at){ stage='⚠ delivered '+ago(r.delivered_at)+(src?' · '+src:'')+' but never marked shipped — autopilot will NOT release. Add tracking, or release manually.'; color='var(--amber)'; }
   else if(r.delivered_at){ stage='delivered '+ago(r.delivered_at)+(src?' · '+src:'')+' · autopilot releases '+paid+' within 6h'; color='var(--teal)'; }
   else if(r.shipped_at){ stage='shipped '+ago(r.shipped_at)+' · auto-confirms 7 days after ship · funds held'; color='var(--amber)'; }
   else { stage='sold · awaiting ship + delivery · funds held'; color='var(--amber)'; }
@@ -694,7 +720,7 @@ function ofPaint(){
   $('ofCount').textContent=ofRows.length?(ofRows.length+' shown'+(pend?' · '+pend+' pending':'')):'';
   $('ofList').innerHTML=ofRows.map(o=>{
     const mlink=SITE+'/offer.html?token='+encodeURIComponent(o.manage_token);
-    const net=Math.round(o.amount*0.93);
+    const net=Math.round(netOf(o.amount));
     return '<div class="cnrow" style="grid-template-columns:1fr auto">'
       +'<div><div class="cnt">'+money(o.amount)+' offer'
         +' <span class="cnst" style="color:var(--muted);border-color:var(--line)">'+esc((o.status||'').toUpperCase())+'</span>'

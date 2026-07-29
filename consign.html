@@ -76,7 +76,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
 <div class="wrap">
   <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
   <h1>List a Card <span class="accent">for Sale</span></h1>
-  <p class="sub"><b style="color:var(--gold)">Free to list.</b> Sell your F1 card as Buy It Now to thousands of collectors on the Index Shop. You set the price and keep the card until it sells — then you ship it straight to the buyer and we pay you out. We only take 7% when it sells. We never touch the card.</p>
+  <p class="sub"><b style="color:var(--gold)">Free to list.</b> Sell your F1 card as Buy It Now to thousands of collectors on the Index Shop. You set the price and keep the card until it sells — then you ship it straight to the buyer and we pay you out. We only take <span id="feeProse">10%</span> when it sells. We never touch the card.</p>
 
   <div class="steps">
     <div class="step"><b>1</b>List your card</div>
@@ -181,7 +181,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
         <div class="f"><label for="cert">Cert # (optional)</label><input id="cert" placeholder="PSA/BGS/SGC serial"></div>
         <div class="f req"><label for="price">Your Buy It Now price (USD)</label><input id="price" type="number" min="1" step="0.01" placeholder="450"></div>
       </div>
-      <div class="net" id="net">You'll receive <b id="netVal">—</b> after our <span id="feeTxt">15%</span> fee, once it sells.</div>
+      <div class="net" id="net">You'll receive <b id="netVal">—</b> after our <span id="feeTxt">10%</span> fee, once it sells.</div>
       <div class="f" style="margin-top:14px"><label for="notes">Anything else (optional)</label><textarea id="notes" placeholder="Condition notes, centering, why it's special…"></textarea></div>
     </div>
 
@@ -205,7 +205,7 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     </div>
 
     <div class="terms">
-      <b>How it works:</b> Listing is <b>free</b> — you set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop, and buyers can also send you offers to accept or decline. When it sells, <b>we collect and hold the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them</b> with USPS tracking. <b>Your payout is released as soon as tracking confirms delivery</b> — your price minus our <b id="feePct">7%</b> fee. Holding funds until delivery protects both sides: buyers know their money is safe, and you're guaranteed payment once the card arrives. We never handle the card, and you're never charged up front.
+      <b>How it works:</b> Listing is <b>free</b> — you set the price and keep the card. It lists as <b>Buy It Now</b> in the Index Shop, and buyers can also send you offers to accept or decline. When it sells, <b>we collect and hold the payment</b> and send you the buyer's shipping details — <b>you ship the card directly to them</b> with USPS tracking. <b>Your payout is released as soon as tracking confirms delivery</b> — your price minus our <b id="feePct">10%</b> fee. Holding funds until delivery protects both sides: buyers know their money is safe, and you're guaranteed payment once the card arrives. We never handle the card, and you're never charged up front.
     </div>
 
     <button class="submit" id="submit" type="submit">List my card</button>
@@ -228,17 +228,30 @@ button.submit:disabled{opacity:.5;cursor:not-allowed}
     <p class="tally" id="tally" style="display:none"></p>
   </div>
 
-  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v7</span></div>
+  <div class="foot">Questions? <a href="mailto:hello@f1cardindex.com">hello@f1cardindex.com</a> · <a href="https://www.f1cardindex.com">F1 Card Index</a> <span style="opacity:.35">· v8</span></div>
 </div>
 
 <script>
 /* ── config: same project as the rest of the site ── */
 const SB_URL='https://xvpvvzvmozusfvyebvyq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2cHZ2enZtb3p1c2Z2eWVidnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NDYwODgsImV4cCI6MjA5ODQyMjA4OH0.pClFgr8Mv5GegFGDEftx-03vhqJ_5AdpEnhlwbzuc7k';
-const FEE_PCT=7;   // marketplace fee shown to sellers — charged only when the card sells
+/* Marketplace fee. The real number lives in app_settings.fee_pct and is read below via the
+   public_fees() RPC, so the fee is never hardcoded in two places again. This is only the value
+   shown until that call returns (and the fallback if it fails) — keep it matching the DB. */
+let FEE_PCT=10;
 
 const $=id=>document.getElementById(id);
-$('feePct').textContent=FEE_PCT+'%'; $('feeTxt').textContent=FEE_PCT+'%';
+function paintFee(){
+  const t=FEE_PCT+'%';
+  ['feePct','feeTxt','feeProse'].forEach(id=>{ const el=$(id); if(el) el.textContent=t; });
+  updateNet();
+}
+/* one read, so every fee number on this page comes from the database */
+fetch(SB_URL+'/rest/v1/rpc/public_fees',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:'{}'})
+  .then(r=>r.ok?r.json():null)
+  .then(d=>{ const n=Number(d&&d.fee_pct); if(isFinite(n)&&n>0&&n<100){ FEE_PCT=n; paintFee(); } })
+  .catch(()=>{});
+paintFee();
 let photos=[];   // {url, name, uploading}
 let listed=0;    // how many cards this seller has submitted without reloading
 
