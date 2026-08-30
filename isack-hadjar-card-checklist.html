@@ -19,7 +19,7 @@
 <style>
 :root{
   --c0:#0c0d0e; --c1:#15171a; --c2:#1b1e22; --line:#2a2e33;
-  --ink:#eef1f3; --mut:#828c93; --dim:#5a646b;
+  --ink:#eef1f3; --mut:#828c93; --dim:#7e868b;
   --teal:#3671C6; --teal-d:#24518f; --gold:#d9b878; --red:#ff5d5d;
   --dia:#cfeef2;
 }
@@ -149,6 +149,12 @@ dialog input,dialog select{width:100%;background:var(--c2);border:1px solid var(
 .drow{display:flex;gap:9px;justify-content:flex-end;margin-top:16px}
 .empty{padding:30px 14px;text-align:center;color:var(--dim);font-size:13px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== quality floor (impeccable) ===== */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--teal)!important;outline-offset:2px!important}
+::selection{background:var(--gold,#d9b878);color:#141008}
+@media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
+@media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>

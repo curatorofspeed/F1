@@ -71,6 +71,13 @@ h3.cl-set a{color:var(--gold)}
 table.cl td,table.cl th{padding:7px 12px;font-size:13.5px}
 table.cl .rc{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;color:#062;background:#39e08a;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
 table.cl td a{color:var(--gold);font-weight:600;font-size:12.5px}
+
+/* ===== quality floor (impeccable) ===== */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold,#d9b878)!important;outline-offset:2px!important}
+::selection{background:var(--gold,#d9b878);color:#141008}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
+@media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>

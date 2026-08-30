@@ -85,6 +85,13 @@ select.sh{width:100%;background:var(--panel);border:1px solid var(--line);border
 .cnst{display:inline-block;font-size:10px;font-weight:700;border-radius:5px;padding:1px 7px;margin-left:6px;vertical-align:1px;border:1px solid var(--line)}
 .cnact{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
 .cnact button{padding:6px 11px;font-size:12px;white-space:nowrap}
+
+/* ===== quality floor (impeccable) ===== */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold,#d9b878)!important;outline-offset:2px!important}
+::selection{background:var(--gold,#d9b878);color:#141008}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
+@media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 </head>
 <body>

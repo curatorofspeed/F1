@@ -44,8 +44,8 @@
   }
   html[data-theme="light"]{
     --bg:#eef1f0;--panel:#ffffff;--panel2:#f4f7f6;--line:#dbe2df;--carbon:#e7ebea;
-    --teal:#0d9488;--teal-dim:#8fd3cb;--gold:#a9781f;
-    --up:#15a34a;--down:#dc2626;--txt:#17201e;--muted:#5a665f;--accent:#0d9488;--btn-ink:#ffffff;
+    --teal:#0b7b71;--teal-dim:#8fd3cb;--gold:#90661a;
+    --up:#107d39;--down:#dc2626;--txt:#17201e;--muted:#5a665f;--accent:#0b7b71;--btn-ink:#ffffff;
   }
   /* light-mode fills (the few opaque dark tints) */
   html[data-theme="light"] .conf.high{background:rgba(21,163,74,.12);border-color:rgba(21,163,74,.4)}
@@ -750,6 +750,13 @@
 .shopcta .t1{font-weight:800;font-size:15px;color:var(--gold)}
 .shopcta .t2{font-size:12.5px;color:var(--muted)}
 .shopcta .go{margin-left:auto;font-weight:800;color:var(--gold);white-space:nowrap}
+
+/* ===== quality floor (impeccable) ===== */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold,#d9b878)!important;outline-offset:2px!important}
+::selection{background:var(--gold,#d9b878);color:#141008}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
+@media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -3801,6 +3808,56 @@ async function loadSupabaseSales(){
   SHOP_READY.then(function(){
     try{if(typeof currentDriverId!=='undefined'&&currentDriverId)renderDriverShop(currentDriverId);}catch(e){}
   });
+})();
+</script>
+<script>/* impeccable-kbd */
+(function(){
+"use strict";
+// --- keyboard operability for generated [onclick] cards/rows ---
+function tag(el){
+  if(el.closest('a,button,input,select,textarea,[role]'))return;
+  if(!el.hasAttribute('tabindex'))el.setAttribute('tabindex','0');
+  el.setAttribute('role','button');
+}
+function sweep(root){root.querySelectorAll('[onclick]').forEach(tag);if(root.matches&&root.matches('[onclick]'))tag(root);}
+sweep(document);
+new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)sweep(n);}))).observe(document.body,{childList:true,subtree:true});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ')return;
+  const t=e.target;
+  if(!t.matches||!t.matches('[onclick][role="button"]'))return;
+  if(t.matches('input,textarea,select,a,button'))return;
+  e.preventDefault();t.click();
+});
+// --- modal contract: dialog semantics, Escape, focus trap + restore ---
+const ov=document.getElementById('overlay'),md=document.getElementById('modal');
+if(ov&&md){
+  let trigger=null;
+  const FOC='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  md.setAttribute('role','dialog');md.setAttribute('aria-modal','true');
+  new MutationObserver(()=>{
+    if(ov.classList.contains('on')){
+      trigger=(document.activeElement&&document.activeElement!==document.body)?document.activeElement:trigger;
+      const h=md.querySelector('h1,h2,h3,.modal-title');
+      if(h){h.id=h.id||'impModalTitle';md.setAttribute('aria-labelledby',h.id);}
+      else md.setAttribute('aria-label','Dialog');
+      const f=md.querySelector(FOC);
+      if(f)f.focus();else{md.setAttribute('tabindex','-1');md.focus();}
+    }else if(trigger){trigger.focus();trigger=null;}
+  }).observe(ov,{attributes:true,attributeFilter:['class']});
+  document.addEventListener('keydown',e=>{
+    if(!ov.classList.contains('on'))return;
+    if(e.key==='Escape'){e.preventDefault();ov.classList.remove('on');return;}
+    if(e.key==='Tab'){
+      const els=[...md.querySelectorAll(FOC)].filter(x=>x.offsetParent!==null);
+      if(!els.length)return;
+      const first=els[0],last=els[els.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+      else if(!md.contains(document.activeElement)){e.preventDefault();first.focus();}
+    }
+  });
+}
 })();
 </script>
 </body>
