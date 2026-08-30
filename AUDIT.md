@@ -46,3 +46,18 @@
 - **Hub chevron glyphs** (`.mff-go`, `.auct-item .go`) use `--teal-dim` (2.4:1) as text — redundant iconography on labeled rows, so exempt-adjacent, but bumping to `--muted` is a two-line change.
 - **`admin_1.html`** looks like a stale copy of `admin.html` (it got the floor CSS anyway) — consider deleting it from the repo.
 - **`giveaway-section.html`** is a paste-in fragment, not a page — skipped by design.
+
+---
+
+# Design Review Pass (2026-08-30)
+
+**Scope:** cross-page coherence — navigation, typography, loading states, theme, copy.
+
+- **Shared site nav** (`Market · Shop · Sets · Sell`, mono uppercase, brand-colored hover) added to every surface: hub header (Shop · Checklists · Sell a Card), the 38 dark site-header pages, all set pages + sets index, driver stub pages, shop/seller/consign. Checklist pages' existing nav gained a Shop link (template too). Giveaway intentionally stays chromeless (conversion landing page); order.html left minimal (transactional).
+- **Brand typography unified:** Sora body + Saira Condensed headlines rolled to the 57 pages that were on system fonts (all set pages, shop/consign/seller/order, offer, driver stubs). Giveaway keeps Inter (campaign identity); admin pages left as-is.
+- **Set-page voice:** emoji section headers (⭐🔥🌈📋✍️🎴) and the 🛒 in eBay CTAs removed to match the site's typographic voice.
+- **Theme cleanup (hub):** the unreachable legacy dark `:root` replaced with the shipped light tokens and `data-theme="light"` set statically on `<html>` — kills the dark-flash before JS applied the light theme, and removes the dead third theme. Tron untouched. NOTE: `2025-topps-lights-out-f1.html` already implements theme-following (reads `f1CardIndex:v1` from localStorage) — that's the established pattern for making subpages follow the hub theme; rolling dual palettes to the other ~90 dark pages remains future work.
+- **Shop loading state:** 6-card shimmer skeleton (reduced-motion-safe) shown during the Supabase fetch, hidden on success and on the existing error message.
+- **Copy:** giveaway countdown now pluralizes ("1 day").
+
+**Verified live:** nav rendered on hub/about/set/driver-stub/shop; computed fonts (`Sora` body, `Saira Condensed` h1) on shop + set pages; skeleton hides after data loads; countdown reads "1 day" at d=1; no duplicate nav insertions across 157 pages; all inline scripts still parse.

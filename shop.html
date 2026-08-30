@@ -122,12 +122,27 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
 @media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+
+/* ===== site nav (impeccable design) ===== */
+.hd-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0}
+.hd-nav a{color:var(--muted,#828c93);text-decoration:none}
+.hd-nav a:hover{color:var(--gold,#d9b878)}
+
+/* brand type (impeccable design) */
+body{font-family:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif}
+h1,h2,h3{font-family:'Saira Condensed',system-ui,sans-serif}
+
+.skel-card{height:320px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(100deg,var(--panel2) 40%,var(--panel) 50%,var(--panel2) 60%);background-size:200% 100%;animation:skl 1.2s linear infinite}
+@keyframes skl{to{background-position:-200% 0}}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="wrap">
   <div class="top">
     <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
+<nav class="hd-nav" aria-label="Site" data-role="impeccable-nav"><a href="/">Market</a><a href="/shop">Shop</a><a href="/sets">Sets</a><a href="/consign">Sell</a></nav>
     <a class="brand" href="shop.html" id="allLink" style="display:none">← Full shop</a>
   </div>
   <h1 id="hTitle">The <span class="accent">Shop</span></h1>
@@ -160,7 +175,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
   <div class="count" id="count"></div>
 
-  <div class="state" id="state">Loading the vault…</div>
+  <div class="state" id="state" role="status">Loading the vault…</div>
+  <div class="grid" id="skel" aria-hidden="true"><div class="skel-card"></div><div class="skel-card"></div><div class="skel-card"></div><div class="skel-card"></div><div class="skel-card"></div><div class="skel-card"></div></div>
   <div class="grid" id="grid"></div>
   <div id="soldWrap" style="display:none">
     <div class="soldhead">Recently sold</div>
@@ -337,14 +353,14 @@ async function load(){
     if(fees&&isFinite(Number(fees.handling_fee))) HANDLING=Number(fees.handling_fee);
     if(fees&&isFinite(Number(fees.fee_pct))&&$('hSellFee')) $('hSellFee').textContent=Number(fees.fee_pct)+'%';
     paintHandlingNote();
-    $('state').style.display='none';
+    $('state').style.display='none';$('skel').style.display='none';
     $('tools').style.display='flex';
     buildGradeOptions();
     if(SELLER) await loadStore(SELLER);
     paint();
   }catch(e){
     $('state').textContent='Couldn’t load the shop right now — try a refresh.';
-    $('state').className='state err';
+    $('state').className='state err';$('skel').style.display='none';
   }
 }
 

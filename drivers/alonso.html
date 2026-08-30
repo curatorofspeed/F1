@@ -97,11 +97,18 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
 @media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+
+/* ===== site nav (impeccable design) ===== */
+.hd-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0}
+.hd-nav a{color:var(--muted,#828c93);text-decoration:none}
+.hd-nav a:hover{color:var(--gold,#d9b878)}
+header.site .wrap{flex-wrap:wrap;gap:10px}
 </style>
 </head>
 <body>
 <header class="site"><div class="wrap">
 <a class="brand" href="/"><span class="chk">&#127937;</span> F1 Card Index</a>
+<nav class="hd-nav" aria-label="Site" data-role="impeccable-nav"><a href="/">Market</a><a href="/shop">Shop</a><a href="/sets">Sets</a><a href="/consign">Sell</a></nav>
 <a class="back" href="/#alonso">Live Alonso board &rarr;</a>
 </div></header>
 <main><div class="wrap">

@@ -51,12 +51,24 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
 @media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+
+/* ===== site nav (impeccable design) ===== */
+.hd-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0}
+.hd-nav a{color:var(--muted,#828c93);text-decoration:none}
+.hd-nav a:hover{color:var(--gold,#d9b878)}
+
+/* brand type (impeccable design) */
+body{font-family:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif}
+h1,h2,h3{font-family:'Saira Condensed',system-ui,sans-serif}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="wrap">
   <div class="top">
     <a class="brand" href="https://www.f1cardindex.com">🏁 F1 Card Index</a>
+<nav class="hd-nav" aria-label="Site" data-role="impeccable-nav"><a href="/">Market</a><a href="/shop">Shop</a><a href="/sets">Sets</a><a href="/consign">Sell</a></nav>
     <span class="crumb"><a href="/sets">Set Checklists</a> → 2025 Lights Out</span>
   </div>
 
@@ -76,7 +88,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
 
   <div class="card">
-    <h2>⭐ Key Cards</h2>
+    <h2>Key Cards</h2>
     <ul>
       <li><b>Kimi Antonelli Gold Frame 1/1</b> — the rookie chase of the set</li>
       <li><b>Lewis Hamilton framed Drivers Autograph</b></li>
@@ -86,7 +98,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
 
   <div class="card">
-    <h2>🌈 Parallel Ladder</h2>
+    <h2>Parallel Ladder</h2>
     <table>
       <thead><tr><th>Parallel</th><th class="r">Print run</th><th class="r">Note</th></tr></thead>
       <tbody>
@@ -103,7 +115,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
 
   <div class="card">
-    <h2>📋 Base Set — Drivers (20)</h2>
+    <h2>Base Set — Drivers (20)</h2>
     <table>
       <thead><tr><th>Driver</th><th>Team</th></tr></thead>
       <tbody>
@@ -133,7 +145,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
 
   <div class="card">
-    <h2>✍️ Autographs — 26 subjects</h2>
+    <h2>Autographs — 26 subjects</h2>
     <ul>
       <li><b>Drivers Autographs (12)</b> — Ocon, Colapinto, Russell, Hadjar, Antonelli, Stroll, Norris, Hamilton, Bearman, Piastri, Gasly, Tsunoda</li>
       <li><b>Nero Autographs (5)</b> — Russell, Norris, Hamilton, Bearman, Gasly</li>
@@ -144,7 +156,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </div>
 
   <div class="card">
-    <h2>🎴 Inserts &amp; Subsets</h2>
+    <h2>Inserts &amp; Subsets</h2>
     <ul>
       <li><b>Bright Future (6)</b> — the rookie class: Colapinto, Bortoleto, Hadjar, Antonelli, Lawson, Bearman</li>
       <li><b>Nero (10)</b> — black-finish elite subset: Sainz, Alonso, Russell, Norris, Hamilton, Lawson, Verstappen, Hulkenberg, Bearman, Gasly</li>

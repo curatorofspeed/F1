@@ -143,6 +143,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     }
     const d = Math.floor(ms/86400000), h = Math.floor(ms/3600000)%24, m = Math.floor(ms/60000)%60;
     $('cdD').textContent = d; $('cdH').textContent = h; $('cdM').textContent = m;
+    $('cdD').nextElementSibling.textContent = (d===1?'day':'days');
   }
   tick(); setInterval(tick, 30000);
 

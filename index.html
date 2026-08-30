@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,9 +33,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0c0d0e;--panel:#15171a;--panel2:#1b1e22;--line:#2a2e33;--carbon:#0e0f11;
-    --teal:#c4cdd2;--teal-dim:#4a5258;--gold:#d9b878;
-    --up:#39e08a;--down:#ff5d5d;--txt:#eef1f3;--muted:#828c93;--accent:#c4cdd2;--btn-ink:#0c0d0e;
+    --bg:#eef1f0;--panel:#ffffff;--panel2:#f4f7f6;--line:#dbe2df;--carbon:#e7ebea;
+    --teal:#0b7b71;--teal-dim:#8fd3cb;--gold:#90661a;
+    --up:#107d39;--down:#dc2626;--txt:#17201e;--muted:#5a665f;--accent:#0b7b71;--btn-ink:#ffffff;
   }
   html[data-theme="tron"]{
     --bg:#000409;--panel:#04121b;--panel2:#071a24;--line:#0c3a44;--carbon:#02080d;
@@ -757,6 +757,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline-color:CanvasText!important}}
 @media (max-width:760px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
+
+/* ===== site nav (impeccable design) ===== */
+.hd-nav{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin:2px 0}
+.hd-nav a{color:var(--muted,#828c93);text-decoration:none}
+.hd-nav a:hover{color:var(--gold,#d9b878)}
+.hub-nav{display:flex;gap:18px;margin-top:10px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.hub-nav a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+.hub-nav a:hover{color:var(--gold);border-bottom-color:var(--gold)}
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -774,6 +782,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <div class="tagline">
           The live market index for Formula 1 cards — what's ending, what just sold, what's next
           <span class="badge" id="updatedBadge">2026 Season</span>
+          <nav class="hub-nav" aria-label="Site" data-role="impeccable-nav"><a href="/shop">Shop</a><a href="/sets">Checklists</a><a href="/consign">Sell a Card</a></nav>
         </div>
       </div>
       <div class="head-snap" id="headSnap">
