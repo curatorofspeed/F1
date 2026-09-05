@@ -61,3 +61,31 @@
 - **Copy:** giveaway countdown now pluralizes ("1 day").
 
 **Verified live:** nav rendered on hub/about/set/driver-stub/shop; computed fonts (`Sora` body, `Saira Condensed` h1) on shop + set pages; skeleton hides after data loads; countdown reads "1 day" at d=1; no duplicate nav insertions across 157 pages; all inline scripts still parse.
+
+---
+
+# Critique Pass (2026-09-04) — findings only, nothing changed
+
+**Scope:** the whole product as deployed, judged fresh — including the two earlier passes' own choices. **Method:** live production checks, DOM reads, measured contrast, repo analysis.
+
+## 🟠 High
+- **Admin surfaces are public and indexable.** `admin.html`, the stale `admin_1.html`, and `approval-console.html` are served on the live site with no `noindex` and no robots exclusion (robots.txt allows everything). The auth model itself is sound — keys/secret are typed in at runtime, nothing embedded — but the console is discoverable by crawlers, and `admin_1.html` is a dead old copy that only widens the surface. (`order/offer/seller` already carry `noindex` — the admin trio should match, and `admin_1.html` should go.)
+- **The hub has no footer.** The site's most-visited page just ends: no Privacy / Disclaimer / Contact / About links anywhere on it (those live only in subpage footers). Legal links reachable from the page carrying the newsletter signup and affiliate content is table stakes.
+
+## 🟡 Medium
+- **The emoji inconsistency is now ours.** The design pass stripped emoji headers from set pages for "typographic voice" — but the hub's own section headers are full of them (🛒🛍️🏁📋🔴🏆🔬🃏🔨). Either the emoji are the brand's voice (then the set-page strip was wrong) or they aren't (then the hub needs the same cleanup). Pick one; currently the flagship page and its children disagree.
+- **Light hub → permanently dark subpages** remains the biggest coherence break (unchanged from the design review). The theme-following pattern exists on `2025-topps-lights-out-f1.html` (`f1CardIndex:v1`); it hasn't been rolled anywhere else.
+- **The duplicated set pages are already drifting.** Every set page exists twice (top-level + `sets/`), hand-synced. All four sampled pairs differ (13–30 lines). Canonicals are correct, so SEO is safe — this is a maintenance trap, not a ranking problem. Long-term: one copy + a redirect.
+
+## 🟢 Low
+- Hub chevron glyphs still use `--teal-dim` at 2.4:1 (carried from pass 1's Recommended).
+- `.hub-nav` has no `flex-wrap`; its three links fit at 375px but it's one long driver-name badge away from overflow.
+- `order.html` remains nav-less by design — fine for email-linked flows, worth revisiting if it ever gets organic traffic.
+
+## Verified healthy (measured, no action needed)
+- **Retired from pass 1's Recommended:** all 59 checklist team-color focus rings measured — every one clears the 3:1 indicator floor on both its surfaces (lowest ≈3.2, Red Bull `#3671C6`).
+- Both quality-floor passes are intact in production (nav, fonts, tokens, `data-theme="light"` all serving).
+- Canonicals: duplicated set pages both point at the `/sets/` URL — correct.
+- Affiliate hygiene: Amazon Associates disclosure present, eBay links `rel="sponsored"`, disclaimer page covers it.
+- The ended giveaway (Aug 31) degrades gracefully: hub banner auto-hides, page shows "Entries closed", inputs disabled.
+- Alt text present on sampled image templates; image weights sane (worst 143KB); hub transfers ~93KB gzipped despite the 358KB source.
