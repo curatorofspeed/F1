@@ -89,3 +89,12 @@
 - Affiliate hygiene: Amazon Associates disclosure present, eBay links `rel="sponsored"`, disclaimer page covers it.
 - The ended giveaway (Aug 31) degrades gracefully: hub banner auto-hides, page shows "Entries closed", inputs disabled.
 - Alt text present on sampled image templates; image weights sane (worst 143KB); hub transfers ~93KB gzipped despite the 358KB source.
+
+## Critique pass — actions taken (2026-09-04)
+- **Admin:** `admin.html` now carries `noindex,nofollow`; stale `admin_1.html` deleted from the repo. Correction to the finding: `approval-console.html` is untracked/undeployed (404s live) — it was never exposed.
+- **Hub footer added:** site links (About/Methodology/Contact/Privacy/Disclaimer/Shop/Checklists/Sell) + the standard independence/affiliate fine print with auto-year, styled on hub tokens.
+- **Voice unified:** hub `<h2>` emoji removed (matches set pages and the info/driver family). Status glyphs in data chips retained.
+- **Chevrons** (`.mff-go`, `.auct-item .go`) bumped `--teal-dim` → `--muted`.
+- **`.hub-nav`** got `flex-wrap:wrap`.
+- **Verified live:** footer renders with all 8 links + year script, zero emoji `<h2>`s, chevron computes to `--muted`, nav wraps, inline scripts parse.
+- **Deferred (dedicated work):** theme-following rollout to dark subpages (pattern on lights-out page); consolidating the duplicated set pages behind redirects.
