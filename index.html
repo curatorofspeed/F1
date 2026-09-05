@@ -3738,6 +3738,8 @@ async function loadSupabaseSales(){
   var img=g('gvBannerImg'); if(img&&typeof GV_CARD_IMG!=='undefined') img.src=GV_CARD_IMG;
   var banner=g('gvHomeBanner');
   if(banner&&typeof GV_END_DATE!=='undefined'&&Date.parse(GV_END_DATE)<Date.now()){ banner.style.display='none'; return; }
+  /* while a giveaway is live, the Starlink banner yields the slot */
+  var sl=g('slBanner'); if(sl&&typeof GV_END_DATE!=='undefined'&&Date.parse(GV_END_DATE)>=Date.now()) sl.style.display='none';
   var btn=g('gvBannerBtn'), inp=g('gvBannerEmail'), msg=g('gvBannerMsg'), form=g('gvBannerForm');
   if(!btn) return;
   var busy=false;
