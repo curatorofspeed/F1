@@ -898,7 +898,7 @@ renderRace();renderDrivers();renderChecklists();
   ]);
   mergeTop10(top);
   DATA.auctions=Array.isArray(live)?live.filter(a=>byId[a.driver_id]&&a.url&&(!a.ends_on||a.ends_on>=TODAY)):[];
-  DATA.shop=Array.isArray(shop)?shop.filter(r=>r.status==='available'&&!r.sold_at):[];
+  DATA.shop=Array.isArray(shop)?shop.filter(r=>r.status==='available'):[];
   DATA.live=(top||live||shop)?'live':'curated';
   buildSales();
   renderAll();
