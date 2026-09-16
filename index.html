@@ -61,7 +61,7 @@ button{font:inherit}
 .tag{display:block;margin-top:9px;font:600 10px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .stripe{display:flex;gap:3px;margin-top:12px}
 .stripe i{flex:1;height:3px;border-radius:2px}
-.stripe i:nth-child(1){background:#0b7b71}.stripe i:nth-child(2){background:var(--line)}.stripe i:nth-child(3){background:#90661a}.stripe i:nth-child(4){background:#ED1C24}.stripe i:nth-child(5){background:#f08a24}
+.stripe i:nth-child(1){background:var(--teal)}.stripe i:nth-child(2){background:var(--line)}.stripe i:nth-child(3){background:var(--gold)}.stripe i:nth-child(4){background:var(--red)}.stripe i:nth-child(5){background:#f08a24}
 .side-h{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 10px 6px;margin:0}
 .side-nav{display:grid;gap:2px}
 .side-nav a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;text-decoration:none;font-weight:500;color:var(--muted)}
@@ -156,7 +156,7 @@ h2{font:700 22px/1.05 var(--disp);text-transform:uppercase;letter-spacing:.5px;m
 .media{position:relative;display:block;aspect-ratio:4/5;background:var(--panel2);border-bottom:1px solid var(--line);overflow:hidden}
 .media img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:14px;transition:transform var(--dur-2) var(--ease)}
 a.media:hover img{transform:scale(1.03)}
-.tile{position:absolute;inset:0;display:grid;place-items:center;font:800 44px var(--disp);letter-spacing:1px;color:var(--tc,var(--muted));background:linear-gradient(160deg,color-mix(in srgb,var(--tc,var(--muted)) 14%,var(--panel2)),var(--panel2) 70%)}
+.tile{position:absolute;inset:0;display:grid;place-items:center;font:800 44px var(--disp);letter-spacing:1px;color:var(--tct,var(--tc,var(--muted)));background:linear-gradient(160deg,color-mix(in srgb,var(--tc,var(--muted)) 14%,var(--panel2)),var(--panel2) 70%)}
 .badge{position:absolute;left:10px;top:10px;font:700 10px var(--mono);letter-spacing:.05em;padding:4px 7px;border-radius:6px;background:var(--panel);border:1px solid var(--line);color:var(--txt)}
 .badge.r{left:auto;right:10px}
 .badge.hot{color:var(--down)}
@@ -200,7 +200,8 @@ a.media:hover img{transform:scale(1.03)}
 .back{display:inline-flex;align-items:center;gap:7px;min-height:24px;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:16px}
 .back:hover{color:var(--gold)}
 .dhead{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.dnum{font:800 clamp(44px,7vw,64px)/.85 var(--disp);color:var(--tc,var(--muted));letter-spacing:-1px}
+.dnum{font:800 clamp(44px,7vw,64px)/.85 var(--disp);color:var(--tct,var(--tc,var(--muted)));letter-spacing:-1px}
+html[data-theme="tron"] .dnum,html[data-theme="tron"] .tile{color:var(--tc,var(--muted))}
 .dhead h1{margin:0}
 .dmeta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
 .team-pill{display:inline-flex;align-items:center;gap:7px;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
@@ -238,6 +239,7 @@ a.media:hover img{transform:scale(1.03)}
 .crow .ci{font-size:12px;color:var(--muted)}
 .crow .dt{font:600 11px var(--mono);color:var(--muted);white-space:nowrap}
 .crow.next{border-color:var(--gold)}
+.crow .tag-rec{font:600 9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border:1px solid var(--line);border-radius:4px;padding:2px 5px;margin-right:6px;vertical-align:1px}
 @media (max-width:540px){.gc-inputs{grid-template-columns:minmax(0,1fr)}}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
 .grow{flex:1}
@@ -666,6 +668,24 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;'
 const money=n=>'$'+Math.round(Number(n)||0).toLocaleString('en-US');
 const moneyShort=n=>n>=1e6?'$'+(n/1e6).toFixed(1)+'M':n>=1e4?'$'+Math.round(n/1e3)+'K':money(n);
 const tc=c=>/^#[0-9a-f]{3,8}$/i.test(c||'')?c:'#8a968f';
+/* Team colours double as large text (driver numbers, fallback initials). On the light
+   surfaces many are too pale, so each is mixed toward the ink only as far as it needs
+   to clear 3.1:1 on --bg and --panel2; colours that already pass are left untouched. */
+const TCT={};
+function tct(c){
+  c=tc(c);
+  if(TCT[c])return TCT[c];
+  if(!/^#[0-9a-f]{6}$/i.test(c))return TCT[c]=c;
+  const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const lum=a=>a.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+  const ratio=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+  const base=rgb(c),ink=[0x17,0x20,0x1e],surfaces=[[0xee,0xf1,0xf0],[0xf4,0xf7,0xf6]];
+  for(let p=0;p<=80;p++){
+    const m=base.map((v,i)=>Math.round(v*(1-p/100)+ink[i]*p/100));
+    if(surfaces.every(s=>ratio(m,s)>=3.1))return TCT[c]='#'+m.map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+  return TCT[c]='#17201e';
+}
 const lastName=n=>String(n||'').split(' ').slice(-1)[0];
 const hostOf=u=>{try{return new URL(u).hostname;}catch(e){return '';}};
 const TODAY=new Date().toISOString().slice(0,10);
@@ -796,14 +816,14 @@ function renderSpot(){
 function renderHolders(){
   const rows=drivers.filter(d=>DATA.topByDriver[d.id]).sort((a,b)=>DATA.topByDriver[b.id].price-DATA.topByDriver[a.id].price).slice(0,5);
   $('#holders').innerHTML=rows.map((d,i)=>
-    '<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+'"><span class="rank">'+String(i+1).padStart(2,'0')+'</span>'+
+    '<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="rank">'+String(i+1).padStart(2,'0')+'</span>'+
     '<span class="abbr">'+esc(d.abbr)+'</span><span class="who"><b>'+esc(d.name)+'</b><span>'+esc(d.team)+'</span></span>'+
     '<span class="price">'+money(DATA.topByDriver[d.id].price)+'</span></a></li>').join('');
 }
 function saleCard(s){
   const d=s.d,href=s.url?wrapEbay(s.url):'';
   const open=href?'<a class="media" href="'+esc(href)+'" target="_blank" rel="noopener'+(isEbay(href)?' sponsored':'')+'" aria-label="View source listing: '+esc(s.card)+'">':'<div class="media">';
-  return '<article class="card sale" style="--tc:'+tc(d.color)+'">'+open+tileHtml(d,!!s.img)+imgHtml(s.img)+
+  return '<article class="card sale" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'">'+open+tileHtml(d,!!s.img)+imgHtml(s.img)+
     (s.grade?'<span class="badge">'+esc(s.grade)+'</span>':'')+(href?'</a>':'</div>')+
     '<div class="sale-b"><a class="sale-d" href="'+boardHref(d.id)+'">'+esc(d.name)+'</a>'+
     '<p class="sale-c" title="'+esc(s.card)+'">'+esc(s.card)+'</p>'+
@@ -811,7 +831,7 @@ function saleCard(s){
 }
 function auctionCard(a){
   const d=byId[a.driver_id];
-  return '<article class="card sale" style="--tc:'+tc(d.color)+'">'+
+  return '<article class="card sale" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'">'+
     '<a class="media" href="'+esc(a.url)+'" target="_blank" rel="noopener" aria-label="View auction on Goldin: '+esc(a.title)+'">'+
     tileHtml(d,!!a.image_url)+imgHtml(a.image_url)+
     (a.grade?'<span class="badge">'+esc(a.grade)+'</span>':'')+'<span class="badge r hot">Live</span></a>'+
@@ -838,7 +858,7 @@ function renderRace(){
   box.innerHTML='<div class="sec-h" style="margin:0"><span class="label">Next race · Round '+(D.races.indexOf(r)+1)+'</span><span class="count-up">'+when+'</span></div>'+
     '<h2 class="race-name" id="h-race">'+esc(r.name)+'</h2>'+
     '<p class="race-meta">'+esc(r.circuit)+' · '+esc(r.city)+' · '+esc(r.range)+(r.sprint?' · Sprint weekend':'')+'</p>'+
-    (watch.length?'<p class="label" style="margin:0 0 8px">Cards to watch</p><div class="chips">'+watch.map(d=>'<a class="chip" href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+'"><span class="dot"></span>'+esc(lastName(d.name))+'</a>').join('')+'</div>':'');
+    (watch.length?'<p class="label" style="margin:0 0 8px">Cards to watch</p><div class="chips">'+watch.map(d=>'<a class="chip" href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="dot"></span>'+esc(lastName(d.name))+'</a>').join('')+'</div>':'');
 }
 function renderShop(){
   const list=DATA.shop.slice(0,4);
@@ -864,7 +884,7 @@ function driverCard(d,mode){
     if(guide)links.push('<a href="/drivers/'+esc(d.id)+'">Price guide</a>');
     links.push('<a href="'+esc(ebaySearch(d.name,false))+'" target="_blank" rel="noopener sponsored">eBay &nearr;</a>');
   }
-  return '<article class="card dcard" style="--tc:'+tc(d.color)+'"><span class="abbr">'+esc(d.abbr)+'</span>'+
+  return '<article class="card dcard" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="abbr">'+esc(d.abbr)+'</span>'+
     '<div class="who"><a class="stretch" href="'+esc(primary)+'"><b>'+esc(d.name)+'</b></a><span>'+esc(d.team)+' · '+meta+'</span></div>'+
     '<span class="go" aria-hidden="true">&rarr;</span>'+(links.length?'<div class="dlinks">'+links.join('')+'</div>':'')+'</article>';
 }
@@ -907,7 +927,7 @@ function renderCalendar(){
   $('#calRows').innerHTML=list.length?list.map(r=>'<article class="card crow'+(r===next?' next':'')+'">'+
     '<span class="rd">R'+(races.indexOf(r)+1)+'</span>'+
     '<span><span class="nm">'+esc(r.name)+'</span><span class="ci" style="display:block">'+esc(r.circuit)+' \u00b7 '+esc(r.city)+(r.sprint?' \u00b7 Sprint':'')+'</span></span>'+
-    '<span class="dt">'+esc(r.range)+'</span></article>').join(''):
+    '<span class="dt">'+(r===next?'<span class="tag-rec">Next</span>':'')+esc(r.range)+'</span></article>').join(''):
     '<div class="card empty">The 2026 season is done \u2014 see you next year.</div>';
 }
 
@@ -952,6 +972,7 @@ function renderDriverBoard(d){
   const stock=DATA.shop.filter(r=>r.driver_id===d.id);
   const cl=D.checklistPages[d.id], guide=(D.driverPages||[]).includes(d.id);
   document.querySelector('[data-view="driver"]').style.setProperty('--tc',tc(d.color));
+  document.querySelector('[data-view="driver"]').style.setProperty('--tct',tct(d.color));
 
   $('#dHead').innerHTML='<p class="eyebrow" style="margin:0">'+esc(TIER_LABEL[tierOf(d)])+(d.rookieYear?' · Rookie '+d.rookieYear:'')+'</p>'+
     '<div class="dhead">'+(d.number!=null?'<span class="dnum">'+d.number+'</span>':'')+
@@ -1081,7 +1102,7 @@ function initSearch(){
     const v=inp.value.trim().toLowerCase();
     if(!v){close();return;}
     const m=drivers.filter(d=>(d.name+' '+d.team+' '+d.abbr).toLowerCase().includes(v)).sort(byTopSale).slice(0,8);
-    box.innerHTML=m.length?m.map(d=>'<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+'"><span class="abbr">'+esc(d.abbr)+'</span><span class="who"><b>'+esc(d.name)+'</b><span>'+esc(d.team)+'</span></span></a></li>').join(''):'<li class="qempty">No drivers match “'+esc(inp.value.trim())+'”</li>';
+    box.innerHTML=m.length?m.map(d=>'<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="abbr">'+esc(d.abbr)+'</span><span class="who"><b>'+esc(d.name)+'</b><span>'+esc(d.team)+'</span></span></a></li>').join(''):'<li class="qempty">No drivers match “'+esc(inp.value.trim())+'”</li>';
     box.hidden=false;inp.setAttribute('aria-expanded','true');
   });
   inp.addEventListener('keydown',e=>{

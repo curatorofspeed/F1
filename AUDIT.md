@@ -205,3 +205,37 @@ The first version of the view entrance also ran on initial page load, starting t
 - **Theme switch is instant by design** — cross-fading every element's colours on toggle is expensive and rarely worth it.
 - **Reduced motion could not be emulated in the preview browser**; verified via the stylesheet rule instead. Worth one manual check with the OS setting on.
 - **`hub.html` (the legacy `/hub`) was not touched.**
+
+---
+
+# Homepage — Colour Pass (2026-09-16)
+
+**Scope:** `index.html` (homepage) · **Method:** measured every text token against every surface it sits on in both shipped themes (light, tron), measured all 63 team colours where they render as text, checked for colour-only signalling and hard-coded colours — then fixed and re-measured on the rendered page.
+
+## Findings by severity
+
+### 🟠 High
+**Team colours failed contrast as text in the light theme — 38 of 63 drivers.** Team colours double as large text: the driver number on each board (44–64px) and the fallback initials on sale/auction cards without a photo (44px). Against the light `--bg`/`--panel2` they fell below even the 3:1 large-text floor: worst #FFB800 (Leon, Tsolov, Naël) 1.53:1, #e6b65c (legends) 1.65, #00D2BE (Mercedes) 1.69, #64C4FF 1.70, #B6BABD 1.72. Tron passed all 63. → **Fixed:** a `tct()` helper mixes each colour toward the ink **only as far as that colour needs** to clear 3.1:1 on both light surfaces; exposed as `--tct` and used by `.dnum`/`.tile` in light only, while tron keeps the raw team colour. A uniform darkening would have needed 36% and muddied the 8 colours that already passed (Ferrari red, Williams blue…); per-colour, those get 0%. Measured after: Leon 3.14, Antonelli 3.11, Ocon 3.13, Norris 3.13, Leclerc unchanged at 3.86, all 8 visible fallback tiles ≥ 3.28.
+
+### 🟢 Low
+- **"Next race" was signalled by border colour alone** (WCAG 1.4.1) → the row now carries a "Next" label.
+- **The brand stripe was hard-coded to light-theme colours**, so in tron it dimmed to a dark teal/brown on black → stripe uses `--teal`/`--gold`/`--red`, brightening in tron and identical in light.
+
+## Verified passing (measured, unchanged)
+| Token | Light | Tron |
+|---|---|---|
+| `--txt` on bg/panel/panel2 | 14.64 / 16.64 / 15.44 | 18.58 / 17.14 / 16.05 |
+| `--muted` on bg/panel/panel2 | 5.28 / 6.00 / 5.57 | 5.75 / 5.31 / 4.97 |
+| `--gold` text on bg/panel/panel2 | **4.50** / 5.12 / 4.75 | 14.24 / 13.13 / 12.30 |
+| `--up` on panel (next-race countdown) | 5.23 | 11.02 |
+| `--down` on panel ("Ends in", Live badge) | 4.83 | 6.30 |
+| Button ink on gold | 5.12 | 13.36 |
+| Red wordmark (large text, 3:1) | 3.86–4.38 | 4.33–4.69 |
+| Focus ring gold (non-text, 3:1) | 4.50–5.12 | 13.13–14.24 |
+
+**No colour-only signalling left:** live status says "Live data", auction lots say "Live" and "Ends in N days", grading profit/loss carries a +/− sign, pressed chips invert *and* set `aria-pressed`, "Best on file" and "Next" are text. Team-colour dots and bars sit beside driver names, so they are decorative.
+
+## Recommended (not done)
+- **Light `--gold` on `--bg` sits exactly on the floor (4.50:1)** — it passes, but with zero headroom: any future tweak to `--bg` or `--gold` drops gold text below AA. `#8c6319` would give ~4.7:1 with no visible change.
+- **`tct()` hard-codes the light `--bg` and `--panel2` values** it tests against. If those tokens change, update the two surface values in the helper.
+- **`hub.html` (legacy `/hub`) was not touched.**
