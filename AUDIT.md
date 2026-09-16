@@ -243,3 +243,38 @@ The first version of the view entrance also ran on initial page load, starting t
 ## Colour pass — follow-ups applied (2026-09-16)
 - **Light gold `#90661a` → `#8c6319` on all seven light-theme pages** (homepage, hub, shop, consign, seller, order, 2025 Lights Out) so the brand keeps one gold. Gold text on `--bg` 4.50 → **4.72:1**, on panels 5.12 → **5.37:1**; white button text on gold 5.12 → **5.37:1**. Verified on the rendered homepage and shop (Buy button and prices 5.37:1).
 - **`tct()` no longer hard-codes surface colours** — it reads `--bg`, `--panel2` and `--txt` from the `:root` rule, so it tracks the tokens and gives the same result even when the page loads in tron (tron overrides computed values, not the rule). Verified: Noel León's number renders `rgb(171,129,11)` whether the page first loads in light or loads in tron and is switched to light.
+
+---
+
+# Homepage — Delight Pass (2026-09-16)
+
+**Scope:** `index.html` (homepage) · **Method:** inventoried every empty, loading, success and error state plus the ranking, race and calculator moments; added personality only where it also carries meaning or utility; verified each moment in the browser (race-weekend state via a throwaway local copy with the next race shifted to tomorrow — deleted, never committed).
+
+## Findings
+
+### 🟡 Medium
+**Empty states were dead ends.** Filtering the sales archive or the driver index to nothing said so ("Try another source or clear the filter.", "No drivers match.") but offered no way back — you had to find and undo each filter yourself. → **Fixed:** "Nothing on the grid for that combination." with a **Reset filters** button (sales) and "No driver on the grid by that name." with **Clear filters** (drivers). Reset restores the full list, empties the text filter and moves focus to the first filter chip so keyboard users land somewhere sensible. Verified: 400 sales restored, input cleared, focus on "All sources".
+
+### 🟢 Low — personality with a purpose
+- **Record holders were numbered 01–05** — a ranking with no sense of place. → Now **P1–P5**, with gold, silver and bronze tints on the podium. Text stays `--txt`, so contrast is unchanged in both themes.
+- **"This weekend" was the most exciting race moment.** → On race weekends only (race ≤ 2 days away) the next-race card shows **F1 start lights**: five reds light one by one, then lights out, with the label "Lights out this weekend". The lights are `aria-hidden`; the label carries the meaning. Off-weekend the card reads "In N days" as before (verified: "In 10 days" on the real page).
+- **The grading calculator gave numbers without a verdict.** → A verdict tag leads the result: **Podium** (ROI ≥ 100%), **Points** (profitable), **DNF** (loss). The word carries the meaning; the tint echoes it. Still announced via the existing `role="status"`.
+- **Newsletter confirmation was a plain line.** → "🏁 You're on the grid" with a brief chequered-flag wave (three swings, then still; flag is `aria-hidden`).
+- **Search with no match** now reads "No driver on the grid matches “…”".
+
+All new motion (start lights, flag wave) stops under the existing `prefers-reduced-motion` kill-switch.
+
+## Bug found and fixed along the way
+**The grading calculator formatted losses as "$-25 (-20%)".** Pre-existing in the calculator ported from the hub. → Now "−$25 (−20%)" with a proper minus sign. Verified all three verdict paths.
+
+## Verified live
+- Record holders render P1(p1) P2(p2) P3(p3) P4 P5.
+- Sales empty state → Reset filters → 400 sales, input cleared, focus on first chip; drivers empty state → Clear filters → 63 drivers.
+- Calculator: Podium +$175 (+140%), Points +$35 (+28%), DNF −$25 (−20%).
+- Race weekend (test copy): label "Lights out this weekend", 5 lamps running `lamp1`–`lamp5`, `aria-hidden="true"`.
+- Newsletter subscribed state: flag `wave` animation, `aria-hidden`, copy correct.
+- No console errors.
+
+## Recommended (not done)
+- **Loading copy stays plain** ("Loading market data") — clarity beats whimsy while someone is waiting.
+- **A "new record" moment** (when a live sale beats a driver's best on file) would be the most on-brand delight left, but it needs a reliable data signal first — the current `recent_records` feed isn't one.

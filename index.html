@@ -140,9 +140,35 @@ h2{font:700 22px/1.05 var(--disp);text-transform:uppercase;letter-spacing:.5px;m
 
 .holders{padding:18px 18px 6px}
 .holders ol{list-style:none;margin:10px 0 0;padding:0}
-.holders li a{display:grid;grid-template-columns:22px 46px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px 4px;border-top:1px solid var(--line);text-decoration:none}
+.holders li a{display:grid;grid-template-columns:30px 46px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px 4px;border-top:1px solid var(--line);text-decoration:none}
 .holders li a:hover .who b{color:var(--gold)}
-.rank{font:600 11px var(--mono);color:var(--muted)}
+.rank{font:600 11px var(--mono);color:var(--muted);text-align:center}
+/* podium: P1–P3 carry a gold/silver/bronze tint; text stays --txt so contrast holds in both themes */
+.rank.pod{font-weight:700;color:var(--txt);border-radius:5px;padding:3px 0}
+.rank.p1{background:color-mix(in srgb,var(--gold) 26%,transparent)}
+.rank.p2{background:color-mix(in srgb,#9aa6ad 34%,transparent)}
+.rank.p3{background:color-mix(in srgb,#b8733d 28%,transparent)}
+.empty .btn{margin-top:14px}
+/* F1 start lights: five reds light one by one, then lights out — race weekends only */
+.lights{display:inline-flex;gap:4px;margin-right:8px;vertical-align:-1px}
+.lights i{width:9px;height:9px;border-radius:50%;background:color-mix(in srgb,var(--down) 20%,var(--panel2))}
+.lights i:nth-child(1){animation:lamp1 3.6s infinite}.lights i:nth-child(2){animation:lamp2 3.6s infinite}
+.lights i:nth-child(3){animation:lamp3 3.6s infinite}.lights i:nth-child(4){animation:lamp4 3.6s infinite}
+.lights i:nth-child(5){animation:lamp5 3.6s infinite}
+@keyframes lamp1{0%,11%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}12%,79%{background:var(--down)}80%,100%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}}
+@keyframes lamp2{0%,23%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}24%,79%{background:var(--down)}80%,100%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}}
+@keyframes lamp3{0%,35%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}36%,79%{background:var(--down)}80%,100%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}}
+@keyframes lamp4{0%,47%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}48%,79%{background:var(--down)}80%,100%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}}
+@keyframes lamp5{0%,59%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}60%,79%{background:var(--down)}80%,100%{background:color-mix(in srgb,var(--down) 20%,var(--panel2))}}
+.race-live{color:var(--down)}
+/* grading verdict: the word carries the meaning, the tint just echoes it */
+.verdict{display:inline-block;font:700 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--txt);border-radius:4px;padding:2px 6px;margin-right:8px;vertical-align:1px}
+.verdict.podium{background:color-mix(in srgb,var(--gold) 26%,transparent)}
+.verdict.points{background:color-mix(in srgb,var(--up) 20%,transparent)}
+.verdict.dnf{background:color-mix(in srgb,var(--down) 20%,transparent)}
+.flag{display:inline-block;transform-origin:15% 90%;animation:wave .7s var(--ease) 3}
+@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-14deg)}}
+
 .abbr{display:grid;place-items:center;height:32px;border-radius:7px;background:var(--panel2);border-left:3px solid var(--tc,var(--line));font:700 11px var(--mono);letter-spacing:.04em}
 .who{min-width:0}
 .who b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -830,7 +856,7 @@ function renderSpot(){
 function renderHolders(){
   const rows=drivers.filter(d=>DATA.topByDriver[d.id]).sort((a,b)=>DATA.topByDriver[b.id].price-DATA.topByDriver[a.id].price).slice(0,5);
   $('#holders').innerHTML=rows.map((d,i)=>
-    '<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="rank">'+String(i+1).padStart(2,'0')+'</span>'+
+    '<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="rank'+(i<3?' pod p'+(i+1):'')+'">P'+(i+1)+'</span>'+
     '<span class="abbr">'+esc(d.abbr)+'</span><span class="who"><b>'+esc(d.name)+'</b><span>'+esc(d.team)+'</span></span>'+
     '<span class="price">'+money(DATA.topByDriver[d.id].price)+'</span></a></li>').join('');
 }
@@ -867,7 +893,8 @@ function renderRace(){
   const box=$('#raceCard');
   if(!r){box.innerHTML='<h2 id="h-race">Season complete</h2><p class="race-meta">The 2026 calendar is done — see you in 2027.</p>';return;}
   const n=Math.ceil((Date.parse(r.date+'T00:00:00Z')-Date.now())/864e5);
-  const when=n<=2?'This weekend':'In '+n+' days';
+  const raceWeekend=n<=2;
+  const when=raceWeekend?'<span class="lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="race-live">Lights out this weekend</span>':'In '+n+' days';
   const watch=(r.watch||[]).map(id=>byId[id]).filter(Boolean);
   box.innerHTML='<div class="sec-h" style="margin:0"><span class="label">Next race · Round '+(D.races.indexOf(r)+1)+'</span><span class="count-up">'+when+'</span></div>'+
     '<h2 class="race-name" id="h-race">'+esc(r.name)+'</h2>'+
@@ -967,8 +994,9 @@ function renderGradeCalc(d){
     const out=$('#gcOut');
     if(raw<=0||tgt<=0){out.innerHTML='<div class="gc-strip">Enter a raw price and a PSA 10 target \u2014 profit, ROI and break-even appear here.</div>';return;}
     const basis=raw+cost, profit=tgt-basis, roi=basis>0?(profit/basis*100):0, up=profit>=0;
-    out.innerHTML='<div class="gc-strip '+(up?'up':'down')+'">All-in <b>'+money(basis)+'</b> \u2192 PSA 10 <b>'+money(tgt)+
-      '</b> \u00b7 <b class="big">'+(up?'+':'')+money(profit)+'</b> ('+(up?'+':'')+roi.toFixed(0)+'%) \u00b7 break-even '+money(basis)+'</div>';
+    const verdict=roi>=100?['podium','Podium']:up?['points','Points']:['dnf','DNF'];
+    out.innerHTML='<div class="gc-strip '+(up?'up':'down')+'"><span class="verdict '+verdict[0]+'">'+verdict[1]+'</span>All-in <b>'+money(basis)+'</b> \u2192 PSA 10 <b>'+money(tgt)+
+      '</b> \u00b7 <b class="big">'+(up?'+':'\u2212')+money(Math.abs(profit))+'</b> ('+(up?'+':'\u2212')+Math.abs(roi).toFixed(0)+'%) \u00b7 break-even '+money(basis)+'</div>';
   };
   ['gcRaw','gcCost','gcTarget'].forEach(id=>$('#'+id).addEventListener('input',recalc));
   recalc();
@@ -1051,7 +1079,7 @@ function renderSales(append){
   else if(SV.sort==='price-asc')list=list.slice().sort((a,b)=>a.price-b.price);
   const total=list.reduce((a,s)=>a+s.price,0);
   $('#salesCount').textContent=list.length?list.length.toLocaleString('en-US')+' sales · '+moneyShort(total)+' total':'No sales match these filters';
-  $('#salesGrid').innerHTML=list.length?list.slice(0,SV.limit).map(saleCard).join(''):'<div class="card empty" style="grid-column:1/-1">Try another source or clear the filter.</div>';
+  $('#salesGrid').innerHTML=list.length?list.slice(0,SV.limit).map(saleCard).join(''):'<div class="card empty" style="grid-column:1/-1">Nothing on the grid for that combination.<br><button type="button" class="btn ghost" data-reset="sales">Reset filters</button></div>';
   if(!append)refade($('#salesGrid'));
   $('#salesMore').hidden=list.length<=SV.limit;
 }
@@ -1082,7 +1110,7 @@ function renderDrivers(){
   const q=DV.q.toLowerCase();
   const list=drivers.filter(d=>(DV.tier==='all'||tierOf(d)===DV.tier)&&(!q||(d.name+' '+d.team+' '+d.abbr).toLowerCase().includes(q))).sort(byTopSale);
   $('#drvCount').textContent=list.length+' driver'+(list.length===1?'':'s');
-  $('#drvGrid').innerHTML=list.length?list.map(d=>driverCard(d,'full')).join(''):'<div class="card empty" style="grid-column:1/-1">No drivers match.</div>';
+  $('#drvGrid').innerHTML=list.length?list.map(d=>driverCard(d,'full')).join(''):'<div class="card empty" style="grid-column:1/-1">No driver on the grid by that name.<br><button type="button" class="btn ghost" data-reset="drivers">Clear filters</button></div>';
   refade($('#drvGrid'));
 }
 
@@ -1096,6 +1124,12 @@ function renderChecklists(){
 }
 
 function wireControls(){
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-reset]');
+    if(!b)return;
+    if(b.dataset.reset==='sales'){SV.source='all';SV.tier='all';SV.q='';SV.limit=24;$('#salesQ').value='';renderSales();const c=$('#salesSource .chip');if(c)c.focus();}
+    else if(b.dataset.reset==='drivers'){DV.tier='all';DV.q='';$('#drvQ').value='';renderDrivers();const c=$('#drvTier .chip');if(c)c.focus();}
+  });
   onChip($('#salesSource'),v=>{SV.source=v;SV.limit=24;renderSales();});
   onChip($('#salesTier'),v=>{SV.tier=v;SV.limit=24;renderSales();});
   $('#salesSort').addEventListener('change',e=>{SV.sort=e.target.value;SV.limit=24;renderSales();});
@@ -1116,7 +1150,7 @@ function initSearch(){
     const v=inp.value.trim().toLowerCase();
     if(!v){close();return;}
     const m=drivers.filter(d=>(d.name+' '+d.team+' '+d.abbr).toLowerCase().includes(v)).sort(byTopSale).slice(0,8);
-    box.innerHTML=m.length?m.map(d=>'<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="abbr">'+esc(d.abbr)+'</span><span class="who"><b>'+esc(d.name)+'</b><span>'+esc(d.team)+'</span></span></a></li>').join(''):'<li class="qempty">No drivers match “'+esc(inp.value.trim())+'”</li>';
+    box.innerHTML=m.length?m.map(d=>'<li><a href="'+boardHref(d.id)+'" style="--tc:'+tc(d.color)+';--tct:'+tct(d.color)+'"><span class="abbr">'+esc(d.abbr)+'</span><span class="who"><b>'+esc(d.name)+'</b><span>'+esc(d.team)+'</span></span></a></li>').join(''):'<li class="qempty">No driver on the grid matches “'+esc(inp.value.trim())+'”</li>';
     box.hidden=false;inp.setAttribute('aria-expanded','true');
   });
   inp.addEventListener('keydown',e=>{
@@ -1152,7 +1186,7 @@ function initTheme(){
 /* ---------- newsletter ---------- */
 function initSignup(){
   const form=$('#nlForm'),inp=$('#nlEmail'),hp=$('#nlHp'),btn=$('#nlBtn'),msg=$('#nlMsg'),LS='f1ci_subscribed';
-  try{if(localStorage.getItem(LS)){form.hidden=true;msg.dataset.tone='ok';msg.textContent="You’re on the list — the market email lands on Fridays.";return;}}catch(e){}
+  try{if(localStorage.getItem(LS)){form.hidden=true;msg.dataset.tone='ok';msg.innerHTML='<span class="flag" aria-hidden="true">🏁</span> You’re on the grid — the market email lands every Friday.';return;}}catch(e){}
   form.addEventListener('submit',async e=>{
     e.preventDefault();
     if(btn.disabled||hp.value)return;
@@ -1161,7 +1195,7 @@ function initSignup(){
     btn.disabled=true;btn.classList.add('is-busy');msg.dataset.tone='';msg.textContent='Subscribing…';
     const ok=await timeout(fetch(SB+'/rest/v1/rpc/subscribe',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},SBH),body:JSON.stringify({subscriber_email:email.toLowerCase()})}).then(r=>r.ok).catch(()=>false),10000);
     btn.classList.remove('is-busy');
-    if(ok){try{localStorage.setItem(LS,'1');}catch(e){}form.hidden=true;msg.dataset.tone='ok';msg.textContent="You’re in. First report lands this Friday.";}
+    if(ok){try{localStorage.setItem(LS,'1');}catch(e){}form.hidden=true;msg.dataset.tone='ok';msg.innerHTML='<span class="flag" aria-hidden="true">🏁</span> You’re on the grid. First report lands this Friday.';}
     else{btn.disabled=false;msg.dataset.tone='err';msg.textContent='Something went wrong — please try again in a moment.';}
   });
 }
