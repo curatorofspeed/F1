@@ -29,6 +29,7 @@
   --txt:#17201e;--muted:#5a665f;--btn-ink:#ffffff;--red:#ED1C24;
   --shadow:0 1px 2px rgba(16,24,20,.05),0 10px 26px -18px rgba(16,24,20,.22);
   --r:14px;--side-w:248px;
+  --ease:cubic-bezier(.2,.7,.2,1);--dur-1:120ms;--dur-2:220ms;
   --disp:'Saira Condensed','Arial Narrow','Helvetica Neue Condensed',system-ui,sans-serif;
   --sans:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
@@ -153,7 +154,7 @@ h2{font:700 22px/1.05 var(--disp);text-transform:uppercase;letter-spacing:.5px;m
 .grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(214px,1fr));gap:12px}
 .sale{display:flex;flex-direction:column;overflow:hidden}
 .media{position:relative;display:block;aspect-ratio:4/5;background:var(--panel2);border-bottom:1px solid var(--line);overflow:hidden}
-.media img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:14px;transition:transform .25s ease}
+.media img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:14px;transition:transform var(--dur-2) var(--ease)}
 a.media:hover img{transform:scale(1.03)}
 .tile{position:absolute;inset:0;display:grid;place-items:center;font:800 44px var(--disp);letter-spacing:1px;color:var(--tc,var(--muted));background:linear-gradient(160deg,color-mix(in srgb,var(--tc,var(--muted)) 14%,var(--panel2)),var(--panel2) 70%)}
 .badge{position:absolute;left:10px;top:10px;font:700 10px var(--mono);letter-spacing:.05em;padding:4px 7px;border-radius:6px;background:var(--panel);border:1px solid var(--line);color:var(--txt)}
@@ -273,9 +274,10 @@ select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px s
 .foot-nav a{display:inline-flex;align-items:center;min-height:24px;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
 .foot-nav a:hover{color:var(--gold)}
 
-.sk{display:inline-block;background:linear-gradient(100deg,var(--panel2) 40%,var(--line) 50%,var(--panel2) 60%);background-size:200% 100%;animation:sk 1.2s linear infinite;border-radius:6px;color:transparent!important;min-width:4ch}
+.sk{display:inline-block;position:relative;overflow:hidden;background:var(--panel2);border-radius:6px;color:transparent!important;min-width:4ch}
+.sk::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--line) 85%,transparent),transparent);animation:sk 1.2s var(--ease) infinite}
 .sk-block{display:block;height:100%;min-height:120px}
-@keyframes sk{to{background-position:-200% 0}}
+@keyframes sk{to{transform:translateX(100%)}}
 
 .tabbar{display:none}
 
@@ -322,6 +324,26 @@ select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px s
   .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px;scroll-padding-inline:16px}
   .chips::-webkit-scrollbar{display:none}
 }
+/* ---------- motion: quick, compositor-friendly, and all of it off under reduced motion ---------- */
+.btn,.chip,.pill,.more,.theme button,.side-nav a,.tabbar a,.back,.dlinks a,.foot-nav a,.foot-more a,.sale-d,.qres a{
+  transition:color var(--dur-1) var(--ease),background-color var(--dur-1) var(--ease),border-color var(--dur-1) var(--ease),filter var(--dur-1) var(--ease),transform var(--dur-1) var(--ease)}
+.card,.dcard,.gear a,.shop-mini a,.holders li a{transition:border-color var(--dur-1) var(--ease),transform var(--dur-1) var(--ease)}
+.tabbar svg{transition:color var(--dur-1) var(--ease),transform var(--dur-1) var(--ease)}
+/* press: a small give on tap/click */
+.btn:active:not(:disabled),.chip:active,.pill:active,.theme button:active{transform:scale(.97)}
+.tabbar a:active svg{transform:scale(.9)}
+.dcard:active,.gear a:active,.shop-mini a:active{transform:scale(.99)}
+/* views and refreshed content arrive, rather than snap */
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+.motion-ready [data-view]:not([hidden]){animation:rise var(--dur-2) var(--ease) both}
+.refade{animation:fade var(--dur-2) var(--ease) both}
+.qres:not([hidden]){animation:pop var(--dur-1) var(--ease) both;transform-origin:top center}
+/* live feed: a slow pulse on the status dot, the one ambient motion on the page */
+.status[data-state="live"] i{position:relative}
+.status[data-state="live"] i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--up);animation:pulse 2.4s var(--ease) infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.55}to{transform:scale(2.8);opacity:0}}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .stretch:focus-visible{outline:none}
 h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-visible{outline:none}
@@ -691,6 +713,8 @@ function imgHtml(src){
   return src?'<img src="'+esc(src)+'" alt="" loading="lazy" decoding="async" onerror="this.previousElementSibling.hidden=false;this.remove()">':'';
 }
 
+function refade(el){if(!el)return;el.classList.remove('refade');void el.offsetWidth;el.classList.add('refade');}
+
 /* ---------- data ---------- */
 const DATA={sales:[],auctions:[],shop:[],gear:[],records:[],live:'loading',topByDriver:{}};
 
@@ -753,6 +777,7 @@ function renderKPIs(){
     ['Highest recorded sale',top?money(top.price):'—',top?'<b>'+esc(top.d.name)+'</b> · '+esc(fmtDate(top.date)):'']
   ];
   $('#kpis').innerHTML=tiles.map(x=>'<div class="card kpi"><div class="label">'+x[0]+'</div><div class="kpi-v">'+x[1]+'</div><div class="kpi-s">'+x[2]+'</div></div>').join('');
+  refade($('#kpis'));
 }
 function renderSpot(){
   const d=byId.antonelli||drivers[0];
@@ -917,8 +942,10 @@ function renderGradeCalc(d){
 
 /* ---------- driver board ---------- */
 function driverSales(d){return DATA.sales.filter(s=>s.d===d);}
+let lastBoard=null;
 function renderDriverBoard(d){
   if(!d)return;
+  const fresh=d.id!==lastBoard;lastBoard=d.id;
   const sales=driverSales(d), top=sales.slice(0,10);
   const recent=sales.filter(s=>!top.includes(s)&&s.date).sort((a,b)=>dateKey(b.date).localeCompare(dateKey(a.date))).slice(0,8);
   const auctions=DATA.auctions.filter(a=>a.driver_id===d.id).sort((a,b)=>String(a.ends_on).localeCompare(String(b.ends_on)));
@@ -969,6 +996,7 @@ function renderDriverBoard(d){
   $('#dRecent').innerHTML=recent.map(s=>'<article class="card srow">'+
     '<div><div class="t">'+esc(s.card)+'</div><div class="m">'+esc([s.grade,s.source,fmtDate(s.date)].filter(Boolean).join(' · '))+'</div></div>'+
     '<div class="p">'+money(s.price)+'</div></article>').join('');
+  if(fresh)['#dHead','#dTiles','#dTop10'].forEach(s=>refade($(s)));
 }
 
 /* ---------- filterable views ---------- */
@@ -978,7 +1006,7 @@ function chips(el,opts,cur){
 function onChip(el,fn){el.addEventListener('click',e=>{const b=e.target.closest('.chip');if(b)fn(b.dataset.v);});}
 
 const SV={source:'all',tier:'all',sort:'price-desc',q:'',limit:24};
-function renderSales(){
+function renderSales(append){
   chips($('#salesSource'),[['all','All sources'],['Goldin','Goldin'],['eBay','eBay'],['Fanatics','Fanatics'],['other','Other']],SV.source);
   chips($('#salesTier'),TIERS,SV.tier);
   const q=SV.q.toLowerCase();
@@ -989,6 +1017,7 @@ function renderSales(){
   const total=list.reduce((a,s)=>a+s.price,0);
   $('#salesCount').textContent=list.length?list.length.toLocaleString('en-US')+' sales · '+moneyShort(total)+' total':'No sales match these filters';
   $('#salesGrid').innerHTML=list.length?list.slice(0,SV.limit).map(saleCard).join(''):'<div class="card empty" style="grid-column:1/-1">Try another source or clear the filter.</div>';
+  if(!append)refade($('#salesGrid'));
   $('#salesMore').hidden=list.length<=SV.limit;
 }
 
@@ -1009,6 +1038,7 @@ function renderAuctions(){
   const bidTotal=list.reduce((a,x)=>a+(Number(x.current_bid)||0),0);
   $('#auctCount').textContent=list.length+' live lot'+(list.length===1?'':'s')+' · '+moneyShort(bidTotal)+' in current bids';
   $('#auctGrid').innerHTML=list.map(auctionCard).join('');
+  refade($('#auctGrid'));
 }
 
 const DV={tier:'all',q:''};
@@ -1018,6 +1048,7 @@ function renderDrivers(){
   const list=drivers.filter(d=>(DV.tier==='all'||tierOf(d)===DV.tier)&&(!q||(d.name+' '+d.team+' '+d.abbr).toLowerCase().includes(q))).sort(byTopSale);
   $('#drvCount').textContent=list.length+' driver'+(list.length===1?'':'s');
   $('#drvGrid').innerHTML=list.length?list.map(d=>driverCard(d,'full')).join(''):'<div class="card empty" style="grid-column:1/-1">No drivers match.</div>';
+  refade($('#drvGrid'));
 }
 
 const CV={tier:'all'};
@@ -1026,6 +1057,7 @@ function renderChecklists(){
   const list=drivers.filter(d=>D.checklistPages[d.id]&&(CV.tier==='all'||tierOf(d)===CV.tier)).sort(byTopSale);
   $('#clCount').textContent=list.length+' collection tracker'+(list.length===1?'':'s');
   $('#clGrid').innerHTML=list.map(d=>driverCard(d,'checklist')).join('');
+  refade($('#clGrid'));
 }
 
 function wireControls(){
@@ -1033,7 +1065,7 @@ function wireControls(){
   onChip($('#salesTier'),v=>{SV.tier=v;SV.limit=24;renderSales();});
   $('#salesSort').addEventListener('change',e=>{SV.sort=e.target.value;SV.limit=24;renderSales();});
   $('#salesQ').addEventListener('input',e=>{SV.q=e.target.value.trim();SV.limit=24;renderSales();});
-  $('#salesMore').addEventListener('click',()=>{SV.limit+=24;renderSales();});
+  $('#salesMore').addEventListener('click',()=>{SV.limit+=24;renderSales(true);});
   onChip($('#auctDrivers'),v=>{AV.driver=v;renderAuctions();});
   $('#auctSort').addEventListener('change',e=>{AV.sort=e.target.value;renderAuctions();});
   onChip($('#drvTier'),v=>{DV.tier=v;renderDrivers();});
@@ -1108,6 +1140,7 @@ function route(){
   const v=drv?'driver':(VIEWS[h]?h:(current||'overview'));
   if(v===current&&drv===currentDriver)return;
   const first=current===null;
+  if(!first)document.documentElement.classList.add('motion-ready');
   current=v;currentDriver=drv;
   if(drv)renderDriverBoard(byId[drv]);
   $$('[data-view]').forEach(s=>{s.hidden=s.dataset.view!==v;});

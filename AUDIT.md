@@ -168,3 +168,40 @@
 - **`hub.html` still carries the same misleading "record" wording** in its ticker — it is the legacy surface now (noindexed at `/hub`), so I left it alone; it is a one-line change if you want it matched.
 - **10px is the floor for mono micro-labels** — legible at `.14em` but at the small end; moving the floor to 11px would cost a little density.
 - **The wordmark sits off-scale at 31px** — deliberate, it is sized to the sidebar lockup rather than the type scale.
+
+---
+
+# Homepage — Motion Pass (2026-09-16)
+
+**Scope:** `index.html` (homepage) · **Method:** inventoried every transition, keyframe and hover/press rule, then read `document.getAnimations()` live to see exactly which animations run and which CSS properties they touch — before and after the fix.
+
+## Findings by severity
+
+### 🟡 Medium
+**The only animation was paint-heavy.** The loading skeleton shimmer animated `background-position` on 9 elements, repainting every frame for up to ~8s while Supabase loads. → **Fixed:** the shimmer is now a pseudo-element sliding on `transform`. Measured live: every looping animation on the page animates only `transform` and `opacity`.
+
+**No press feedback anywhere.** Zero `:active` states across buttons, chips, the theme toggle, tab bar and cards — a tap gave no tactile response. → **Fixed:** buttons/chips/pills/theme toggle scale to .97 on press, tab-bar icons to .9, cards to .99.
+
+**Views and content snapped.** Switching views, switching drivers, and changing filters replaced content with no transition, which is disorienting in a dense data UI. → **Fixed:** views rise in (6px + fade, 220ms); filtered grids, the KPI row when data lands, and the driver board on driver switch fade in; the search dropdown pops open. "Show more" deliberately does **not** re-fade the grid (verified: animation state identical before and after), and a live-data re-render of the *same* driver board doesn't flash.
+
+### 🟢 Low
+**17 hover states snapped instantly** (buttons, chips, cards, nav, links); the one existing transition used an ad-hoc `.25s ease`. → **Fixed:** shared tokens (`--ease: cubic-bezier(.2,.7,.2,1)`, `--dur-1: 120ms`, `--dur-2: 220ms`) on color/background/border/filter/transform for every interactive element.
+
+**No ambient signal that the data is live.** → Added a slow pulse on the "Live data" status dot — the single ambient animation on the page, transform/opacity only.
+
+## Caught during the pass
+The first version of the view entrance also ran on initial page load, starting the whole overview at opacity 0 and delaying the largest paint by ~220ms. → Entrances now arm only on the first navigation (`.motion-ready`). Verified: on first load the overview has no animation and computes `opacity: 1`.
+
+## Verified live
+- Load: skeleton animations animate `transform`/`opacity` only (was `background-position`).
+- After data: `pulse` running on the live dot; KPI row `fade`.
+- Interactive transitions: `color, background-color, border-color, filter, transform @ 120ms cubic-bezier(.2,.7,.2,1)`.
+- Three `:active` rule groups present; reduced-motion kill-switch covers `*, ::before, ::after`, so shimmer, pulse, entrances and transitions all stop under `prefers-reduced-motion`.
+- View switch → `rise`; filter change → `fade` (re-triggers, `running@0`); driver switch → `fade` on header/tiles/top sales; search open → `pop`; "Show more" → no re-trigger.
+- No console errors.
+
+## Recommended (not done)
+- **Sticky header uses `backdrop-filter: blur(10px)`** — cheap on desktop but a known scroll cost on low-end phones; swapping it for a solid background below 900px would remove it, at the cost of the frosted look.
+- **Theme switch is instant by design** — cross-fading every element's colours on toggle is expensive and rarely worth it.
+- **Reduced motion could not be emulated in the preview browser**; verified via the stylesheet rule instead. Worth one manual check with the OS setting on.
+- **`hub.html` (the legacy `/hub`) was not touched.**
