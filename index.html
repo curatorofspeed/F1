@@ -228,6 +228,29 @@ a.media:hover img{transform:scale(1.03)}
 .dhead{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .dnum{font:800 clamp(44px,7vw,64px)/.85 var(--disp);color:var(--tct,var(--tc,var(--muted)));letter-spacing:-1px}
 html[data-theme="tron"] .dnum,html[data-theme="tron"] .tile{color:var(--tc,var(--muted))}
+/* ---------- driver sales history chart ---------- */
+.chart-wrap{position:relative}
+.chart{border-radius:8px;touch-action:pan-y}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart .gl{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+.chart .ax{fill:var(--muted);font:500 11px var(--mono);font-variant-numeric:tabular-nums}
+.chart .dot{fill:var(--tct,var(--tc,var(--muted)));stroke:var(--panel);stroke-width:2}
+html[data-theme="tron"] .chart .dot{fill:var(--tc,var(--muted))}
+.chart .dot.on{stroke-width:3}
+.chart .lbl{fill:var(--txt);font:700 11px var(--mono);font-variant-numeric:tabular-nums}
+.chart:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.tip{position:absolute;left:0;top:0;z-index:3;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:8px 11px;font-size:12px;width:max-content;max-width:260px}
+.tip b{display:block;font:700 15px var(--mono);font-variant-numeric:tabular-nums}
+.tip .t{color:var(--txt);margin-top:3px;line-height:1.35}
+.tip .m{color:var(--muted);margin-top:3px}
+.chart-note{font-size:12px;color:var(--muted);margin:10px 0 0;max-width:72ch;text-wrap:pretty}
+.chart-table{margin-top:8px}
+.chart-table summary{display:inline-flex;align-items:center;min-height:24px;cursor:pointer;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.chart-table .scroll{overflow-x:auto;margin-top:6px}
+.chart-table table{width:100%;border-collapse:collapse;font-size:12.5px}
+.chart-table th,.chart-table td{text-align:left;padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+.chart-table th{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-top:0}
+.chart-table .num{text-align:right;white-space:nowrap;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .dhead h1{margin:0}
 .dmeta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
 .team-pill{display:inline-flex;align-items:center;gap:7px;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
@@ -626,6 +649,24 @@ h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-vi
           <div class="btn-row" id="dLinks"></div>
         </div>
         <div class="kpis" id="dTiles"></div>
+        <section class="sec" id="dChartSec" hidden aria-labelledby="h-dchart">
+          <div class="sec-h"><h2 id="h-dchart">Sales history</h2><span class="label" id="dChartSub"></span></div>
+          <div class="card pad">
+            <div class="chart-wrap">
+              <div class="chart" id="dChart" tabindex="0" role="group" aria-roledescription="chart" aria-describedby="dChartHelp"></div>
+              <div class="tip" id="dChartTip" hidden></div>
+            </div>
+            <p class="chart-note" id="dChartHelp"></p>
+            <p class="vh" id="dChartLive" aria-live="polite"></p>
+            <details class="chart-table">
+              <summary>View as table</summary>
+              <div class="scroll"><table>
+                <thead><tr><th scope="col">Date</th><th scope="col">Card</th><th scope="col">Grade</th><th scope="col">Source</th><th scope="col" class="num">Price</th></tr></thead>
+                <tbody id="dChartRows"></tbody>
+              </table></div>
+            </details>
+          </div>
+        </section>
         <section class="sec" id="dShopSec" hidden><div class="card pad shopcta" id="dShop"></div></section>
         <section class="sec" id="dAuctSec" hidden aria-labelledby="h-dauct">
           <div class="sec-h"><h2 id="h-dauct">Live auctions</h2><a class="more" href="#auctions">All live lots &rarr;</a></div>
@@ -1039,6 +1080,128 @@ function renderGradeCalc(d){
 
 /* ---------- driver board ---------- */
 function driverSales(d){return DATA.sales.filter(s=>s.d===d);}
+
+/* ---------- sales history chart: one dot per verified sale, price over time ---------- */
+function saleTime(s){
+  s=String(s||'');
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)){const t=Date.parse(s.slice(0,10)+'T12:00:00Z');return isNaN(t)?null:t;}
+  if(/^\d{4}$/.test(s))return Date.UTC(+s,6,1);   /* year-only sales sit mid-year */
+  return null;
+}
+const CHART={pts:[],active:-1,log:false,driver:null};
+function renderSalesChart(d){
+  const all=driverSales(d);
+  const pts=all.map(s=>({s,t:saleTime(s.date)})).filter(p=>p.t!==null&&p.s.price>0).sort((a,b)=>a.t-b.t);
+  const undated=all.length-pts.length;
+  const sec=$('#dChartSec');
+  /* table twin: every sale, newest first, undated last — built with textContent (titles are feed data) */
+  const body=$('#dChartRows');body.textContent='';
+  all.slice().sort((a,b)=>(saleTime(b.date)||0)-(saleTime(a.date)||0)).forEach(s=>{
+    const tr=document.createElement('tr');
+    [fmtDate(s.date)||'Undated',s.card,s.grade||'—',s.source||'—',money(s.price)].forEach((v,i)=>{
+      const td=document.createElement('td');td.textContent=v;if(i===4)td.className='num';tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+  if(pts.length<2){sec.hidden=true;CHART.pts=[];CHART.xy=null;CHART.active=-1;$('#dChart').textContent='';$('#dChartSub').textContent='';$('#dChartTip').hidden=true;return;}
+  sec.hidden=false;
+  const lo=Math.min(...pts.map(p=>p.s.price)),hi=Math.max(...pts.map(p=>p.s.price));
+  CHART.pts=pts;CHART.active=-1;CHART.log=hi/lo>=20;CHART.driver=d;
+  $('#dChartSub').textContent=pts.length+' dated sales'+(CHART.log?' · log scale':'');
+  $('#dChartHelp').textContent='Each dot is one verified sale'+(CHART.log?', on a log scale so a record sale doesn\u2019t flatten the rest':'')+
+    '. Hover or tap a dot for details; with a keyboard, focus the chart and use \u2190 \u2192 to step through sales.'+
+    (undated?' '+undated+' undated sale'+(undated===1?' is':'s are')+' in the table but not plotted.':'');
+  $('#dChart').setAttribute('aria-label',d.name+' sales history: '+pts.length+' sales from '+fmtDate(new Date(pts[0].t).toISOString())+
+    ' to '+fmtDate(new Date(pts[pts.length-1].t).toISOString())+', '+money(lo)+' to '+money(hi)+'.');
+  $('#dChartTip').hidden=true;
+  drawSalesChart();
+}
+function drawSalesChart(){
+  const el=$('#dChart'),pts=CHART.pts;
+  const W=Math.round(el.clientWidth);
+  if(!pts.length||W<120)return;          /* hidden or not laid out yet — the ResizeObserver redraws */
+  const H=W<520?220:260,m={l:58,r:18,t:22,b:30},pw=W-m.l-m.r,ph=H-m.t-m.b;
+  let t0=pts[0].t,t1=pts[pts.length-1].t;
+  if(t1-t0<864e5*120){t0-=864e5*60;t1+=864e5*60;}
+  const tp=(t1-t0)*.04;t0-=tp;t1+=tp;
+  const X=t=>m.l+(t-t0)/(t1-t0)*pw;
+  const prices=pts.map(p=>p.s.price),lo=Math.min(...prices),hi=Math.max(...prices);
+  let Y,yt;
+  if(CHART.log){
+    const a=Math.floor(Math.log10(lo)),b=Math.ceil(Math.log10(hi));
+    Y=v=>m.t+ph-(Math.log10(v)-a)/((b-a)||1)*ph;
+    yt=[];for(let e=a;e<=b;e++)yt.push(Math.pow(10,e));
+    if(yt.length>6)yt=yt.filter((_,i)=>i%2===0);
+  }else{
+    const step=niceStep(hi/4),top=Math.ceil(hi/step)*step;
+    Y=v=>m.t+ph-v/top*ph;
+    yt=[];for(let v=0;v<=top+1e-9;v+=step)yt.push(v);
+  }
+  const short=v=>v>=1e6?'$'+(v/1e6).toFixed(v%1e6?1:0)+'M':v>=1e3?'$'+(v/1e3).toFixed(v%1e3?1:0)+'K':'$'+Math.round(v);
+  const y0=new Date(t0).getUTCFullYear(),y1=new Date(t1).getUTCFullYear();
+  let years=[];for(let y=y0;y<=y1+1;y++){const t=Date.UTC(y,0,1);if(t>=t0&&t<=t1)years.push(y);}
+  const maxTicks=Math.max(2,Math.floor(pw/64));
+  while(years.length>maxTicks)years=years.filter((_,i)=>i%2===0);
+  let svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" aria-hidden="true" focusable="false">';
+  yt.forEach(v=>{const y=Y(v).toFixed(1);svg+='<line class="gl" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+y+'" y2="'+y+'"/><text class="ax" x="'+(m.l-8)+'" y="'+y+'" dy="4" text-anchor="end">'+short(v)+'</text>';});
+  years.forEach(y=>{const x=X(Date.UTC(y,0,1)).toFixed(1);svg+='<text class="ax" x="'+x+'" y="'+(H-8)+'" text-anchor="middle">'+y+'</text>';});
+  let topI=0;pts.forEach((p,i)=>{if(p.s.price>pts[topI].s.price)topI=i;});
+  CHART.xy=pts.map(p=>[X(p.t),Y(p.s.price)]);
+  CHART.xy.forEach(([x,y],i)=>{svg+='<circle class="dot'+(i===CHART.active?' on':'')+'" data-i="'+i+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(i===CHART.active?7:4.5)+'"/>';});
+  const [tx,ty]=CHART.xy[topI],right=tx<W-110;
+  svg+='<text class="lbl" x="'+(tx+(right?10:-10)).toFixed(1)+'" y="'+(ty+4).toFixed(1)+'" text-anchor="'+(right?'start':'end')+'">'+money(pts[topI].s.price)+'</text>';
+  el.innerHTML=svg+'</svg>';
+  if(CHART.active>=0)placeTip(CHART.active);
+}
+function niceStep(raw){const e=Math.pow(10,Math.floor(Math.log10(raw)));const f=raw/e;return (f<=1?1:f<=2?2:f<=5?5:10)*e;}
+function placeTip(i){
+  const tip=$('#dChartTip'),p=CHART.pts[i],[x,y]=CHART.xy[i],el=$('#dChart');
+  tip.textContent='';
+  const b=document.createElement('b');b.textContent=money(p.s.price);
+  const c=document.createElement('div');c.className='t';c.textContent=p.s.card;
+  const mm=document.createElement('div');mm.className='m';mm.textContent=[p.s.grade,p.s.source,fmtDate(p.s.date)].filter(Boolean).join(' \u00b7 ');
+  tip.append(b,c,mm);tip.hidden=false;
+  const tw=tip.offsetWidth,th=tip.offsetHeight,W=el.clientWidth;
+  const left=Math.max(0,Math.min(W-tw,x-tw/2));
+  const top=y-th-14<0?y+14:y-th-14;
+  tip.style.transform='translate('+Math.round(left)+'px,'+Math.round(top)+'px)';
+}
+function setActive(i,announce){
+  const pts=CHART.pts;if(!pts.length)return;
+  if(i<0){CHART.active=-1;$('#dChartTip').hidden=true;$$('#dChart .dot.on').forEach(c=>{c.classList.remove('on');c.setAttribute('r','4.5');});return;}
+  i=Math.max(0,Math.min(pts.length-1,i));
+  $$('#dChart .dot.on').forEach(c=>{c.classList.remove('on');c.setAttribute('r','4.5');});
+  const dot=$('#dChart .dot[data-i="'+i+'"]');if(dot){dot.classList.add('on');dot.setAttribute('r','7');}
+  CHART.active=i;placeTip(i);
+  if(announce){const s=pts[i].s;$('#dChartLive').textContent=(i+1)+' of '+pts.length+': '+money(s.price)+', '+s.card+', '+[s.grade,s.source,fmtDate(s.date)].filter(Boolean).join(', ');}
+}
+function initSalesChart(){
+  const el=$('#dChart');
+  const nearest=e=>{
+    if(!CHART.xy||!CHART.pts.length)return -1;
+    const r=el.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+    let best=-1,bd=24;              /* 24px hit radius — bigger than the 9px mark */
+    CHART.xy.forEach(([x,y],i)=>{const dd=Math.hypot(x-px,y-py);if(dd<=bd){bd=dd;best=i;}});
+    return best;
+  };
+  el.addEventListener('pointermove',e=>{const i=nearest(e);if(i!==CHART.active)setActive(i,false);});
+  el.addEventListener('pointerdown',e=>{const i=nearest(e);setActive(i,false);});
+  el.addEventListener('pointerleave',()=>{if(document.activeElement!==el)setActive(-1);});
+  el.addEventListener('keydown',e=>{
+    const n=CHART.pts.length;if(!n)return;
+    const cur=CHART.active<0?n:CHART.active;
+    let i=null;
+    if(e.key==='ArrowRight')i=CHART.active<0?0:cur+1;
+    else if(e.key==='ArrowLeft')i=CHART.active<0?n-1:cur-1;
+    else if(e.key==='Home')i=0;
+    else if(e.key==='End')i=n-1;
+    else if(e.key==='Escape'){setActive(-1);return;}
+    if(i===null)return;
+    e.preventDefault();setActive(i,true);
+  });
+  el.addEventListener('blur',()=>setActive(-1));
+  if('ResizeObserver' in window)new ResizeObserver(()=>drawSalesChart()).observe(el);
+}
 let lastBoard=null;
 function renderDriverBoard(d){
   if(!d)return;
@@ -1070,6 +1233,7 @@ function renderDriverBoard(d){
                ['In the Index Shop',String(stock.length),stock.length?'from '+money(Math.min.apply(null,stock.map(r=>Number(r.price_usd)||0))):'']];
   $('#dTiles').innerHTML=tiles.map(x=>'<div class="card kpi"><div class="label">'+x[0]+'</div><div class="kpi-v">'+x[1]+'</div><div class="kpi-s">'+x[2]+'</div></div>').join('');
 
+  renderSalesChart(d);
   $('#dShopSec').hidden=!stock.length;
   if(stock.length)$('#dShop').innerHTML='<div><p class="eyebrow" style="margin:0">In stock now</p><h2 style="margin-top:6px">'+stock.length+' '+esc(lastName(d.name))+' card'+(stock.length===1?'':'s')+' in the Index Shop</h2>'+
     '<p class="race-meta" style="margin:8px 0 0">Buy instantly — ships insured and tracked.</p></div>'+
@@ -1326,7 +1490,7 @@ function renderAll(){
 $('#yr').textContent=new Date().getFullYear();
 route();
 window.addEventListener('hashchange',route);
-initSearch();initTheme();initSignup();wireControls();initFoil();initMorph();
+initSearch();initTheme();initSignup();wireControls();initFoil();initMorph();initSalesChart();
 renderRace();renderCalendar();renderDrivers();renderChecklists();
 
 (async()=>{

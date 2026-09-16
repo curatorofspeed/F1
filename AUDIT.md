@@ -307,3 +307,33 @@ All new motion (start lights, flag wave) stops under the existing `prefers-reduc
 ## Recommended (not done)
 - **Confirm prefetch in a real Chrome** (DevTools → Application → Speculative loads) — it can't be observed from this preview.
 - **Scroll-driven reveals** (`animation-timeline: view()`) are supported here and would be the next ambitious step, but on a data-dense page they risk becoming decoration; held back on purpose.
+
+---
+
+# Driver Boards — Overdrive Round 2: Sales History Chart (2026-09-16)
+
+**Scope:** `index.html` driver boards (`/#<driver>`) · **Method:** designed with the dataviz method (form → colour → mark specs → hover layer → accessibility → render and look), measured mark contrast in both themes, verified every interaction in the browser.
+
+## What shipped
+A **Sales history** chart on every driver board with at least two dated sales: one dot per verified sale, price over time.
+
+- **Form — dots, not a line.** Each sale is a different card; a line would invent continuity between a $500 base card and a $900,000 one-of-one.
+- **Scale that tells the truth.** Card prices span orders of magnitude, so the price axis goes **logarithmic when the range is ≥ 20×** (Hamilton: $160 → $900,000, ticks $100 / $1K / $10K / $100K / $1M) and stays **linear** otherwise (Stroll, Bottas, most prospects). The subtitle and note say "log scale" whenever it is.
+- **Colour.** One series in the driver's team colour, reusing the light-theme readable variant (`--tct`) — marks clear the 3:1 non-text floor on the chart card in both themes (worst 3.54 light, 3.41 tron). No legend box (single series; the title names it). Text never wears the team colour.
+- **Marks & labels.** 9px dots with a 2px surface ring; hairline solid gridlines; only the record sale is direct-labelled.
+- **Hover & touch.** Nearest-point detection with a 24px hit radius; tooltip leads with the price, then card, grade · source · date, built with `textContent` (sale titles are feed data), clamped inside the chart and flipped below near the top.
+- **Keyboard & screen readers.** One tab stop; ← → step through sales chronologically, Home/End jump, Escape clears; each step is announced via a live region ("3 of 16: $312,000, …"). The chart group carries a summary label (sale count, date range, price range).
+- **Table twin.** "View as table" lists every sale (date, card, grade, source, price) — including undated ones, which the note calls out as not plotted — so no value is gated behind hover.
+- **Sparse data.** Drivers with fewer than two dated sales get no chart (their sale still shows in Top sales); switching to them clears the previous driver's chart state.
+- **Responsive.** Redraws at the real container width via `ResizeObserver` (text stays crisp, never scaled); year ticks thin to avoid collisions (375px: 2023, 2025).
+
+## Caught while verifying
+- **Stale chart DOM on sparse drivers** — hiding the section left the previous driver's 16 dots and "log scale" subtitle in the DOM. → Cleared on hide; verified 0 stale dots.
+
+## Verified live
+- Hamilton: 16 dots = "16 sales on file" tile = 16 table rows; log ticks; $900,000 labelled; accessible summary present.
+- Linear-scale and sparse drivers behave (12 drivers stepped through).
+- Hover tooltip (off-centre pointer), move-away hides; keyboard →/End/Escape with announcements; 375px fit, no page overflow; tron dots use the raw team colour; no console errors.
+
+## Recommended (not done)
+- **Supabase-sourced sales default their grade to "Raw"** even when the title says "PSA 9" (visible in some tooltips/table rows) — a data-ingestion fix in the Radar worker, not a chart issue.
