@@ -278,3 +278,32 @@ All new motion (start lights, flag wave) stops under the existing `prefers-reduc
 ## Recommended (not done)
 - **Loading copy stays plain** ("Loading market data") — clarity beats whimsy while someone is waiting.
 - **A "new record" moment** (when a live sale beats a driver's best on file) would be the most on-brand delight left, but it needs a reliable data signal first — the current `recent_records` feed isn't one.
+
+---
+
+# Homepage — Overdrive Pass (2026-09-16)
+
+**Scope:** `index.html` (homepage) · **Method:** baseline-measured (CLS 0, long tasks 0, DOM ready 150ms; view transitions, speculation rules and fine pointer all supported here), then shipped four progressive enhancements and verified each — using a throwaway, never-committed test copy with rAF/visibility shims where the hidden preview pane pauses animation frames.
+
+## What shipped
+- **Refractor foil on card photos.** On fine pointers only, hovering a sale or auction card tilts the photo up to 6° in 3D toward the pointer, with a chrome/refractor sheen that tracks across it — a nod to Topps Chrome. Pointer updates are rAF-throttled and drive only `transform` (the tilt) and `transform`/`opacity` (the sheen). Gated by `(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)` in CSS **and** `pointerType==='mouse'` in JS. Verified: mouse sets `--rx 3.6deg / --ry 4.8deg` and a 3D matrix on the image, leaving clears it, touch pointers are ignored.
+- **View transitions, with a driver-name morph.** Switching views now uses the browser's View Transitions API; clicking a driver (record holders, driver cards, search results, sale-card names) morphs that name into the board title. Browsers without the API — or users with reduced motion — keep the previous rise animation; the two never double up. Verified: transition fires once, the clicked name and board title share `view-transition-name: driver-name` across the swap, and the name is cleared afterwards.
+- **Speculative prefetch.** A `speculationrules` block prefetches same-origin pages (shop, checklists, set pages, price guides) on hover/pointer-down (`moderate` eagerness) so those navigations feel instant in Chromium; other browsers ignore it. Prefetch, not prerender, so no page scripts or Supabase calls run speculatively. Verified: rules JSON valid, `HTMLScriptElement.supports('speculationrules')` true. **Not observed firing** — this embedded preview doesn't execute speculative loads even at `immediate`; confirm in Chrome DevTools → Application → Speculative loads.
+- **Live KPI count-up.** When market data lands, the four headline figures roll up over 700ms (ease-out), counting in their final unit so the volume never jumps format (`$0.0M → $7.6M`). Tabular figures keep the width steady — CLS stayed 0. Verified: 123 frames, mid-roll `$6.5M | 333 | 53 | $750,146`, final `$7.6M | 400 | 63 | $900,000`.
+
+## Bugs caught in my own changes (all fixed before shipping)
+- **🟠 Frozen $0 figures.** The first count-up relied only on `requestAnimationFrame`, which browsers pause in background tabs and some headless renderers (search-engine rendering included) — the KPIs sat at "$0.0M | 0 | 0 | $0". → Animates only in a visible tab, and a timer always lands the final value. Verified three ways: hidden tab (final immediately), stalled rAF (final via timer), animated (rolls and lands).
+- **🟠 URL and view out of sync under rapid navigation.** View-transition updates run asynchronously; overlapping navigations could land an older update last — `#sales` in the address bar while Max Verstappen's board showed. → The update resolves the route from the URL at the moment it applies, so the last navigation always wins. Verified: three hash changes in one tick → Sales; overlapping driver→driver → Leclerc's board.
+- **🟡 Unhandled promise rejections.** Skipped transitions (hidden tab, interrupted navigation) reject `ready`, surfacing as uncaught `InvalidStateError` in the console. → Handled; verified zero unhandled rejections across repeated rapid navigation.
+
+## Deliberately not shipped
+- **`fetchpriority="high"` on the spotlight image** — measured: it's injected by JavaScript after data loads and is only 161px wide, so it isn't what drives the largest paint. Adding the attribute would be decoration, not performance.
+
+## Verified live (real page, no shims)
+- CLS 0 and long tasks 0 — unchanged from baseline.
+- KPIs correct in a hidden tab; navigation into a driver board works; no unhandled rejections.
+- Test copies deleted (local 404); all motion stops under `prefers-reduced-motion`.
+
+## Recommended (not done)
+- **Confirm prefetch in a real Chrome** (DevTools → Application → Speculative loads) — it can't be observed from this preview.
+- **Scroll-driven reveals** (`animation-timeline: view()`) are supported here and would be the next ambitious step, but on a data-dense page they risk becoming decoration; held back on purpose.

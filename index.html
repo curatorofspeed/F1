@@ -366,12 +366,26 @@ select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px s
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes pop{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
 .motion-ready [data-view]:not([hidden]){animation:rise var(--dur-2) var(--ease) both}
+/* when the browser runs a view transition it owns the motion — no double animation */
+.vt [data-view]:not([hidden]){animation:none}
+::view-transition-old(root),::view-transition-new(root){animation-duration:var(--dur-2);animation-timing-function:var(--ease)}
+::view-transition-group(driver-name){animation-duration:320ms;animation-timing-function:var(--ease)}
 .refade{animation:fade var(--dur-2) var(--ease) both}
 .qres:not([hidden]){animation:pop var(--dur-1) var(--ease) both;transform-origin:top center}
 /* live feed: a slow pulse on the status dot, the one ambient motion on the page */
 .status[data-state="live"] i{position:relative}
 .status[data-state="live"] i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--up);animation:pulse 2.4s var(--ease) infinite}
 @keyframes pulse{from{transform:scale(1);opacity:.55}to{transform:scale(2.8);opacity:0}}
+/* ---------- refractor foil: pointer-tracked tilt + a chrome sheen, fine pointers only ---------- */
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+  a.media{perspective:700px}
+  a.media img{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform var(--dur-1) var(--ease)}
+  a.media:hover img{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(1.04)}
+  a.media::after{content:"";position:absolute;inset:-50%;pointer-events:none;opacity:0;z-index:1;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.42) 46%,rgba(140,225,255,.26) 50%,rgba(255,150,225,.22) 54%,transparent 62%);
+    transform:translate(var(--sx,0%),var(--sy,0%));transition:opacity var(--dur-2) var(--ease)}
+  a.media:hover::after{opacity:1}
+}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .stretch:focus-visible{outline:none}
 h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-visible{outline:none}
@@ -380,6 +394,7 @@ h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-vi
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media (forced-colors:active){a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,.stretch:focus-visible::after{outline-color:CanvasText}}
 </style>
+<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -825,19 +840,39 @@ function renderStatus(){
   el.dataset.state=DATA.live;
   el.lastChild.textContent=DATA.live==='live'?'Live data':'Curated data · live feed unavailable';
 }
+function countUp(el,to,fmt){
+  const land=()=>{el.textContent=fmt(to);};
+  if(!(to>0)||document.visibilityState!=='visible'||matchMedia('(prefers-reduced-motion: reduce)').matches){land();return;}
+  const t0=performance.now(),dur=700;
+  let done=false;
+  const step=now=>{
+    if(done)return;
+    const p=Math.min(1,(now-t0)/dur);
+    el.textContent=fmt(p<1?to*(1-Math.pow(1-p,3)):to);
+    if(p<1)requestAnimationFrame(step);else done=true;
+  };
+  el.textContent=fmt(0);
+  requestAnimationFrame(step);
+  /* rAF stalls in background tabs and some headless renderers — never leave a $0 on screen */
+  setTimeout(()=>{if(!done){done=true;land();}},dur+250);
+}
 function renderKPIs(){
   const vol=DATA.sales.reduce((a,s)=>a+s.price,0);
   const top=DATA.sales[0];
   const t={grid:0,prospect:0,legend:0};
   drivers.forEach(d=>t[tierOf(d)]++);
+  /* count in the final unit so the figure never jumps format mid-roll ($0.0M -> $7.6M) */
+  const volFmt=vol>=1e6?x=>'$'+(x/1e6).toFixed(1)+'M':x=>moneyShort(x);
+  const intFmt=x=>Math.round(x).toLocaleString('en-US');
   const tiles=[
-    ['Market volume tracked',moneyShort(vol),'across every verified sale'],
-    ['Verified sales on file',DATA.sales.length.toLocaleString('en-US'),'Goldin, eBay, Fanatics &amp; more'],
-    ['Drivers tracked',String(drivers.length),t.grid+' grid · '+t.prospect+' juniors · '+t.legend+' legends'],
-    ['Highest recorded sale',top?money(top.price):'—',top?'<b>'+esc(top.d.name)+'</b> · '+esc(fmtDate(top.date)):'']
+    ['Market volume tracked',vol,volFmt,'across every verified sale'],
+    ['Verified sales on file',DATA.sales.length,intFmt,'Goldin, eBay, Fanatics &amp; more'],
+    ['Drivers tracked',drivers.length,intFmt,t.grid+' grid · '+t.prospect+' juniors · '+t.legend+' legends'],
+    ['Highest recorded sale',top?top.price:0,x=>top?money(Math.round(x)):'—',top?'<b>'+esc(top.d.name)+'</b> · '+esc(fmtDate(top.date)):'']
   ];
-  $('#kpis').innerHTML=tiles.map(x=>'<div class="card kpi"><div class="label">'+x[0]+'</div><div class="kpi-v">'+x[1]+'</div><div class="kpi-s">'+x[2]+'</div></div>').join('');
+  $('#kpis').innerHTML=tiles.map(x=>'<div class="card kpi"><div class="label">'+x[0]+'</div><div class="kpi-v">'+x[2](x[1])+'</div><div class="kpi-s">'+x[3]+'</div></div>').join('');
   refade($('#kpis'));
+  $$('#kpis .kpi-v').forEach((el,i)=>countUp(el,tiles[i][1],tiles[i][2]));
 }
 function renderSpot(){
   const d=byId.antonelli||drivers[0];
@@ -1202,13 +1237,35 @@ function initSignup(){
 
 /* ---------- router ---------- */
 const VIEWS={overview:'Market overview',sales:'Sales archive',auctions:'Live auctions',drivers:'Drivers',checklists:'Checklists'};
-let current=null,currentDriver=null;
-function route(){
+let current=null,currentDriver=null,pendingMorph=null;
+function resolveRoute(){
   const h=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();
   const drv=byId[h]?h:null;
-  const v=drv?'driver':(VIEWS[h]?h:(current||'overview'));
+  return {drv,v:drv?'driver':(VIEWS[h]?h:(current||'overview'))};
+}
+function route(){
+  const {v,drv}=resolveRoute();
   if(v===current&&drv===currentDriver)return;
   const first=current===null;
+  const canVT=!first&&typeof document.startViewTransition==='function'&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!canVT){applyRoute(v,drv,first);return;}
+  document.documentElement.classList.add('vt');
+  const morph=drv&&pendingMorph&&pendingMorph.isConnected?pendingMorph:null;
+  pendingMorph=null;
+  if(morph)morph.style.viewTransitionName='driver-name';
+  const vt=document.startViewTransition(()=>{
+    if(morph)morph.style.viewTransitionName='';
+    /* update callbacks run async and can land out of order when navigations overlap —
+       always apply whatever the URL says *now*, so the last word wins */
+    const r=resolveRoute();
+    if(r.v!==current||r.drv!==currentDriver)applyRoute(r.v,r.drv,first);
+    const h1=morph&&r.drv&&document.querySelector('[data-view="driver"] h1');
+    if(h1)h1.style.viewTransitionName='driver-name';
+  });
+  vt.ready.catch(()=>{});   /* skipped transitions (hidden tab, rapid re-navigation) reject ready — the route has still applied */
+  vt.finished.finally(()=>{const h1=document.querySelector('[data-view="driver"] h1');if(h1)h1.style.viewTransitionName='';}).catch(()=>{});
+}
+function applyRoute(v,drv,first){
   if(!first)document.documentElement.classList.add('motion-ready');
   current=v;currentDriver=drv;
   if(drv)renderDriverBoard(byId[drv]);
@@ -1228,6 +1285,39 @@ function route(){
   if(!first){window.scrollTo(0,0);const h1=$('[data-view="'+v+'"] h1');if(h1)h1.focus({preventScroll:true});}
 }
 
+/* ---------- overdrive: refractor foil + name morph ---------- */
+function initFoil(){
+  const ok=matchMedia('(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference)');
+  let target=null,raf=0,px=0,py=0;
+  const clear=el=>['--rx','--ry','--sx','--sy'].forEach(k=>el.style.removeProperty(k));
+  const apply=()=>{
+    raf=0;if(!target)return;
+    const r=target.getBoundingClientRect(),x=(px-r.left)/r.width-.5,y=(py-r.top)/r.height-.5;
+    target.style.setProperty('--ry',(x*12).toFixed(2)+'deg');
+    target.style.setProperty('--rx',(-y*12).toFixed(2)+'deg');
+    target.style.setProperty('--sx',(x*44).toFixed(1)+'%');
+    target.style.setProperty('--sy',(y*44).toFixed(1)+'%');
+  };
+  document.addEventListener('pointermove',e=>{
+    if(!ok.matches||e.pointerType!=='mouse')return;
+    const m=e.target.closest?e.target.closest('a.media'):null;
+    if(m!==target){if(target)clear(target);target=m;}
+    if(!m)return;
+    px=e.clientX;py=e.clientY;
+    if(!raf)raf=requestAnimationFrame(apply);
+  },{passive:true});
+  document.addEventListener('pointerleave',()=>{if(target){clear(target);target=null;}});
+}
+function initMorph(){
+  document.addEventListener('click',e=>{
+    const a=e.target.closest?e.target.closest('a[href^="#"]'):null;
+    if(!a)return;
+    const id=decodeURIComponent(a.getAttribute('href').slice(1)).toLowerCase();
+    if(!byId[id])return;
+    pendingMorph=a.matches('.sale-d')?a:a.querySelector('b');
+  },true);
+}
+
 /* ---------- boot ---------- */
 function renderAll(){
   renderStatus();renderKPIs();renderSpot();renderHolders();renderOvAuctions();renderLandmarks();
@@ -1236,7 +1326,7 @@ function renderAll(){
 $('#yr').textContent=new Date().getFullYear();
 route();
 window.addEventListener('hashchange',route);
-initSearch();initTheme();initSignup();wireControls();
+initSearch();initTheme();initSignup();wireControls();initFoil();initMorph();
 renderRace();renderCalendar();renderDrivers();renderChecklists();
 
 (async()=>{
