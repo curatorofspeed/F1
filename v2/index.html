@@ -185,6 +185,20 @@ a.media:hover img{transform:scale(1.03)}
 .dlinks a{display:inline-flex;align-items:center;min-height:24px;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold);text-decoration:none}
 .dlinks a:hover{text-decoration:underline}
 
+.back{display:inline-flex;align-items:center;gap:7px;min-height:24px;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;margin-bottom:16px}
+.back:hover{color:var(--gold)}
+.dhead{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dnum{font:800 clamp(44px,7vw,64px)/.85 var(--disp);color:var(--tc,var(--muted));letter-spacing:-1px}
+.dhead h1{margin:0}
+.dmeta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.team-pill{display:inline-flex;align-items:center;gap:7px;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+.team-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--tc,var(--muted))}
+.rows{display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 15px}
+.srow .t{font-size:13px;line-height:1.4}
+.srow .m{font-size:11px;color:var(--muted);margin-top:3px}
+.srow .p{font:700 15px var(--mono);white-space:nowrap}
+.shopcta{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-left:4px solid var(--gold)}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
 .grow{flex:1}
 select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
@@ -481,6 +495,29 @@ h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-vi
         <div class="drivers" id="drvGrid"></div>
       </section>
 
+      <!-- ===== DRIVER BOARD ===== -->
+      <section data-view="driver" aria-labelledby="h-driver" hidden>
+        <a class="back" href="#drivers">&larr; All drivers</a>
+        <div class="view-head">
+          <div id="dHead"></div>
+          <div class="btn-row" id="dLinks"></div>
+        </div>
+        <div class="kpis" id="dTiles"></div>
+        <section class="sec" id="dShopSec" hidden><div class="card pad shopcta" id="dShop"></div></section>
+        <section class="sec" id="dAuctSec" hidden aria-labelledby="h-dauct">
+          <div class="sec-h"><h2 id="h-dauct">Live auctions</h2><a class="more" href="#auctions">All live lots &rarr;</a></div>
+          <div class="grid-cards" id="dAuctions"></div>
+        </section>
+        <section class="sec" aria-labelledby="h-dtop">
+          <div class="sec-h"><h2 id="h-dtop">Top sales</h2><span class="label" id="dTopSub"></span></div>
+          <div class="grid-cards" id="dTop10"></div>
+        </section>
+        <section class="sec" id="dRecentSec" hidden aria-labelledby="h-drec">
+          <div class="sec-h"><h2 id="h-drec">Recent sales</h2><span class="label">Below the top board</span></div>
+          <div class="rows" id="dRecent"></div>
+        </section>
+      </section>
+
       <!-- ===== CHECKLISTS ===== -->
       <section data-view="checklists" aria-labelledby="h-checklists" hidden>
         <div class="view-head">
@@ -545,7 +582,7 @@ const byId=Object.fromEntries(drivers.map(d=>[d.id,d]));
 const tierOf=d=>d.tier==='prospect'?'prospect':d.tier==='legend'?'legend':'grid';
 const TIERS=[['all','All drivers'],['grid','F1 grid'],['prospect','F2 / F3'],['legend','Legends']];
 const TIER_LABEL={grid:'F1 grid',prospect:'F2 / F3 prospect',legend:'Legend'};
-const boardHref=id=>'/#'+encodeURIComponent(id);
+const boardHref=id=>'#'+encodeURIComponent(id);
 
 function normSource(s){
   const k=String(s||'').trim().toLowerCase();
@@ -742,6 +779,53 @@ function renderFind(){
   $('#findDrivers').innerHTML=drivers.filter(d=>tierOf(d)!=='legend').sort(byTopSale).slice(0,8).map(d=>driverCard(d,'compact')).join('');
 }
 
+/* ---------- driver board ---------- */
+function driverSales(d){return DATA.sales.filter(s=>s.d===d);}
+function renderDriverBoard(d){
+  if(!d)return;
+  const sales=driverSales(d), top=sales.slice(0,10);
+  const recent=sales.filter(s=>!top.includes(s)&&s.date).sort((a,b)=>dateKey(b.date).localeCompare(dateKey(a.date))).slice(0,8);
+  const auctions=DATA.auctions.filter(a=>a.driver_id===d.id).sort((a,b)=>String(a.ends_on).localeCompare(String(b.ends_on)));
+  const stock=DATA.shop.filter(r=>r.driver_id===d.id);
+  const cl=D.checklistPages[d.id], guide=(D.driverPages||[]).includes(d.id);
+  document.querySelector('[data-view="driver"]').style.setProperty('--tc',tc(d.color));
+
+  $('#dHead').innerHTML='<p class="eyebrow" style="margin:0">'+esc(TIER_LABEL[tierOf(d)])+(d.rookieYear?' · Rookie '+d.rookieYear:'')+'</p>'+
+    '<div class="dhead">'+(d.number!=null?'<span class="dnum">'+d.number+'</span>':'')+
+    '<div><h1 id="h-driver" tabindex="-1">'+esc(d.name)+'</h1>'+
+    '<div class="dmeta-row"><span class="team-pill"><span class="dot"></span>'+esc(d.team)+'</span>'+
+    (d.record?'<span class="label">Record · '+esc(d.record.txt||'')+'</span>':'')+'</div></div></div>';
+
+  const links=['<a class="btn ghost" href="'+esc(ebaySearch(d.name,false))+'" target="_blank" rel="noopener sponsored">Auctions ending &nearr;</a>',
+               '<a class="btn ghost" href="'+esc(ebaySearch(d.name,true))+'" target="_blank" rel="noopener sponsored">Recently sold &nearr;</a>'];
+  if(cl)links.unshift('<a class="btn" href="/'+esc(cl)+'">Collection checklist</a>');
+  if(guide)links.push('<a class="btn ghost" href="/drivers/'+esc(d.id)+'">Price guide</a>');
+  $('#dLinks').innerHTML=links.join('');
+
+  const bidTotal=auctions.reduce((a,x)=>a+(Number(x.current_bid)||0),0);
+  const tiles=[['Top recorded sale',top[0]?money(top[0].price):'—',top[0]?esc([top[0].grade,fmtDate(top[0].date)].filter(Boolean).join(' · ')):'no sales on file'],
+               ['Sales on file',String(sales.length),'verified across all sources'],
+               ['Live lots',String(auctions.length),auctions.length?money(bidTotal)+' in current bids':'nothing on the block'],
+               ['In the Index Shop',String(stock.length),stock.length?'from '+money(Math.min.apply(null,stock.map(r=>Number(r.price_usd)||0))):'']];
+  $('#dTiles').innerHTML=tiles.map(x=>'<div class="card kpi"><div class="label">'+x[0]+'</div><div class="kpi-v">'+x[1]+'</div><div class="kpi-s">'+x[2]+'</div></div>').join('');
+
+  $('#dShopSec').hidden=!stock.length;
+  if(stock.length)$('#dShop').innerHTML='<div><p class="eyebrow" style="margin:0">In stock now</p><h2 style="margin-top:6px">'+stock.length+' '+esc(lastName(d.name))+' card'+(stock.length===1?'':'s')+' in the Index Shop</h2>'+
+    '<p class="race-meta" style="margin:8px 0 0">Buy instantly — ships insured and tracked.</p></div>'+
+    '<a class="btn" href="/shop?driver='+encodeURIComponent(d.id)+'">Shop '+esc(lastName(d.name))+' &rarr;</a>';
+
+  $('#dAuctSec').hidden=!auctions.length;
+  $('#dAuctions').innerHTML=auctions.slice(0,8).map(auctionCard).join('');
+
+  $('#dTopSub').textContent=top.length?top.length+' biggest on file':'';
+  $('#dTop10').innerHTML=top.length?top.map(saleCard).join(''):'<div class="card empty" style="grid-column:1/-1">No verified sales on file for '+esc(d.name)+' yet.</div>';
+
+  $('#dRecentSec').hidden=!recent.length;
+  $('#dRecent').innerHTML=recent.map(s=>'<article class="card srow">'+
+    '<div><div class="t">'+esc(s.card)+'</div><div class="m">'+esc([s.grade,s.source,fmtDate(s.date)].filter(Boolean).join(' · '))+'</div></div>'+
+    '<div class="p">'+money(s.price)+'</div></article>').join('');
+}
+
 /* ---------- filterable views ---------- */
 function chips(el,opts,cur){
   el.innerHTML=opts.map(o=>'<button type="button" class="chip" data-v="'+esc(o[0])+'" aria-pressed="'+(o[0]===cur)+'"'+(o[2]?' style="--tc:'+tc(o[2])+'"':'')+'>'+(o[2]?'<span class="dot"></span>':'')+esc(o[1])+'</button>').join('');
@@ -872,17 +956,26 @@ function initSignup(){
 
 /* ---------- router ---------- */
 const VIEWS={overview:'Market overview',sales:'Sales archive',auctions:'Live auctions',drivers:'Drivers',checklists:'Checklists'};
-let current=null;
+let current=null,currentDriver=null;
 function route(){
-  const h=(location.hash||'').slice(1);
-  const v=VIEWS[h]?h:(current||'overview');
-  if(v===current)return;
+  const h=decodeURIComponent((location.hash||'').slice(1)).toLowerCase();
+  const drv=byId[h]?h:null;
+  const v=drv?'driver':(VIEWS[h]?h:(current||'overview'));
+  if(v===current&&drv===currentDriver)return;
   const first=current===null;
-  current=v;
+  current=v;currentDriver=drv;
+  if(drv)renderDriverBoard(byId[drv]);
   $$('[data-view]').forEach(s=>{s.hidden=s.dataset.view!==v;});
   $$('[data-nav]').forEach(a=>{if(a.dataset.nav===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
-  $('#crumb').textContent=VIEWS[v];
-  document.title=VIEWS[v]+' · F1 Card Index (v2 preview)';
+  if(v==='driver'){
+    const nav=$$('[data-nav]').filter(a=>a.dataset.nav==='drivers');
+    nav.forEach(a=>a.setAttribute('aria-current','page'));
+    $('#crumb').textContent=byId[drv].name;
+    document.title=byId[drv].name+' F1 cards · F1 Card Index (v2 preview)';
+  }else{
+    $('#crumb').textContent=VIEWS[v];
+    document.title=VIEWS[v]+' · F1 Card Index (v2 preview)';
+  }
   if(!first){window.scrollTo(0,0);const h1=$('[data-view="'+v+'"] h1');if(h1)h1.focus({preventScroll:true});}
 }
 
@@ -909,6 +1002,7 @@ renderRace();renderDrivers();renderChecklists();
   DATA.live=(top||live||shop)?'live':'curated';
   buildSales();
   renderAll();
+  if(currentDriver)renderDriverBoard(byId[currentDriver]);
 })();
 })();
 </script>
