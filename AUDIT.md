@@ -131,3 +131,40 @@
 - **Mobile sticky header is 101px tall** (brand row + full-width search row) on top of a 49px tab bar — about 19% of a 780px phone viewport is permanently chrome. Making the search row scroll away (sticky brand row only) would return most of it; that's a design call, not a defect.
 - **KPI labels wrap to two lines at 360px** ("MARKET VOLUME TRACKED"), giving slightly ragged tile heights. Shorter labels would fix it, but the wording is the hub's.
 - **The hero collapses to one column at 1120px** while the sidebar is still present, so the spotlight runs full width on narrow laptops. Intentional, and it reads fine — noted for the record.
+
+---
+
+# Homepage — Typography Pass (2026-09-15)
+
+**Scope:** `index.html` (the v2 hub, now the homepage) · **Method:** measured the type system — scale, tracking, measure (characters per line), line-height, figures, truncation, font loading and punctuation — at 1440 and 375, then fixed and re-measured live.
+
+## Findings by severity
+
+### 🟠 High
+**The "records" strip contradicted the page.** It rendered `recent_records` rows as "Hamilton record $750,000" directly under a KPI reading "Highest recorded sale $900,000". Reading the function: `recent_records` returns each driver's top sale **inside `f1_sales`, ingested in the last 45 days** — not the site record, which merges curated data. The `pct_over` figure compares against that driver's second-best row in the same table, which means nothing without the explanation. → **Fixed:** the strip is now labelled "Recently logged", chips read `driver · price · sale date`, the meaningless percentage is gone, and a "Best on file" tag appears only when the sale really is that driver's best in merged data (1 of 6 currently — Hadjar). Verified against the live feed.
+
+### 🟡 Medium
+**Prose ran to 127 characters per line.** The grading-calculator note measured 127ch at 1440 (comfortable is 45–75); the footer legal paragraph was uncapped. → **Fixed** with `max-width` caps: grading note 72ch measured, footer 78ch, race meta 70ch. The lede was already correct at 62ch.
+
+**One label role, five different trackings.** Uppercase mono micro-labels rendered at `1.2px / 1.4px / 1.32px / 1.76px / 1.6px / 1.1px` across `.eyebrow`, `.label`, `.more`, `.side-h`, `.tag`, `.count`, `.back`, `.team-pill`, `.dlinks`, `.foot-nav` and the theme toggle — the same role, inconsistently spaced. → **Fixed:** a single `.14em` for every uppercase mono label (measured live: only `1.4px @ 10px` and `1.54px @ 11px` remain, i.e. one value scaled by size), and one `.5px` for every display heading (h1/h2/.race-name/.wm/.m-brand).
+
+**The scale had 21 steps for a 14-step job.** Near-duplicates (11.5/12, 15/16/17, 19/18, 21/22/23, 26/28, 44/46) → consolidated to 10, 11, 12, 13, 14, 16, 18, 22, 28, 31, 34, 44, 50, 64. Visible effects: section headings 23→22px, sale prices 17→16px, partner heading 26→28px.
+
+### 🟢 Low
+- **Straight apostrophes in copy** ("what's", "driver's", "You're" ×2) → typographic `’`.
+- **Figures didn't lock to a column** → `font-variant-numeric: tabular-nums` on prices, KPI values and record-holder figures, so digits align if the mono face ever falls back.
+- **Display fallback was `system-ui`** — a wide face standing in for a condensed one, so headings reflowed noticeably when Saira Condensed swapped in → fallback stack now `'Arial Narrow', 'Helvetica Neue Condensed', system-ui`.
+- **No wrap control** → `text-wrap: balance` on headings and `pretty` on prose, killing widows and orphans (supported in this browser; harmless elsewhere).
+
+## Verified live (measured)
+- Grading note 127ch → 72ch; footer fine 78ch; lede 62ch.
+- Uppercase mono tracking collapsed from 6 combinations to 1 value.
+- h2 22px at `.5px`; sale price 16px; KPI 28px desktop / 22px at 375.
+- `tabular-nums` and `text-wrap: balance` active in computed styles.
+- Records strip: no "record" wording, dates present, 1 legitimate "Best on file" tag, no contradiction with the $900,000 KPI.
+- No horizontal overflow and no console errors at 1440 or 375.
+
+## Recommended (not done)
+- **`hub.html` still carries the same misleading "record" wording** in its ticker — it is the legacy surface now (noindexed at `/hub`), so I left it alone; it is a one-line change if you want it matched.
+- **10px is the floor for mono micro-labels** — legible at `.14em` but at the small end; moving the floor to 11px would cost a little density.
+- **The wordmark sits off-scale at 31px** — deliberate, it is sized to the sidebar lockup rather than the type scale.
