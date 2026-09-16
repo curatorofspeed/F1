@@ -98,3 +98,36 @@
 - **`.hub-nav`** got `flex-wrap:wrap`.
 - **Verified live:** footer renders with all 8 links + year script, zero emoji `<h2>`s, chevron computes to `--muted`, nav wraps, inline scripts parse.
 - **Deferred (dedicated work):** theme-following rollout to dark subpages (pattern on lights-out page); consolidating the duplicated set pages behind redirects.
+
+---
+
+# v2 Preview — Layout Pass (2026-09-15)
+
+**Scope:** `v2/index.html` (the /v2 hub preview) · **Method:** measured layout at 1920 / 1440 / 1280 / 1120 / 1000 / 940 / 900 / 820 / 768 / 600 / 540 / 414 / 360 px — grid column counts, header-to-content alignment, tap-target sizes, overflow and control wrapping — then fixed and re-measured live.
+
+## Findings by severity
+
+### 🟠 High
+**The sticky header didn't line up with the page column on wide screens.** `main` and the footer cap at 1280px and centre, but the top bar was full-bleed: at 1920 the breadcrumb started at x=280 while content started at x=476 (196px out), and the bar's right edge ran 82px past the content edge. → **Fixed:** header children wrapped in a `.top-in` container capped to the same 1216px content box. Measured after: header 476 = content 476 = footer 476, right edge 1692 = 1692.
+
+**Filter controls stranded themselves on phones.** A flex spacer (`span.grow`) sat between the chips and the sort `<select>`, so at 360px the select wrapped onto its own line with a 172px empty gap beside it (sales and auctions both). → **Fixed:** the spacer is hidden below 540px and selects/fields go full width. Toolbar height 114px → 79px, select spans the full 328px column.
+
+### 🟡 Medium
+**Tap targets under the 24px minimum (WCAG 2.5.8).** Section "→" links measured 15px tall, footer nav links 15px, driver-card sub-links 13px. → **Fixed** with `inline-flex` + `min-height:24px`; all now measure exactly 24px. Chips (29px), buttons (41px) and tab-bar items (49px) already passed.
+
+**Long chip rows stacked six deep on a phone.** The auctions driver filter (15 chips) wrapped to 6 rows at 360px, pushing the results far below the fold. → **Fixed:** below 540px chip groups become a single horizontally scrollable row (scrollbar hidden, 31px tall; scroll width 1496px in a 328px viewport).
+
+### 🟢 Low
+**Honeypot field sat at `left:-9999px`** — the only element in the document extending outside the viewport bounds. → **Fixed** with the standard clip pattern (`clip-path:inset(50%)`); zero out-of-bounds elements now.
+
+## Verified live (measured, not eyeballed)
+- Header/content/footer alignment at 1920 and 1280; no horizontal overflow at any of the 13 widths tested.
+- Tap targets: `.more`, `.foot-nav a`, `.side-link`, `.dlinks a` all 24px.
+- 360px: sales + auctions toolbars single-row chips, full-width select, no stranded gap.
+- Breakpoint behaviour: KPIs 4→2 columns at 1120, cards 5→4→3→2 columns down the range, sidebar→tab bar swap at 900, spotlight 2→1 column at 540, tab-bar items 49px.
+- No console errors.
+
+## Recommended (not done)
+- **Mobile sticky header is 101px tall** (brand row + full-width search row) on top of a 49px tab bar — about 19% of a 780px phone viewport is permanently chrome. Making the search row scroll away (sticky brand row only) would return most of it; that's a design call, not a defect.
+- **KPI labels wrap to two lines at 360px** ("MARKET VOLUME TRACKED"), giving slightly ragged tile heights. Shorter labels would fix it, but the wording is the hub's.
+- **The hero collapses to one column at 1120px** while the sidebar is still present, so the spotlight runs full width on narrow laptops. Intentional, and it reads fine — noted for the record.
