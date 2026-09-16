@@ -25,7 +25,7 @@
 <style>
 :root{
   --bg:#eef1f0;--panel:#ffffff;--panel2:#f4f7f6;--line:#dbe2df;
-  --teal:#0b7b71;--gold:#90661a;--up:#107d39;--down:#dc2626;
+  --teal:#0b7b71;--gold:#8c6319;--up:#107d39;--down:#dc2626;
   --txt:#17201e;--muted:#5a665f;--btn-ink:#ffffff;--red:#ED1C24;
   --shadow:0 1px 2px rgba(16,24,20,.05),0 10px 26px -18px rgba(16,24,20,.22);
   --r:14px;--side-w:248px;
@@ -671,6 +671,20 @@ const tc=c=>/^#[0-9a-f]{3,8}$/i.test(c||'')?c:'#8a968f';
 /* Team colours double as large text (driver numbers, fallback initials). On the light
    surfaces many are too pale, so each is mixed toward the ink only as far as it needs
    to clear 3.1:1 on --bg and --panel2; colours that already pass are left untouched. */
+/* the light theme's declared values, read from the :root rule so they track the tokens
+   even while tron is active (tron overrides the computed values, not the rule) */
+const LIGHT_TOKENS=(()=>{
+  const t={bg:'#eef1f0',panel2:'#f4f7f6',txt:'#17201e'};
+  for(const s of document.styleSheets){
+    let rules;try{rules=s.cssRules;}catch(e){continue;}
+    for(const r of rules){
+      if(r.selectorText!==':root')continue;
+      for(const k in t){const v=r.style.getPropertyValue('--'+k).trim();if(/^#[0-9a-f]{6}$/i.test(v))t[k]=v;}
+      return t;
+    }
+  }
+  return t;
+})();
 const TCT={};
 function tct(c){
   c=tc(c);
@@ -679,7 +693,7 @@ function tct(c){
   const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
   const lum=a=>a.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
   const ratio=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
-  const base=rgb(c),ink=[0x17,0x20,0x1e],surfaces=[[0xee,0xf1,0xf0],[0xf4,0xf7,0xf6]];
+  const base=rgb(c),ink=rgb(LIGHT_TOKENS.txt),surfaces=[rgb(LIGHT_TOKENS.bg),rgb(LIGHT_TOKENS.panel2)];
   for(let p=0;p<=80;p++){
     const m=base.map((v,i)=>Math.round(v*(1-p/100)+ink[i]*p/100));
     if(surfaces.every(s=>ratio(m,s)>=3.1))return TCT[c]='#'+m.map(v=>v.toString(16).padStart(2,'0')).join('');

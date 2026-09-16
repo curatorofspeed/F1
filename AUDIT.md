@@ -239,3 +239,7 @@ The first version of the view entrance also ran on initial page load, starting t
 - **Light `--gold` on `--bg` sits exactly on the floor (4.50:1)** — it passes, but with zero headroom: any future tweak to `--bg` or `--gold` drops gold text below AA. `#8c6319` would give ~4.7:1 with no visible change.
 - **`tct()` hard-codes the light `--bg` and `--panel2` values** it tests against. If those tokens change, update the two surface values in the helper.
 - **`hub.html` (legacy `/hub`) was not touched.**
+
+## Colour pass — follow-ups applied (2026-09-16)
+- **Light gold `#90661a` → `#8c6319` on all seven light-theme pages** (homepage, hub, shop, consign, seller, order, 2025 Lights Out) so the brand keeps one gold. Gold text on `--bg` 4.50 → **4.72:1**, on panels 5.12 → **5.37:1**; white button text on gold 5.12 → **5.37:1**. Verified on the rendered homepage and shop (Buy button and prices 5.37:1).
+- **`tct()` no longer hard-codes surface colours** — it reads `--bg`, `--panel2` and `--txt` from the `:root` rule, so it tracks the tokens and gives the same result even when the page loads in tron (tron overrides computed values, not the rule). Verified: Noel León's number renders `rgb(171,129,11)` whether the page first loads in light or loads in tron and is switched to light.
