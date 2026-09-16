@@ -212,6 +212,32 @@ a.media:hover img{transform:scale(1.03)}
 .srow .m{font-size:11px;color:var(--muted);margin-top:3px}
 .srow .p{font:700 15px var(--mono);white-space:nowrap}
 .shopcta{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-left:4px solid var(--gold)}
+.gc-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gc-inputs label{display:grid;gap:6px;font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.gc-inputs input{font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.gc-strip{border-radius:10px;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);font-size:13px;margin-top:12px}
+.gc-strip.up{border-color:color-mix(in srgb,var(--up) 45%,var(--line))}
+.gc-strip.down{border-color:color-mix(in srgb,var(--down) 45%,var(--line))}
+.gc-strip .big{font:700 16px var(--mono)}
+.gc-note{font-size:11.5px;color:var(--muted);margin:12px 0 0}
+.gc-cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.gear{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:10px}
+.gear a{display:flex;align-items:center;gap:11px;padding:12px 14px;text-decoration:none}
+.gear a:hover{border-color:var(--muted)}
+.gear .ic{font-size:19px;flex:none}
+.gear .nm{display:block;font-weight:600;font-size:13px;line-height:1.35}
+.gear .bl{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.35}
+.rec-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.rec-chip{display:inline-flex;align-items:center;gap:8px;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--panel)}
+.rec-chip .pc{color:var(--up);font-weight:600;font-family:var(--mono);font-size:11px}
+.cal{display:grid;gap:6px}
+.crow{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px}
+.crow .rd{font:600 11px var(--mono);color:var(--muted)}
+.crow .nm{font-weight:600;font-size:13px}
+.crow .ci{font-size:11.5px;color:var(--muted)}
+.crow .dt{font:600 11px var(--mono);color:var(--muted);white-space:nowrap}
+.crow.next{border-color:var(--gold)}
+@media (max-width:540px){.gc-inputs{grid-template-columns:minmax(0,1fr)}}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
 .grow{flex:1}
 select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
@@ -388,6 +414,8 @@ h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-vi
           <div class="card kpi"><div class="label">Highest recorded sale</div><div class="kpi-v"><span class="sk">$000,000</span></div><div class="kpi-s"><span class="sk">driver · date</span></div></div>
         </div>
 
+        <div class="rec-strip" id="recStrip" hidden></div>
+
         <div class="hero">
           <article class="card spot" id="spot" aria-labelledby="h-spot"><span class="sk sk-block" style="grid-column:1/-1"></span></article>
           <section class="card holders" aria-labelledby="h-holders">
@@ -414,6 +442,16 @@ h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-vi
             <div class="shop-mini" id="shopMini"></div>
           </section>
         </div>
+
+        <section class="sec" id="gearSec" hidden aria-labelledby="h-gear">
+          <div class="sec-h"><h2 id="h-gear">Collector gear</h2><span class="label">Affiliate links</span></div>
+          <div class="gear" id="gearRow"></div>
+        </section>
+
+        <section class="sec" aria-labelledby="h-cal">
+          <div class="sec-h"><h2 id="h-cal">Season calendar</h2><span class="label" id="calSub"></span></div>
+          <div class="cal" id="calRows"></div>
+        </section>
 
         <section class="sec" aria-labelledby="h-find">
           <div class="sec-h"><h2 id="h-find">Find your driver</h2><a class="more" href="#drivers" id="allDriversLink">All drivers &rarr;</a></div>
@@ -532,6 +570,14 @@ h1[tabindex="-1"]:focus,h1[tabindex="-1"]:focus-visible,main:focus,main:focus-vi
           <div class="sec-h"><h2 id="h-dtop">Top sales</h2><span class="label" id="dTopSub"></span></div>
           <div class="grid-cards" id="dTop10"></div>
         </section>
+        <section class="sec" aria-labelledby="h-gc">
+          <div class="sec-h"><h2 id="h-gc">Worth grading?</h2><span class="label">Planning tool</span></div>
+          <div class="card pad" id="gradeCalc"></div>
+        </section>
+        <section class="sec" id="dGearSec" hidden aria-labelledby="h-dgear">
+          <div class="sec-h"><h2 id="h-dgear">Gear for <span id="dGearName">F1</span> fans</h2><span class="label">Affiliate links</span></div>
+          <div class="gear" id="dGear"></div>
+        </section>
         <section class="sec" id="dRecentSec" hidden aria-labelledby="h-drec">
           <div class="sec-h"><h2 id="h-drec">Recent sales</h2><span class="label">Below the top board</span></div>
           <div class="rows" id="dRecent"></div>
@@ -646,7 +692,7 @@ function imgHtml(src){
 }
 
 /* ---------- data ---------- */
-const DATA={sales:[],auctions:[],shop:[],live:'loading',topByDriver:{}};
+const DATA={sales:[],auctions:[],shop:[],gear:[],records:[],live:'loading',topByDriver:{}};
 
 function cleanTitle(r){
   return String(r.title||[r.year,r.set_name,r.parallel,r.serial].filter(Boolean).join(' ')||'Sale').replace(/\s+/g,' ').trim();
@@ -803,6 +849,67 @@ function renderFind(){
   $('#findDrivers').innerHTML=drivers.filter(d=>tierOf(d)!=='legend').sort(byTopSale).slice(0,8).map(d=>driverCard(d,'compact')).join('');
 }
 
+/* ---------- gear · records · calendar ---------- */
+function gearCard(g,fallbackName){
+  const name=g.name||fallbackName||'Collector pick';
+  return '<a class="card" href="'+esc(g.url)+'" target="_blank" rel="noopener sponsored">'+
+    '<span class="ic" aria-hidden="true">'+esc(g.icon||'\u25C6')+'</span>'+
+    '<span><span class="nm">'+esc(name)+'</span>'+(g.blurb||g.price_band?'<span class="bl">'+esc(g.blurb||g.price_band)+'</span>':'')+'</span></a>';
+}
+function renderGear(){
+  const rows=DATA.gear.filter(g=>g.url&&!g.driver_id&&g.name).slice(0,8);
+  $('#gearSec').hidden=!rows.length;
+  $('#gearRow').innerHTML=rows.map(g=>gearCard(g)).join('');
+}
+function renderRecords(){
+  const rows=(DATA.records||[]).slice(0,6);
+  $('#recStrip').hidden=!rows.length;
+  $('#recStrip').innerHTML=rows.map(r=>{
+    const d=byId[r.driver_id];
+    return '<span class="rec-chip"><b>'+esc(d?lastName(d.name):(r.driver_name||r.driver_id))+'</b> record '+money(r.price_usd)+
+      (r.pct_over!=null?'<span class="pc">\u25B2'+esc(r.pct_over)+'%</span>':'')+'</span>';
+  }).join('');
+}
+function renderCalendar(){
+  const races=D.races||[], next=races.find(r=>r.date>=TODAY);
+  const list=next?races.slice(races.indexOf(next),races.indexOf(next)+6):[];
+  $('#calSub').textContent=next?(races.length-races.indexOf(next))+' rounds left':'season complete';
+  $('#calRows').innerHTML=list.length?list.map(r=>'<article class="card crow'+(r===next?' next':'')+'">'+
+    '<span class="rd">R'+(races.indexOf(r)+1)+'</span>'+
+    '<span><span class="nm">'+esc(r.name)+'</span><span class="ci" style="display:block">'+esc(r.circuit)+' \u00b7 '+esc(r.city)+(r.sprint?' \u00b7 Sprint':'')+'</span></span>'+
+    '<span class="dt">'+esc(r.range)+'</span></article>').join(''):
+    '<div class="card empty">The 2026 season is done \u2014 see you next year.</div>';
+}
+
+/* ---------- worth grading? ---------- */
+function renderGradeCalc(d){
+  const psa10=DATA.sales.find(s=>s.d===d&&/psa\s*10/i.test(s.grade||''));
+  $('#gradeCalc').innerHTML='<div class="gc-inputs">'+
+      '<label>Raw price<input id="gcRaw" type="number" min="0" inputmode="decimal" placeholder="0"></label>'+
+      '<label>Grading + ship<input id="gcCost" type="number" min="0" inputmode="decimal" value="25"></label>'+
+      '<label>PSA 10 target<input id="gcTarget" type="number" min="0" inputmode="decimal" placeholder="0"></label>'+
+    '</div>'+
+    '<div id="gcOut" role="status" aria-live="polite"><div class="gc-strip">Enter a raw price and a PSA 10 target \u2014 profit, ROI and break-even appear here.</div></div>'+
+    '<p class="gc-note">PSA tiers run about $25 / $75 / $150 plus shipping. Look up the PSA 10 comp for <em>your</em> card'+
+    (psa10?' \u2014 graded '+esc(d.name)+' sales on file run up to '+money(psa10.price):'')+
+    '. A 9 can be worth a fraction of a 10 \u2014 this is a planning tool, not advice.</p>'+
+    '<div class="gc-cta">'+
+      '<a class="btn ghost" href="https://www.psacard.com/startsubmission" target="_blank" rel="noopener sponsored">Grade with PSA &nearr;</a>'+
+      '<a class="btn ghost" href="'+esc(ebaySearch(d.name,true))+'" target="_blank" rel="noopener sponsored">Raw comps &nearr;</a>'+
+      '<a class="btn ghost" href="'+esc(wrapEbay('https://www.ebay.com/sch/i.html?_nkw='+encodeURIComponent('Topps Chrome Formula 1 '+d.name+' PSA 10')+'&LH_Sold=1&LH_Complete=1&_sop=13'))+'" target="_blank" rel="noopener sponsored">PSA 10 comps &nearr;</a>'+
+    '</div>';
+  const recalc=()=>{
+    const raw=parseFloat($('#gcRaw').value)||0, cost=parseFloat($('#gcCost').value)||0, tgt=parseFloat($('#gcTarget').value)||0;
+    const out=$('#gcOut');
+    if(raw<=0||tgt<=0){out.innerHTML='<div class="gc-strip">Enter a raw price and a PSA 10 target \u2014 profit, ROI and break-even appear here.</div>';return;}
+    const basis=raw+cost, profit=tgt-basis, roi=basis>0?(profit/basis*100):0, up=profit>=0;
+    out.innerHTML='<div class="gc-strip '+(up?'up':'down')+'">All-in <b>'+money(basis)+'</b> \u2192 PSA 10 <b>'+money(tgt)+
+      '</b> \u00b7 <b class="big">'+(up?'+':'')+money(profit)+'</b> ('+(up?'+':'')+roi.toFixed(0)+'%) \u00b7 break-even '+money(basis)+'</div>';
+  };
+  ['gcRaw','gcCost','gcTarget'].forEach(id=>$('#'+id).addEventListener('input',recalc));
+  recalc();
+}
+
 /* ---------- driver board ---------- */
 function driverSales(d){return DATA.sales.filter(s=>s.d===d);}
 function renderDriverBoard(d){
@@ -843,6 +950,15 @@ function renderDriverBoard(d){
 
   $('#dTopSub').textContent=top.length?top.length+' biggest on file':'';
   $('#dTop10').innerHTML=top.length?top.map(saleCard).join(''):'<div class="card empty" style="grid-column:1/-1">No verified sales on file for '+esc(d.name)+' yet.</div>';
+
+  renderGradeCalc(d);
+  const mine=DATA.gear.filter(g=>g.url&&g.driver_id===d.id);
+  const named=mine.filter(g=>g.name).slice(0,5);
+  const bare=mine.find(g=>!g.name);
+  const dg=named.concat(bare&&!named.length?[Object.assign({},bare,{name:lastName(d.name)+' fan gear on Amazon',blurb:'Shirts, caps and collectibles'})]:[]);
+  $('#dGearSec').hidden=!dg.length;
+  $('#dGearName').textContent=lastName(d.name);
+  $('#dGear').innerHTML=dg.map(g=>gearCard(g)).join('');
 
   $('#dRecentSec').hidden=!recent.length;
   $('#dRecent').innerHTML=recent.map(s=>'<article class="card srow">'+
@@ -1008,20 +1124,24 @@ function route(){
 /* ---------- boot ---------- */
 function renderAll(){
   renderStatus();renderKPIs();renderSpot();renderHolders();renderOvAuctions();renderLandmarks();
-  renderRace();renderShop();renderFind();renderSales();renderAuctions();renderDrivers();renderChecklists();
+  renderRace();renderShop();renderFind();renderGear();renderRecords();renderCalendar();renderSales();renderAuctions();renderDrivers();renderChecklists();
 }
 $('#yr').textContent=new Date().getFullYear();
 route();
 window.addEventListener('hashchange',route);
 initSearch();initTheme();initSignup();wireControls();
-renderRace();renderDrivers();renderChecklists();
+renderRace();renderCalendar();renderDrivers();renderChecklists();
 
 (async()=>{
-  const [top,live,shop]=await Promise.all([
+  const [top,live,shop,gear,records]=await Promise.all([
     sbGet('/rest/v1/driver_top10?select=*'),
     sbGet('/rest/v1/live_auctions?select=*'),
-    sbRpc('shop_public_listings',{p_driver:null})
+    sbRpc('shop_public_listings',{p_driver:null}),
+    sbRpc('amazon_gear',{}),
+    sbRpc('recent_records',{})
   ]);
+  DATA.gear=Array.isArray(gear)?gear:[];
+  DATA.records=Array.isArray(records)?records.filter(r=>r&&r.price_usd):[];
   mergeTop10(top);
   DATA.auctions=Array.isArray(live)?live.filter(a=>byId[a.driver_id]&&a.url&&(!a.ends_on||a.ends_on>=TODAY)):[];
   DATA.shop=Array.isArray(shop)?shop.filter(r=>r.status==='available'):[];
