@@ -17,7 +17,7 @@
 <meta name="twitter:description" content="The live market index for Formula 1 trading cards. Track Topps Chrome F1 auctions, verified sold prices, record sales and live lots — by driver, set and parallel.">
 <meta name="twitter:image" content="https://www.f1cardindex.com/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"F1 Card Index","url":"https://www.f1cardindex.com/","description":"The live market index for Formula 1 trading cards — Topps Chrome auctions, sold prices, and record sales."}</script>
-<script>(function(){var t='light';try{var s=JSON.parse(localStorage.getItem('f1CardIndex:v1')||'{}');if(s.theme==='tron')t='tron';}catch(e){}document.documentElement.setAttribute('data-theme',t);})();</script>
+<script>(function(){var t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'tron':'light';try{var s=JSON.parse(localStorage.getItem('f1CardIndex:v1')||'{}');if(s.theme==='tron'||s.theme==='light')t=s.theme;}catch(e){}document.documentElement.setAttribute('data-theme',t);})();</script>
 <link rel="icon" href="/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,14 +28,14 @@
   --teal:#0b7b71;--gold:#8c6319;--up:#107d39;--down:#dc2626;
   --txt:#17201e;--muted:#5a665f;--btn-ink:#ffffff;--red:#ED1C24;
   --shadow:0 1px 2px rgba(16,24,20,.05),0 10px 26px -18px rgba(16,24,20,.22);
-  --r:14px;--side-w:248px;
+  --r:14px;--side-w:248px;--field-line:#7f8a84;
   --ease:cubic-bezier(.2,.7,.2,1);--dur-1:120ms;--dur-2:220ms;
   --disp:'Saira Condensed','Arial Narrow','Helvetica Neue Condensed',system-ui,sans-serif;
   --sans:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
 }
 html[data-theme="tron"]{
-  --bg:#000409;--panel:#04121b;--panel2:#071a24;--line:#0c3a44;
+  --field-line:#3f6e78;--bg:#000409;--panel:#04121b;--panel2:#071a24;--line:#0c3a44;
   --teal:#22e9ff;--gold:#ffd23f;--up:#39e08a;--down:#ff5d5d;
   --txt:#d6faff;--muted:#5f8f99;--btn-ink:#021016;
   --shadow:0 0 0 1px rgba(34,233,255,.03),0 14px 32px -20px rgba(0,0,0,.85);
@@ -82,7 +82,7 @@ button{font:inherit}
 .crumb{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .crumb b{color:var(--txt);font-weight:600}
 .search{position:relative;margin-left:auto;width:min(380px,100%)}
-.search input{width:100%;font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 40px 9px 36px}
+.search input{width:100%;font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--field-line);border-radius:10px;padding:9px 40px 9px 36px}
 .search .mag{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none}
 .search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:600 11px var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;background:var(--panel2)}
 .qres{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;list-style:none;margin:0;max-height:60vh;overflow:auto}
@@ -263,7 +263,7 @@ html[data-theme="tron"] .chart .dot{fill:var(--tc,var(--muted))}
 .shopcta{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-left:4px solid var(--gold)}
 .gc-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .gc-inputs label{display:grid;gap:6px;font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.gc-inputs input{font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.gc-inputs input{font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--field-line);border-radius:10px;padding:10px 12px}
 .gc-strip{border-radius:10px;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);font-size:13px;margin-top:12px}
 .gc-strip.up{border-color:color-mix(in srgb,var(--up) 45%,var(--line))}
 .gc-strip.down{border-color:color-mix(in srgb,var(--down) 45%,var(--line))}
@@ -292,7 +292,7 @@ html[data-theme="tron"] .chart .dot{fill:var(--tc,var(--muted))}
 @media (max-width:540px){.gc-inputs{grid-template-columns:minmax(0,1fr)}}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
 .grow{flex:1}
-select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--field-line);border-radius:10px;padding:8px 12px}
 .field{min-width:220px}
 .count{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:4px 0 14px}
 .more-btn{margin:20px auto 0}
@@ -302,7 +302,7 @@ select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px s
 
 .cta-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px}
 .nl-form{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
-.nl-form input[type=email]{flex:1;min-width:210px;font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.nl-form input[type=email]{flex:1;min-width:210px;font:inherit;color:var(--txt);background:var(--panel2);border:1px solid var(--field-line);border-radius:10px;padding:10px 12px}
 .hp{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);border:0;opacity:0}
 .msg{font-size:13px;margin:10px 0 0;min-height:1.2em}
 .msg[data-tone="ok"]{color:var(--up)}
@@ -399,6 +399,50 @@ select,.field{font:inherit;color:var(--txt);background:var(--panel);border:1px s
 .status[data-state="live"] i{position:relative}
 .status[data-state="live"] i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--up);animation:pulse 2.4s var(--ease) infinite}
 @keyframes pulse{from{transform:scale(1);opacity:.55}to{transform:scale(2.8);opacity:0}}
+/* ---------- adapt: devices, preferences, print ---------- */
+/* landscape phones: the header scrolls away and the tab bar goes single-row, so content isn't 43% chrome */
+@media (max-width:900px) and (max-height:500px) and (orientation:landscape){
+  .top{position:static}
+  .tabbar{padding-top:3px}
+  .tabbar a{grid-auto-flow:column;align-items:center;justify-content:center;gap:6px;padding:5px 2px;font-size:11px}
+  .tabbar svg{width:17px;height:17px}
+}
+/* notched phones in landscape (viewport-fit=cover): keep content and the tab bar out of the cut-outs */
+@supports (padding:max(0px)){
+  @media (max-width:900px){
+    .top,main,.foot{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+    .tabbar{padding-left:max(4px,env(safe-area-inset-left));padding-right:max(4px,env(safe-area-inset-right))}
+  }
+}
+/* the OS asks for more contrast: stronger secondary text and visible hairlines, hierarchy kept */
+@media (prefers-contrast:more){
+  :root{--muted:#3d4843;--line:#8a978f}
+  html[data-theme="tron"]{--muted:#8fbac4;--line:#3f8391}
+}
+/* the OS asks for less transparency: a solid header, no blur */
+@media (prefers-reduced-transparency:reduce){
+  .top{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+/* Windows High Contrast: SVG isn't auto-adjusted, so map the chart to system colours */
+@media (forced-colors:active){
+  .chart .ax,.chart .lbl{fill:CanvasText}
+  .chart .gl{stroke:GrayText}
+  .chart .dot{fill:CanvasText;stroke:Canvas}
+  .chart .dot.on{fill:Highlight}
+  .rank.pod,.verdict,.tag-rec{border:1px solid CanvasText}
+  .lights i{background:GrayText}
+}
+/* print: the current view on white, without app chrome, with chart tables expanded */
+@media print{
+  :root,html[data-theme="tron"]{--bg:#fff;--panel:#fff;--panel2:#fff;--line:#c9d1cd;--field-line:#7f8a84;--txt:#000;--muted:#3d4843;--gold:#6e4d12;--up:#0b5e2a;--down:#a31b1b;--shadow:none}
+  .side,.top,.tabbar,.skip,.status,.cta-row,.foot-more,.btn-row,.more,.back,.tip,.chart-table summary,.toolbar,#salesMore,#dShopSec{display:none!important}
+  .app{display:block}
+  main,.foot{padding:0;max-width:none}
+  .card{box-shadow:none;break-inside:avoid}
+  .grid-cards,.drivers{grid-template-columns:repeat(3,minmax(0,1fr))}
+  a{text-decoration:none}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 /* ---------- refractor foil: pointer-tracked tilt + a chrome sheen, fine pointers only ---------- */
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
   a.media{perspective:700px}
@@ -1380,6 +1424,18 @@ function setTheme(t,persist){
 function initTheme(){
   setTheme(document.documentElement.getAttribute('data-theme'),false);
   $$('[data-theme-set]').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.themeSet,true)));
+  /* no saved choice yet: keep tracking the OS setting live */
+  const os=matchMedia('(prefers-color-scheme: dark)');
+  os.addEventListener('change',e=>{
+    let saved=null;try{saved=JSON.parse(localStorage.getItem('f1CardIndex:v1')||'{}').theme;}catch(_){}
+    if(saved!=='tron'&&saved!=='light')setTheme(e.matches?'tron':'light',false);
+  });
+}
+function initPrint(){
+  /* the table twins are the printable form of the charts — open them for print, restore after */
+  let opened=[];
+  addEventListener('beforeprint',()=>{opened=$$('details.chart-table:not([open])');opened.forEach(d=>d.open=true);});
+  addEventListener('afterprint',()=>{opened.forEach(d=>d.open=false);opened=[];});
 }
 
 /* ---------- newsletter ---------- */
@@ -1490,7 +1546,7 @@ function renderAll(){
 $('#yr').textContent=new Date().getFullYear();
 route();
 window.addEventListener('hashchange',route);
-initSearch();initTheme();initSignup();wireControls();initFoil();initMorph();initSalesChart();
+initSearch();initTheme();initSignup();wireControls();initFoil();initMorph();initSalesChart();initPrint();
 renderRace();renderCalendar();renderDrivers();renderChecklists();
 
 (async()=>{

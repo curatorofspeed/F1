@@ -337,3 +337,46 @@ A **Sales history** chart on every driver board with at least two dated sales: o
 
 ## Recommended (not done)
 - **Supabase-sourced sales default their grade to "Raw"** even when the title says "PSA 9" (visible in some tooltips/table rows) — a data-ingestion fix in the Radar worker, not a chart issue.
+
+---
+
+# Homepage — Adapt Pass (2026-09-16)
+
+**Scope:** `index.html` (homepage + driver boards) · **Method:** measured the page in contexts beyond a desktop browser — 320px reflow, landscape phone (812×375), emulated OS dark mode — inventoried coverage for contrast / transparency / forced-colours / print preferences, then fixed and re-measured.
+
+## Findings by severity
+
+### 🟠 High
+**Form-field boundaries were nearly invisible — 1.16–1.67:1** (WCAG 1.4.11 needs 3:1 for the edge that identifies an input). Affected the search box, sales/auction sort selects, filter fields, the newsletter email and the grading-calculator inputs, in both themes. → **Fixed:** a dedicated `--field-line` token computed as the minimal step toward `--muted` that clears 3.1:1 against the field fill *and* the page — `#7f8a84` (light), `#3f6e78` (tron). Decorative card/divider hairlines keep `--line`. Measured after: light 3.15, tron 3.14–3.35.
+
+### 🟡 Medium
+**OS dark mode was ignored.** With the system set to dark and no saved choice, the page loaded light. → **Fixed:** the pre-paint theme script follows `prefers-color-scheme` until the visitor picks a theme; an explicit Light or Dark choice always wins, and with no saved choice the page tracks OS changes live. Verified: OS dark + no choice → tron; saved Light + OS dark → light (live and after reload).
+
+**Landscape phones spent 43% of the screen on chrome.** At 812×375 the sticky header (101px) plus tab bar (62px) left 213px for content. → **Fixed** for short landscape viewports: the header scrolls away and the tab bar collapses to one icon+label row. Persistent chrome now **10%** (37px), 338px of content visible, labels kept, tap targets 27px.
+
+**Notched phones in landscape:** the page sets `viewport-fit=cover` but padded only the top and bottom safe areas, so content and the tab bar could sit under the notch or rounded corners. → **Fixed:** header, main, footer and tab bar pad by `max(16px, env(safe-area-inset-left/right))` (4px minimum for the tab bar). Resolves to the normal padding on un-notched screens (verified 16px / 4px).
+
+**Windows High Contrast skipped the chart.** SVG isn't auto-adjusted in forced-colours mode, so axis labels, gridlines and dots kept their brand colours on a system background. → **Fixed:** chart text → `CanvasText`, gridlines → `GrayText`, dots → `CanvasText` (active dot `Highlight`); podium/verdict/Next tags gain a `CanvasText` border since their tints disappear.
+
+### 🟢 Low
+- **No `prefers-contrast: more` adaptation** → stronger `--muted` (light 8.37:1, tron 9.78:1 — still a step below `--txt`) and visible hairlines.
+- **No `prefers-reduced-transparency` adaptation** → solid header, no backdrop blur.
+- **Printing produced the app chrome in whatever theme was active.** → Print stylesheet: current view on white with ink-safe tokens, sidebar/header/tab bar/partner/newsletter hidden, cards unbroken across pages, the sales chart kept, and its "View as table" expanded for print (restored afterwards).
+
+## Verified passing (unchanged)
+- **Reflow at 320px** (WCAG 1.4.10): no page-level horizontal scroll on the overview or a driver board; the only elements past the edge live inside intentional horizontal scrollers (filter chips, the sales table).
+
+## Verified live
+- Theme: OS dark/no choice → tron; explicit Light saved → wins over OS dark live and on reload.
+- Field borders 3.14–3.35:1 in both themes (search, sort, newsletter, grading input).
+- Landscape 812×375: header static, tab bar 37px single-row with labels, 10% chrome, no overflow; portrait unchanged.
+- Print handlers: table opens on `beforeprint`, restores on `afterprint`.
+- Stylesheet rules present for landscape, safe areas, `prefers-contrast`, `prefers-reduced-transparency`, forced colours (2 blocks) and print. No console errors.
+
+## Limits of this environment
+- **Live OS theme switching** couldn't be observed: media-query `change` events are delivered during rendering, which the hidden preview skips (the page does follow the OS on load). Worth a manual toggle of system dark mode with the page open.
+- **`prefers-contrast`, `prefers-reduced-transparency`, forced colours, safe-area insets and real print output** can't be emulated here; verified by the rules being present and by computed fallbacks. Worth one pass on an iPhone in landscape and Windows High Contrast.
+
+## Recommended (not done)
+- **Font sizes are all `px` (80 declarations, 0 `rem`)** — browser zoom works (WCAG 1.4.4 met), but a visitor's *default font size* preference is ignored. Moving to `rem` is a whole-stylesheet refactor best done deliberately.
+- **`/hub` saves a theme on every visit**, so someone who opens the legacy hub will be treated as having chosen a theme and stop following the OS on the homepage.
