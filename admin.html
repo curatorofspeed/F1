@@ -165,9 +165,21 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <button class="ghost" id="styHero" type="button">Hero image</button>
         <button id="weekPack" type="button" style="margin-left:auto">🎁 Generate week pack</button>
         <button id="dlCard" type="button">⬇ Download PNG</button>
+        <button class="ghost" id="dlCardCap" type="button">⬇ PNG + caption</button>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from recent approved sales — the last <b>30 days</b> market-wide, <b>90 days</b> for a single driver, so nothing posts as news that isn't. Download the PNG (or screenshot it) and post straight to TikTok / IG. <b>Week pack</b> renders every post at once and saves them as a zip with ready-to-paste captions.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Renders from recent approved sales — the last <b>30 days</b> market-wide, <b>90 days</b> for a single driver, so nothing posts as news that isn't. The caption below is written for whatever post is on screen — edit it freely, then <b>Copy</b> it or grab both at once with <b>PNG + caption</b>. <b>Week pack</b> renders every post and zips them with the same captions.</div>
       <div id="socialStage" style="overflow:auto;background:#000;border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;justify-content:center"></div>
+      <div id="capWrap" style="margin-top:12px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+          <label for="socCaption" style="font-size:12.5px;color:var(--muted)">Caption for this post</label>
+          <button class="ghost" id="capCopy" type="button">📋 Copy</button>
+          <button class="ghost" id="capReset" type="button">↺ Reset</button>
+          <span id="capCount" style="font-size:12px;color:var(--muted)"></span>
+          <span id="capMsg" style="font-size:12px;color:var(--muted)" role="status" aria-live="polite"></span>
+        </div>
+        <textarea id="socCaption" rows="4" spellcheck="true"
+          style="width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:10px 12px;font:inherit;font-size:13px;line-height:1.5;resize:vertical"></textarea>
+      </div>
       <div class="msg" id="socMsg"></div>
     </details>
 
@@ -960,6 +972,7 @@ function socWire(){
     const listMode=(SOC.post==='top'||SOC.post==='ending'||SOC.post==='prospect');
     ['cnt5','cnt3','styList','styHero'].forEach(id=>{ const b=$(id); b.disabled=!listMode; b.style.opacity=listMode?'1':'.4'; b.style.cursor=listMode?'pointer':'not-allowed'; });
     socRender();
+    socSyncCaption();
   };
   $('fmt916').onclick=()=>{SOC.ratio='916';paint();};
   $('fmt11').onclick=()=>{SOC.ratio='11';paint();};
@@ -984,6 +997,10 @@ function socWire(){
     rsel.onchange=()=>{ SOC.recordIdx=+rsel.value; socRender(); };
   }
   $('dlCard').onclick=socDownload;
+  if($('dlCardCap')) $('dlCardCap').onclick=socDownloadPair;
+  if($('capCopy')) $('capCopy').onclick=socCopyCaption;
+  if($('capReset')) $('capReset').onclick=()=>{ socSyncCaption(true); const m=$('capMsg'); if(m){ m.textContent='Caption reset'; setTimeout(()=>{ if(m.textContent==='Caption reset') m.textContent=''; },2000); } };
+  if($('socCaption')) $('socCaption').addEventListener('input',()=>{ $('socCaption').dataset.edited='1'; socCapCount(); });
   paint();
 }
 /* dates on cards: "Jul 10", with the year added once it isn't this year */
@@ -1217,6 +1234,15 @@ function socSvgPngBlob(svg){
     img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
   });
 }
+function socDownloadPair(){
+  const txt=($('socCaption')&&$('socCaption').value.trim())||socCaptionFor(SOC);
+  socDownload();
+  if(!txt){ $('socMsg').textContent='Downloaded — no caption for this post yet.'; return; }
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt+'\n'],{type:'text/plain'}));
+  a.download='f1cardindex-'+SOC.post+(SOC.driver?'-'+SOC.driver:'')+(SOC.prospect?'-'+SOC.prospect:'')+'-'+SOC.ratio+'-caption.txt';
+  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
 function socDownload(){
   const svg=$('socSVG'); if(!svg){ $('socMsg').textContent='Nothing to download yet.'; return; }
   socSvgPngBlob(svg).then(b=>{
@@ -1260,6 +1286,93 @@ function socZip(files){
   return new Blob(local.concat(central,[new Uint8Array(eo.buffer)]),{type:'application/zip'});
 }
 function socMoney(v){ return '$'+Math.round(Number(v||0)).toLocaleString(); }
+const SOC_TAG='\n\n#F1 #F1Cards #TradingCards #ToppsF1 #f1cardindex';
+/* The caption for a given studio state. The studio and the week pack both call
+   this, so what you copy from the preview is what lands in captions.txt.
+   No data for that post -> empty string: the card renders an empty state and
+   there is nothing honest to say about it. */
+function socCaptionFor(st){
+  st=st||SOC;
+  const d=SOC.data||{}, w=(d.week_stats||{}), win=(d.windows||{});
+  const TOPD=win.top_days||30, DRVD=win.driver_days||90;
+  const recent=socRecent(d), recs=(d.new_records||[]), end=(d.ending_soon||[]), pd=(d.per_driver||[]);
+  const tag=SOC_TAG, drv=st.driver, DRV=drv?cap(drv):null;
+  const clip=(s,n)=>String(s||'').slice(0,n).trim();
+
+  if(st.post==='recap')
+    return 'The F1 card market this week: '+socMoney(w.sold_vol_7d!=null?(w.sold_7d>0?w.sold_vol_7d:w.sold_vol_30d):w.total_volume)
+      +' tracked across '+((w.sold_7d>0?w.sold_7d:w.sold_30d)||w.sales_count||0)+' sales, with '+(w.live_now||0)
+      +' auctions live right now. Full board at f1cardindex.com'+tag;
+
+  if(st.post==='prospect'){
+    const pro=st.prospect?SOC_PROSPECTS.find(p=>p.id===st.prospect):null;
+    return pro
+      ? '🌱 '+pro.n+' ('+pro.t+') — '+pro.ttl+' sold for '+socMoney(pro.p)+', his record to date.'+tag+' #F2 #F3'
+      : '🌱 PROSPECT WATCH — the biggest F2/F3 card sales on record. Today’s junior is tomorrow’s rookie card.'+tag+' #F2 #F3';
+  }
+  if(st.post==='ending'){
+    const rows=drv?end.filter(r=>r.driver_id===drv):end;
+    if(!rows.length) return '';
+    return drv
+      ? '⏱ '+DRV+' auctions closing next — '+rows.length+' live lot'+(rows.length===1?'':'s')+' on the board. Bid or watch at f1cardindex.com'+tag
+      : '⏱ Auctions closing next — '+(w.live_now||rows.length)+' live lots on the board. Bid or watch at f1cardindex.com'+tag;
+  }
+  if(st.post==='driver'){
+    const one=drv?pd.find(p=>p.driver_id===drv):pd[0];
+    return one ? cap(one.driver_id)+'’s record sale: '+clip(one.title,80)+' at '+socMoney(one.price_usd)+'.'+tag : '';
+  }
+  if(st.post==='record'){
+    const one=drv?recs.find(r=>r.driver_id===drv):recs[st.recordIdx||0];
+    if(!one) return '';
+    return '🚨 NEW RECORD — '+cap(one.driver_id)+' '+clip(one.title,70)+' sold for '+socMoney(one.price_usd)
+      +(one.previous_record?', past the old mark of '+socMoney(one.previous_record):'')+'.'+tag;
+  }
+  /* top sales */
+  if(drv){
+    let rows=((d.driver_top||{})[drv]||[]), fell=false;
+    if(!rows.length){ rows=((d.driver_top_all||{})[drv]||[]); fell=rows.length>0; }
+    if(!rows.length) return '';
+    const one=rows[0], n=Math.min(st.count||5,rows.length), wind=fell?'all-time':'last '+DRVD+' days';
+    /* one row is not a "Top 1" list — say it the way a person would */
+    return (st.style==='hero'||n<2)
+      ? cap(one.driver_id)+' — '+clip(one.title,80)+' → '+socMoney(one.price_usd)+'. Their biggest tracked sale ('+wind+').'+tag
+      : 'Top '+n+' '+DRV+' card sales ('+wind+') — '+socMoney(one.price_usd)+' out front. Which one would you have bought?'+tag;
+  }
+  if(!recent.length) return '';
+  const one=recent[0], nAll=Math.min(st.count||5,recent.length);
+  return (st.style==='hero'||nAll<2)
+    ? cap(one.driver_id)+' — '+clip(one.title,80)+' → '+socMoney(one.price_usd)+'. Biggest tracked sale of the last '+TOPD+' days.'+tag
+    : 'Top '+nAll+' F1 card sales of the last '+TOPD+' days — '+cap(one.driver_id)+' leads at '+socMoney(one.price_usd)+'. Which one would you have bought?'+tag;
+}
+/* keep the box in step with the preview; hand-edits survive until the post changes */
+let SOC_CAPSIG='';
+/* ratio is deliberately absent: 9:16 and 1:1 say the same thing, so switching
+   format must not throw away a caption you just hand-edited */
+function socCapSig(){ return [SOC.post,SOC.style,SOC.count,SOC.driver,SOC.prospect,SOC.recordIdx].join('|'); }
+function socSyncCaption(force){
+  const box=$('socCaption'); if(!box) return;
+  const sig=socCapSig(), next=socCaptionFor(SOC);
+  if(force||sig!==SOC_CAPSIG||!box.dataset.edited){ box.value=next; box.dataset.edited=''; }
+  SOC_CAPSIG=sig;
+  box.placeholder=next?'':'No caption yet — this post has no data to describe.';
+  socCapCount();
+}
+function socCapCount(){
+  const box=$('socCaption'), out=$('capCount'); if(!box||!out) return;
+  const n=box.value.trim().length;
+  out.textContent=n?n+' characters'+(n>2200?' · over Instagram’s 2,200 limit':''):'';
+  out.style.color=n>2200?'var(--red,#ED1C24)':'var(--muted)';
+}
+async function socCopyCaption(){
+  const box=$('socCaption'), msg=$('capMsg'); if(!box||!msg) return;
+  const txt=box.value.trim();
+  if(!txt){ msg.textContent='Nothing to copy yet.'; return; }
+  let ok=false;
+  try{ await navigator.clipboard.writeText(txt); ok=true; }
+  catch(e){ try{ box.select(); ok=document.execCommand('copy'); }catch(_){ ok=false; } }
+  msg.textContent=ok?'Caption copied 🏁':'Copy failed — select the text and copy manually.';
+  setTimeout(()=>{ if(msg.textContent.startsWith('Caption copied')||msg.textContent.startsWith('Copy failed')) msg.textContent=''; },2500);
+}
 /* what goes in the pack, in posting order — anything with no data renders
    nothing and is skipped, so a quiet week just yields a smaller zip */
 function socPackSpecs(){
@@ -1270,25 +1383,25 @@ function socPackSpecs(){
   const tag='\n\n#F1 #F1Cards #TradingCards #ToppsF1 #f1cardindex';
   const L=[];
   L.push({file:'recap-916',name:'Week recap (story)',state:{post:'recap',ratio:'916'},
-    caption:'The F1 card market this week: '+socMoney(w.sold_vol_7d!=null?(w.sold_7d>0?w.sold_vol_7d:w.sold_vol_30d):w.total_volume)+' tracked across '+((w.sold_7d>0?w.sold_7d:w.sold_30d)||w.sales_count||0)+' sales, with '+(w.live_now||0)+' auctions live right now. Full board at f1cardindex.com'+tag});
+    caption:socCaptionFor({post:'recap'})});
   L.push({file:'recap-11',name:'Week recap (feed)',state:{post:'recap',ratio:'11'},caption:'Same recap, 1:1 for the feed.'+tag});
   if(recent.length){
     L.push({file:'top5-list-916',name:'Top 5 sales (list, story)',state:{post:'top',ratio:'916',style:'list',count:5,driver:null},
-      caption:'Top 5 F1 card sales of the last '+TOPD+' days'+(one?' — '+cap(one.driver_id)+' leads at '+socMoney(one.price_usd):'')+'. Which one would you have bought?'+tag});
+      caption:socCaptionFor({post:'top',style:'list',count:5,driver:null})});
     L.push({file:'top1-hero-916',name:'#1 sale (hero, story)',state:{post:'top',ratio:'916',style:'hero',count:5,driver:null},
-      caption:one?(cap(one.driver_id)+' — '+String(one.title||'').slice(0,80).trim()+' → '+socMoney(one.price_usd)+'. Biggest tracked sale of the last '+TOPD+' days.'+tag):'Top sale of the window.'+tag});
+      caption:socCaptionFor({post:'top',style:'hero',count:5,driver:null})});
     L.push({file:'top5-list-11',name:'Top 5 sales (list, feed)',state:{post:'top',ratio:'11',style:'list',count:5,driver:null},caption:'Top 5, 1:1 for the feed.'+tag});
   }
   if(rec) L.push({file:'record-916',name:'New record',state:{post:'record',ratio:'916',driver:null,recordIdx:0},
-    caption:'🚨 NEW RECORD — '+cap(rec.driver_id)+' '+String(rec.title||'').slice(0,70).trim()+' sold for '+socMoney(rec.price_usd)+(rec.previous_record?', past the old mark of '+socMoney(rec.previous_record):'')+'.'+tag});
+    caption:socCaptionFor({post:'record',driver:null,recordIdx:0})});
   if(end.length) L.push({file:'ending-916',name:'Ending soon',state:{post:'ending',ratio:'916',style:'list',count:5,driver:null},
-    caption:'⏱ Auctions closing next — '+(w.live_now||end.length)+' live lots on the board. Bid or watch at f1cardindex.com'+tag});
+    caption:socCaptionFor({post:'ending',style:'list',count:5,driver:null})});
   if(best) L.push({file:'driver-'+best.driver_id+'-916',name:'Driver spotlight — '+cap(best.driver_id),state:{post:'driver',ratio:'916',driver:best.driver_id},
-    caption:cap(best.driver_id)+'’s record sale: '+String(best.title||'').slice(0,80).trim()+' at '+socMoney(best.price_usd)+'.'+tag});
+    caption:socCaptionFor({post:'driver',driver:best.driver_id})});
   L.push({file:'prospects-list-916',name:'Prospect watch (list)',state:{post:'prospect',ratio:'916',style:'list',count:5,prospect:null},
-    caption:'🌱 PROSPECT WATCH — the biggest F2/F3 card sales on record. Today’s junior is tomorrow’s rookie card.'+tag+' #F2 #F3'});
+    caption:socCaptionFor({post:'prospect',prospect:null})});
   if(pro) L.push({file:'prospect-'+pro.id+'-916',name:'Prospect spotlight — '+pro.n,state:{post:'prospect',ratio:'916',prospect:pro.id},
-    caption:'🌱 '+pro.n+' ('+pro.t+') — '+pro.ttl+' sold for '+socMoney(pro.p)+', his record to date.'+tag+' #F2 #F3'});
+    caption:socCaptionFor({post:'prospect',prospect:pro.id})});
   return L;
 }
 async function socWeekPack(){
